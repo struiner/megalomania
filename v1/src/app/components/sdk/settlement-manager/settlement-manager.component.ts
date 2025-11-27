@@ -1,10 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-settlement-manager',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './settlement-manager.component.html',
-  styleUrl: './settlement-manager.component.scss'
+  styleUrls: ['./settlement-manager.component.scss']
 })
 export class SettlementManagerComponent {
 
