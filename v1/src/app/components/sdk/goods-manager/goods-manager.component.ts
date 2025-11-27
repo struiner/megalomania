@@ -1,10 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-goods-manager',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './goods-manager.component.html',
-  styleUrl: './goods-manager.component.scss'
+  styleUrls: ['./goods-manager.component.scss']
 })
 export class GoodsManagerComponent {
 

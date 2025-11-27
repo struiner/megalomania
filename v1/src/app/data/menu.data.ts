@@ -1,9 +1,14 @@
-import { MenuItem } from '../app/models/menu.model';
-import { CityWrapperComponent } from '../app/pages/city/city-wrapper.component';
-import { GoodsOverviewComponent } from '../app/pages/config/econ/goods-overview.component';
-import { WorldGenerationComponent } from '../app/pages/config/gen/world-generation.component';
-import { KirbyComponent } from '../app/pages/kirby/kirby.component';
-import { KitchenSinkComponent } from '../app/pages/kitchen-sink/kitchen-sink.component';
+import { MenuItem } from '../models/menu.model';
+import { CityWrapperComponent } from '../pages/city/city-wrapper.component';
+import { GoodsOverviewComponent } from '../pages/config/econ/goods-overview.component';
+import { WorldGenerationComponent } from '../pages/config/gen/world-generation.component';
+import { KirbyComponent } from '../pages/kirby/kirby.component';
+import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
+import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
+import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
+import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
+import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
+import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
 
 export const MENU: MenuItem[] = [
     {
@@ -228,6 +233,47 @@ export const MENU: MenuItem[] = [
       { title: 'Sound', type: 'checkbox' },
       { title: 'Music', type: 'checkbox' },
       { title: 'Fullscreen', type: 'checkbox' },
+    ],
+  },
+
+  {
+    title: 'SDK',
+    children: [
+      {
+        title: 'Goods Manager',
+        type: 'route',
+        route: 'sdk/goods',
+        sdkComponent: GoodsManagerComponent,
+        description: 'Placeholder surface for the goods management SDK tool.',
+      },
+      {
+        title: 'Room Creator',
+        type: 'route',
+        route: 'sdk/rooms',
+        sdkComponent: RoomCreatorComponent,
+        description: 'Workspace for designing rooms or interiors.',
+      },
+      {
+        title: 'Settlement Manager',
+        type: 'route',
+        route: 'sdk/settlements',
+        sdkComponent: SettlementManagerComponent,
+        description: 'Manage and iterate on settlement data through the SDK.',
+      },
+      {
+        title: 'Structure Creator',
+        type: 'route',
+        route: 'sdk/structures',
+        sdkComponent: StructureCreatorComponent,
+        description: 'Scaffold for creating structures within the SDK.',
+      },
+      {
+        title: 'Structure Manager',
+        type: 'route',
+        route: 'sdk/structure-manager',
+        sdkComponent: StructuremanagerComponent,
+        description: 'Placeholder view for the structure management tool.',
+      },
     ],
   },
 ];
