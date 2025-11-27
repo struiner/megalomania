@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { MenuItem } from '../../models/menu.model';
-import { MENU } from '../../../data/menu.data';
+import { MENU } from '../../data/menu.data';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {

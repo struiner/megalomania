@@ -1,7 +1,7 @@
 // src/app/menu-routes.ts
 import { Routes } from '@angular/router';
 import { MenuItem } from '../../models/menu.model';
-import { MENU } from '../../../data/menu.data';
+import { MENU } from '../../data/menu.data';
 
 export function menuToRoutes(items: MenuItem[] = MENU): Routes {
   const routes: Routes = [];

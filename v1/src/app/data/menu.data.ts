@@ -1,9 +1,9 @@
-import { MenuItem } from '../app/models/menu.model';
-import { CityWrapperComponent } from '../app/pages/city/city-wrapper.component';
-import { GoodsOverviewComponent } from '../app/pages/config/econ/goods-overview.component';
-import { WorldGenerationComponent } from '../app/pages/config/gen/world-generation.component';
-import { KirbyComponent } from '../app/pages/kirby/kirby.component';
-import { KitchenSinkComponent } from '../app/pages/kitchen-sink/kitchen-sink.component';
+import { MenuItem } from '../models/menu.model';
+import { CityWrapperComponent } from '../pages/city/city-wrapper.component';
+import { GoodsOverviewComponent } from '../pages/config/econ/goods-overview.component';
+import { WorldGenerationComponent } from '../pages/config/gen/world-generation.component';
+import { KirbyComponent } from '../pages/kirby/kirby.component';
+import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
 
 export const MENU: MenuItem[] = [
     {
