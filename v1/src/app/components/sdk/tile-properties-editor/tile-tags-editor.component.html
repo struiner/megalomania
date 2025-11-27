@@ -1,0 +1,25 @@
+<div class="tags-editor-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Add Tag</mat-label>
+    <input matInput [(ngModel)]="newTag" placeholder="New tag" />
+    <button mat-icon-button matSuffix (click)="addTag()" [disabled]!="!newTag">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-chip-set>
+    <mat-chip *ngFor="let tag of editForm.tags" (removed)="removeTag(tag)" removable="true">
+      {{ tag }}
+      <button matChipRemove>
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip>
+  </mat-chip-set>
+
+  <div class="suggested-tags" *ngIf="suggestedTags?.length">
+    <h4>Suggested Tags</h4>
+    <mat-chip-set class="tag-suggestions">
+      <mat-chip *ngFor="let tag of suggestedTags" (click)="addTag(tag)">{{ tag }}</mat-chip>
+    </mat-chip-set>
+  </div>
+</div>

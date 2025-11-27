@@ -1,0 +1,96 @@
+<div class="tile-properties-editor">
+  <!-- Debug Info -->
+  <div style="background: #ffeb3b; padding: 8px; margin-bottom: 16px; border-radius: 4px;">
+    <strong>DEBUG:</strong> TilePropertiesEditor is rendering!<br>
+    Selected tiles: {{ selectedTiles.length }}<br>
+    Has project: {{ !!project }}<br>
+    Has changes: {{ hasChanges }}<br>
+    Edit form exists: {{ !!editForm }}<br>
+    Edit form name: {{ editForm?.name }}<br>
+    Available categories: {{ availableCategories.length }}<br>
+    Available subcategories: {{ availableSubcategories.length }}
+  </div>
+
+  <!-- Header -->
+  <div class="editor-header">
+    <h3 *ngIf="selectedTiles.length === 1">
+      Edit Tile: {{ selectedTiles[0].name }}
+    </h3>
+    <h3 *ngIf="selectedTiles.length > 1">
+      Bulk Edit: {{ selectedTiles.length }} tiles
+    </h3>
+    <h3 *ngIf="selectedTiles.length === 0">
+      No tiles selected
+    </h3>
+    <div class="header-actions" *ngIf="selectedTiles.length > 0">
+      <button mat-button (click)="resetChanges()" [disabled]="!hasChanges">
+        <mat-icon>refresh</mat-icon>
+        Reset
+      </button>
+      <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="!hasChanges">
+        <mat-icon>save</mat-icon>
+        Apply
+      </button>
+    </div>
+  </div>
+
+  <!-- Properties Form -->
+  <div class="properties-form" *ngIf="selectedTiles.length > 0">
+    <!-- Basic Properties Panel -->
+    <div style="border: 1px solid #ccc; margin-bottom: 16px; padding: 16px; border-radius: 4px;">
+      <h4>Basic Properties</h4>
+      <app-tile-basic-properties
+        [editForm]="editForm"
+        [availableCategories]="availableCategories"
+        [availableSubcategories]="availableSubcategories"
+        [selectedTiles]="selectedTiles"
+        (categoryChange)="onCategoryChange()"
+        (formChange)="markChanged()">
+      </app-tile-basic-properties>
+    </div>
+
+    <!-- Metadata Panel -->
+    <div style="border: 1px solid #ccc; margin-bottom: 16px; padding: 16px; border-radius: 4px;">
+      <h4>Metadata</h4>
+      <app-tile-metadata-editor
+        [editForm]="editForm"
+        (formChange)="markChanged()">
+      </app-tile-metadata-editor>
+    </div>
+
+    <!-- Tags Panel -->
+    <div style="border: 1px solid #ccc; margin-bottom: 16px; padding: 16px; border-radius: 4px;">
+      <h4>Tags ({{ editForm.tags?.length || 0 }})</h4>
+      <app-tile-tags-editor
+        [editForm]="editForm"
+        [suggestedTags]="suggestedTags"
+        (formChange)="markChanged()">
+      </app-tile-tags-editor>
+    </div>
+
+    <!-- Custom Properties Panel -->
+    <div style="border: 1px solid #ccc; margin-bottom: 16px; padding: 16px; border-radius: 4px;">
+      <h4>Custom Properties ({{ getPropertyCount() }})</h4>
+      <app-tile-custom-properties
+        [editForm]="editForm"
+        (formChange)="markChanged()">
+      </app-tile-custom-properties>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="selectedTiles.length === 0">
+    <mat-icon>edit</mat-icon>
+    <h3>No tiles selected</h3>
+    <p>Select one or more tiles from the grid to edit their properties</p>
+  </div>
+
+  <!-- Bulk Edit Info -->
+  <div class="bulk-edit-info" *ngIf="selectedTiles.length > 1">
+    <mat-icon>info</mat-icon>
+    <span>
+      Bulk editing {{ selectedTiles.length }} tiles. 
+      Changes will be applied to all selected tiles.
+    </span>
+  </div>
+</div>

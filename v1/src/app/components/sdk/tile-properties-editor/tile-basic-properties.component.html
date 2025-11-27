@@ -1,0 +1,30 @@
+<div class="basic-properties-form">
+  <!-- Debug -->
+  <div style="background: #4caf50; color: white; padding: 4px; margin-bottom: 8px;">
+    DEBUG: TileBasicProperties rendering! Form name: {{ editForm?.name }}
+  </div>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="editForm.name" placeholder="Tile name" (ngModelChange)="onFormChange()" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Category</mat-label>
+    <mat-select [(ngModel)]="editForm.category" (ngModelChange)="onCategoryChange()">
+      <mat-option *ngFor="let cat of availableCategories" [value]="cat">{{ cat }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Subcategory</mat-label>
+    <mat-select [(ngModel)]="editForm.subcategory" (ngModelChange)="onFormChange()">
+      <mat-option *ngFor="let sub of availableSubcategories" [value]="sub">{{ sub }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <textarea matInput [(ngModel)]="editForm.description" placeholder="Description" (ngModelChange)="onFormChange()"></textarea>
+  </mat-form-field>
+</div>

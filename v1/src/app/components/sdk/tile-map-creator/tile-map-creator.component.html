@@ -1,0 +1,92 @@
+<div class="tilemap-creation-tool">
+      <div class="tool-header">
+        <h2>🎨 Tilemap Creation Tool</h2>
+        <div class="header-actions">
+          <button mat-icon-button (click)="onClose()" matTooltip="Close Tool">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <mat-tab-group class="main-tabs" [(selectedIndex)]="selectedTabIndex">
+        <!-- Setup Tab -->
+        <mat-tab label="Setup">
+          <div class="tab-content">
+            <app-project-management
+              [currentProject]="currentProject"
+              [recentProjects]="recentProjects"
+              (newProject)="onNewProject()"
+              (loadProject)="onLoadRecentProject($event)"
+              (saveProject)="onSaveProject()"
+              (importProject)="onImportProject()"
+              (exportProject)="onExportProject($event)"
+              (duplicateProject)="onDuplicateProject()"
+              (deleteProject)="onDeleteProject($event)"
+              (loadExample)="onLoadExample()">
+            </app-project-management>
+
+            <app-file-upload
+              [isDragOver]="isDragOver"
+              (fileSelected)="onFileSelected($event)"
+              (dragOverChange)="onDragOverChange($event)">
+            </app-file-upload>
+
+            <app-tilemap-config
+              *ngIf="selectedFile && !currentProject"
+              [imageInfo]="imageInfo"
+              (configChange)="onConfigChange($event)"
+              (analyze)="onAnalyzeWithConfig($event)"
+              (reset)="onResetConfig()">
+            </app-tilemap-config>
+
+            <app-analysis-progress
+              [isAnalyzing]="isAnalyzing"
+              [progress]="analysisProgress">
+            </app-analysis-progress>
+          </div>
+        </mat-tab>
+
+        <!-- Tile Grid Tab -->
+        <mat-tab label="Tile Grid" [disabled]="!currentProject">
+          <div class="tab-content">
+            <app-tile-grid-viewer
+              [config]="currentProject ? currentProject.config : null"
+              [tiles]="currentProject ? currentProject.tiles : []"
+              [selectedTileIds]="selectedTileIds"
+              (selectionChanged)="onTileSelectionChange($event)">
+            </app-tile-grid-viewer>
+          </div>
+        </mat-tab>
+
+        <!-- Properties Tab -->
+        <mat-tab label="Properties ({{ selectedTiles.length }})">
+          <div class="tab-content">
+            <app-tile-properties-editor
+              *ngIf="selectedTiles.length > 0"
+              [selectedTiles]="selectedTiles"
+              [project]="currentProject"
+              (tilesUpdated)="onTilesUpdated($event)">
+            </app-tile-properties-editor>
+
+            <div *ngIf="selectedTiles.length === 0" class="no-selection">
+              <p>Select tiles from the grid to edit their properties</p>
+              <p><strong>Debug:</strong> selectedTiles.length = {{ selectedTiles.length }}</p>
+              <p><strong>Debug:</strong> selectedTileIds.length = {{ selectedTileIds.length }}</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Export Tab -->
+        <mat-tab label="Export" [disabled]="!currentProject">
+          <div class="tab-content">
+            <app-project-actions
+              [currentProject]="currentProject"
+              (loadProject)="onLoadProject()"
+              (saveProject)="onSaveProject()"
+              (exportPalette)="onExportPalette()"
+              (close)="onClose()">
+            </app-project-actions>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>

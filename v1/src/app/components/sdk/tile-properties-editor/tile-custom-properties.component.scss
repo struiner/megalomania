@@ -1,0 +1,27 @@
+.custom-properties-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.property-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.property-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-property {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+mat-form-field {
+  width: 100%;
+}

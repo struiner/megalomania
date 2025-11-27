@@ -1,0 +1,30 @@
+<div class="custom-properties-form">
+  <div class="property-list">
+    <div class="property-item" *ngFor="let prop of customProperties; let i = index">
+      <mat-form-field appearance="fill">
+        <mat-label>Key</mat-label>
+        <input matInput [(ngModel)]="prop.key" placeholder="Property key" />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Value</mat-label>
+        <input matInput [(ngModel)]="prop.value" placeholder="Property value" />
+      </mat-form-field>
+      <button mat-icon-button color="warn" (click)="removeProperty(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="add-property">
+    <mat-form-field appearance="fill">
+      <mat-label>Key</mat-label>
+      <input matInput [(ngModel)]="newPropertyKey" placeholder="New property key" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Value</mat-label>
+      <input matInput [(ngModel)]="newPropertyValue" placeholder="New property value" />
+    </mat-form-field>
+    <button mat-icon-button color="primary" (click)="addProperty()" [disabled]!="!newPropertyKey">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>

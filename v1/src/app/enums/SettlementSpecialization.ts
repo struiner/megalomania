@@ -1,0 +1,15 @@
+export  enum SettlementSpecialization {
+    Construction = "Construction",
+    Agriculture = "Agriculture",
+    Textiles  = "Textiles ",
+    Metallurgy  = "Metallurgy ",
+    Trade = "Trade",
+    AnimalHusbandry = "AnimalHusbandry",
+    Maritime = "Maritime",
+    Brewing = "Brewing",
+    Artisanship = "Artisanship",
+    Scholar = "Scholar",
+    Precious ="Precious",
+    Trapping = "Trapping",
+    Cultural = "Cultural",
+  }

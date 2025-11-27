@@ -1,0 +1,17 @@
+<div class="metadata-editor-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Rarity</mat-label>
+    <mat-select [(ngModel)]="metadata.rarity" (ngModelChange)="onFormChange()">
+      <mat-option value="common">Common</mat-option>
+      <mat-option value="uncommon">Uncommon</mat-option>
+      <mat-option value="rare">Rare</mat-option>
+      <mat-option value="epic">Epic</mat-option>
+      <mat-option value="legendary">Legendary</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Cost</mat-label>
+    <input matInput type="number" [(ngModel)]="metadata.cost" placeholder="Cost" (ngModelChange)="onFormChange()" />
+  </mat-form-field>
+</div>
