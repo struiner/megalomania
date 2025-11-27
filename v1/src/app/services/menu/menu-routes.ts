@@ -2,7 +2,6 @@
 import { Routes } from '@angular/router';
 import { MenuItem } from '../../models/menu.model';
 import { MENU } from '../../data/menu.data';
-import { SdkToolPageComponent } from '../../pages/sdk/sdk-tool-page.component';
 
 export function menuToRoutes(items: MenuItem[] = MENU): Routes {
   const routes: Routes = [];
