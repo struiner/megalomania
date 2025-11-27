@@ -1,4 +1,4 @@
-import { GoodsType } from "../../app/enums/GoodsType";
+import { GoodsType } from "../../enums/GoodsType";
 
 
 export interface GoodsInfo {
