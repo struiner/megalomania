@@ -1,0 +1,84 @@
+/* toolbar-menu.component.scss */
+:host {
+  display: block;
+}
+
+/* items in this level should be inline for root, stacked for submenu */
+:host .menu-item {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.menu-item {
+  position: relative; /* ensure submenu positions relative to parent li */
+}
+/* top-level items (when host is inside .menu-root) -> inline are handled by parent spacing */
+.menu-label {
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  user-select: none;
+  font-size: 13px;
+}
+
+/* subtle Amiga glow on hover */
+.menu-label:hover, .menu-label:focus {
+  background: linear-gradient(90deg, rgba(110,24,187,0.12), rgba(44,11,80,0.2));
+  box-shadow: 0 0 10px rgba(130, 58, 185, 0.12), inset 0 1px 0 rgba(255,255,255,0.02);
+  outline: none;
+}
+
+/* icons */
+.icon { font-size: 14px; opacity: 0.95; }
+
+/* submenu base style - hidden by default */
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%; /* right below the parent item */
+  left: 0;    /* start at parent's left edge */
+  min-width: 160px;
+  background: linear-gradient(180deg,#0b0720,#0f0b19);
+  border: 1px solid rgba(106,31,179,0.35);
+  padding: 6px 4px;
+  z-index: 2000;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.7);
+  border-radius: 6px;
+}
+
+/* Show submenu when parent li is hovered or focused-within */
+.menu-item:hover > .submenu,
+.menu-item:focus-within > .submenu {
+  display: block;
+}
+
+/* nested submenus open to the right */
+.submenu .submenu {
+  left: 100%;
+  top: 0;
+}
+
+/* Ensure the root-level li are inline (for the toolbar top row) */
+:host(:not(.submenu-host)) > li.menu-item,
+.menu-root > app-toolbar-menu > li.menu-item {
+  display: inline-block;
+}
+.menu-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between; /* if you want title left and checkbox right */
+  width: 220px; /* or min-width depending on level; adjust to preference */
+}
+
+.title { flex: 1 1 auto; text-align: left; }
+
+.checkbox-marker {
+  padding-left: 8px;
+  min-width: 18px;
+  text-align: right;
+}

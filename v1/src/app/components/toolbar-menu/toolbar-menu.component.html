@@ -1,0 +1,30 @@
+<ng-container *ngIf="items?.length">
+  <ng-container *ngFor="let item of items">
+    <li class="menu-item">
+      <div
+        class="menu-label"
+        role="menuitem"
+        [attr.aria-haspopup]="item.children ? 'true' : null"
+        [attr.tabindex]="0"
+        (click)="handleClick(item)"
+        (keydown.enter)="handleEnter($event)"
+      >
+        <span class="icon" *ngIf="item.icon">{{ item.icon }}</span>
+
+        <!-- title only uses innerHTML -->
+        <span class="title" [innerHTML]="renderTitleWithKeybind(item)"></span>
+
+        <!-- right-side checkbox marker -->
+        <span class="checkbox-marker" *ngIf="item.type === 'checkbox'">
+          {{ isChecked(item) ? '✔' : '' }}
+        </span>
+
+        <span class="caret" *ngIf="item.children">▸</span>
+      </div>
+
+      <ul class="submenu" *ngIf="item.children">
+        <app-toolbar-menu [items]="item.children" [path]="itemKey(item)"></app-toolbar-menu>
+      </ul>
+    </li>
+  </ng-container>
+</ng-container>

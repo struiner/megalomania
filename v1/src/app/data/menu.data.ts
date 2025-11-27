@@ -1,0 +1,233 @@
+import { MenuItem } from '../app/models/menu.model';
+import { CityWrapperComponent } from '../app/pages/city/city-wrapper.component';
+import { GoodsOverviewComponent } from '../app/pages/config/econ/goods-overview.component';
+import { WorldGenerationComponent } from '../app/pages/config/gen/world-generation.component';
+import { KirbyComponent } from '../app/pages/kirby/kirby.component';
+import { KitchenSinkComponent } from '../app/pages/kitchen-sink/kitchen-sink.component';
+
+export const MENU: MenuItem[] = [
+    {
+        title: 'Game',
+        children:[{
+            title:'User Interface',
+            type: 'route',
+            route:'game/interface',
+            component: KitchenSinkComponent,
+        }]
+    },
+  {
+    title: 'World',
+    children: [
+      {
+        title: 'Render',
+        type: 'route',
+        route: 'world/view',
+            keybind: 'v',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Generation',
+        type: 'route',
+        route: 'world/generation',
+            keybind: 'w',
+        component: WorldGenerationComponent,
+      },
+      {
+        title: 'Planes',
+        type: 'route',
+        route: 'world/planes',
+            keybind: 'p',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Biomes',
+        children: [
+            {
+            title: 'Overview',
+            type: 'route',
+            keybind: 'b',
+            route: 'biomes/overview',
+            component: KirbyComponent,
+          },
+          {
+            title: 'Flora',
+            type: 'route',
+            route: 'biomes/flora',
+            component: KirbyComponent,
+          },
+          {
+            title: 'Fauna',
+            type: 'route',
+            route: 'biomes/fauna',
+            component: KirbyComponent,
+          },
+          {
+            title: 'Features',
+            type: 'route',
+            route: 'biomes/features',
+            component: KirbyComponent,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    title: 'Cultures',
+    children: [
+      {
+        title: 'Economy',
+        children: [
+          {
+            title: 'Goods',
+            route: 'economy/goods',
+            type: 'route',
+            keybind: 'g',
+            component: GoodsOverviewComponent,
+          },
+          {
+            title: 'Structures',
+            route: 'economy/structures',
+            type: 'route',
+            component: KirbyComponent,
+            keybind: 's',
+          },
+          {
+            title: 'Estates',
+            route: 'economy/estates',
+            type: 'route',
+            component: KirbyComponent,
+            keybind: 'e',
+          },
+        ],
+      },
+      {
+        title: 'Settlements',
+        children: [
+          {
+            title: 'naming',
+            route: 'settlements/naming',
+            type: 'route',
+            keybind: 't',
+            component: KirbyComponent,
+          },
+          {
+            title: 'production',
+            route: 'settlements/production',
+            type: 'route',
+            keybind: 'p',
+            component: CityWrapperComponent,
+          },
+          {
+            title: 'organization',
+            route: 'settlements/organization',
+            type: 'route',
+            keybind: 'o',
+            component: KirbyComponent,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    title: 'Transport',
+    children: [
+      {
+        title: 'Convoys',
+        children: [
+          {
+            title: 'All Convoys',
+            route: 'fleets/convoys',
+            type: 'route',
+            component: KirbyComponent,
+          },
+          { title: 'Create Convoy', type: 'button' },
+        ],
+      },
+      {
+        title: 'Vessels',
+        children: [
+          { title: 'Overview', type: 'button' },
+          { title: 'Create Vessel', type: 'button' },
+          { title: 'Auto-Maintain', type: 'checkbox' },
+        ],
+      },
+    ],
+  },
+
+  {
+    title: 'NPC',
+    children: [
+      {
+        title: 'Nations',
+        route: 'diplomacy/nations',
+        type: 'route',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Guild',
+        route: 'diplomacy/guild',
+        type: 'route',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Trade',
+        route: 'diplomacy/trade',
+        type: 'route',
+        component: KirbyComponent,
+      },
+    ],
+  },
+
+  {
+    title: 'Exploration',
+    children: [
+      {
+        title: 'Sea Routes',
+        type: 'route',
+        route: 'exploration/routes',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Harbors',
+        type: 'route',
+        route: 'exploration/harbors',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Fog of War',
+        type: 'checkbox',
+        keybind: 'x',
+      },
+    ],
+  },
+
+  {
+    title: 'Personnel',
+    children: [
+      {
+        title: 'Captains',
+        route: 'personnel/captains',
+        type: 'route',
+        component: KirbyComponent,
+      },
+      {
+        title: 'Crew',
+        route: 'personnel/crew',
+        type: 'route',
+        component: KirbyComponent,
+      },
+      { title: 'Hiring Auto-Fill', type: 'checkbox' },
+    ],
+  },
+
+  {
+    title: 'Settings',
+    children: [
+      { title: 'Sound', type: 'checkbox' },
+      { title: 'Music', type: 'checkbox' },
+      { title: 'Fullscreen', type: 'checkbox' },
+    ],
+  },
+];
