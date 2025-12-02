@@ -5,6 +5,13 @@ import { SettlementDisasterType } from '../enums/SettlementDisasterType';
 import { Structure } from '../types/Structure';
 import { Population } from '../types/settlement/Population';
 import { StructureType } from '../enums/StructureType';
+import {
+  BlockHeaderDTO,
+  CrossRefDTO,
+  EventHeaderDTO,
+  Hash128,
+  PlayerID,
+} from './anna-readme.models';
 
 export enum TimeSpeed {
   SLOW = 3000,
@@ -66,3 +73,6 @@ export interface DisasterEventData {
   affectedPopulation: number;
   affectedStructures: Structure[];
 }
+
+// Per-Player Blockchain DTOs are sourced from the README-aligned design models.
+export type { EventHeaderDTO, BlockHeaderDTO, CrossRefDTO };
