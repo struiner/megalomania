@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { GoodsType } from "../../enums/GoodsType";
 
 
 @Injectable({ providedIn: 'root' })
