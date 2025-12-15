@@ -1,10 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-structuremanager',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './structuremanager.component.html',
-  styleUrl: './structuremanager.component.scss'
+  styleUrls: ['./structuremanager.component.scss']
 })
 export class StructuremanagerComponent {
 

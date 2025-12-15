@@ -237,4 +237,45 @@ export const MENU: MenuItem[] = [
       { title: 'Fullscreen', type: 'checkbox' },
     ],
   },
+
+  {
+    title: 'SDK',
+    children: [
+      {
+        title: 'Goods Manager',
+        type: 'route',
+        route: 'sdk/goods',
+        sdkComponent: GoodsManagerComponent,
+        description: 'Placeholder surface for the goods management SDK tool.',
+      },
+      {
+        title: 'Room Creator',
+        type: 'route',
+        route: 'sdk/rooms',
+        sdkComponent: RoomCreatorComponent,
+        description: 'Workspace for designing rooms or interiors.',
+      },
+      {
+        title: 'Settlement Manager',
+        type: 'route',
+        route: 'sdk/settlements',
+        sdkComponent: SettlementManagerComponent,
+        description: 'Manage and iterate on settlement data through the SDK.',
+      },
+      {
+        title: 'Structure Creator',
+        type: 'route',
+        route: 'sdk/structures',
+        sdkComponent: StructureCreatorComponent,
+        description: 'Scaffold for creating structures within the SDK.',
+      },
+      {
+        title: 'Structure Manager',
+        type: 'route',
+        route: 'sdk/structure-manager',
+        sdkComponent: StructuremanagerComponent,
+        description: 'Placeholder view for the structure management tool.',
+      },
+    ],
+  },
 ];
