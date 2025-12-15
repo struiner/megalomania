@@ -1,5 +1,75 @@
-<div class="sdk-placeholder">
-  <h2>Goods Manager</h2>
-  <p>A sandbox surface for wiring the goods management SDK flows.</p>
-  <p class="hint">Hook data sources and actions here to explore the tool end-to-end.</p>
-</div>
+<section class="goods-manager">
+  <header>
+    <div>
+      <p class="eyebrow">SDK / Economy</p>
+      <h2>Goods Manager</h2>
+      <p class="lede">Prototype new trade goods, keep tabs on tiers, and sanity-check category coverage.</p>
+    </div>
+
+    <div class="stats">
+      <div class="pill" *ngFor="let tier of tierTotals() | keyvalue">
+        <span class="label">{{ tier.key }}</span>
+        <span class="value">{{ tier.value }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel">
+    <div class="form">
+      <h3>Create good</h3>
+      <form [formGroup]="form" (ngSubmit)="addGood()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Skyfruit" />
+        </label>
+
+        <label>
+          <span>Category</span>
+          <select formControlName="category">
+            <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Tier</span>
+          <select formControlName="tier">
+            <option value="Common">Common</option>
+            <option value="Uncommon">Uncommon</option>
+            <option value="Rare">Rare</option>
+            <option value="Legendary">Legendary</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Tags (comma separated)</span>
+          <input type="text" formControlName="tags" placeholder="Food, trade, staple" />
+        </label>
+
+        <button type="submit">Add good</button>
+      </form>
+    </div>
+
+    <div class="list">
+      <div class="list__header">
+        <h3>Catalog</h3>
+        <input type="search" placeholder="Filter by name, tag, or category" [formControl]="filter" />
+      </div>
+
+      <ul>
+        <li *ngFor="let good of filteredGoods(); let i = index">
+          <div>
+            <p class="eyebrow">{{ good.category }}</p>
+            <h4>{{ good.name }}</h4>
+            <div class="tags">
+              <span class="tag" *ngFor="let tag of good.tags">{{ tag }}</span>
+            </div>
+          </div>
+          <div class="meta">
+            <span class="tier tier--{{ good.tier | lowercase }}">{{ good.tier }}</span>
+            <button type="button" (click)="removeGood(i)">Remove</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

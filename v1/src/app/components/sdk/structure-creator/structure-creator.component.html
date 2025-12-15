@@ -1,5 +1,82 @@
-<div class="sdk-placeholder">
-  <h2>Structure Creator</h2>
-  <p>Embed the structure creation SDK widgets here when they are ready.</p>
-  <p class="hint">The route is pre-wired to the toolbar for rapid iteration.</p>
-</div>
+<section class="structure-creator">
+  <header>
+    <div>
+      <p class="eyebrow">SDK / Structures</p>
+      <h2>Structure Creator</h2>
+      <p class="lede">Capture a blueprint, pick modules, and keep the backlog of builds tidy.</p>
+    </div>
+    <div class="pill">
+      <p class="eyebrow">Average complexity</p>
+      <strong>{{ averageComplexity() }}</strong>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="form">
+      <h3>Blueprint</h3>
+      <form [formGroup]="form" (ngSubmit)="addBlueprint()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Skyforge" />
+        </label>
+
+        <label>
+          <span>Type</span>
+          <select formControlName="type">
+            <option *ngFor="let type of types" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Complexity (1-5)</span>
+          <input type="range" formControlName="complexity" min="1" max="5" />
+        </label>
+
+        <label>
+          <span>Upkeep</span>
+          <input type="text" formControlName="upkeep" />
+        </label>
+
+        <fieldset>
+          <legend>Modules</legend>
+          <label *ngFor="let module of moduleOptions">
+            <input
+              type="checkbox"
+              [value]="module"
+              (change)="form.controls.modules.setValue($event.target.checked
+                ? [...form.controls.modules.value, module]
+                : form.controls.modules.value.filter(m => m !== module))"
+              [checked]="form.controls.modules.value.includes(module)"
+            />
+            {{ module }}
+          </label>
+        </fieldset>
+
+        <label>
+          <span>Notes</span>
+          <textarea formControlName="notes" rows="3" placeholder="Construction quirks, narrative hooks"></textarea>
+        </label>
+
+        <button type="submit">Add blueprint</button>
+      </form>
+    </div>
+
+    <div class="list">
+      <h3>Blueprint backlog ({{ blueprints().length }})</h3>
+      <ul>
+        <li *ngFor="let blueprint of blueprints(); let i = index">
+          <div>
+            <p class="eyebrow">{{ blueprint.type }}</p>
+            <h4>{{ blueprint.name }}</h4>
+            <p class="lede">Complexity {{ blueprint.complexity }} · Upkeep {{ blueprint.upkeep }}</p>
+            <p class="lede" *ngIf="blueprint.notes">{{ blueprint.notes }}</p>
+            <div class="tags">
+              <span class="tag" *ngFor="let module of blueprint.modules">{{ module }}</span>
+            </div>
+          </div>
+          <button type="button" (click)="removeBlueprint(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

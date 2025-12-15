@@ -213,7 +213,9 @@ type BiomeCard = BiomeDefinition & { floraDetails: FloraDisplay[] };
   ],
 })
 export class BiomeOverviewComponent {
-  private readonly floraEntries = Object.values(FLORA_METADATA);
+  private readonly floraEntries = Object.values(FLORA_METADATA).filter(
+    (flora): flora is FloraMetadata => !!flora,
+  );
 
   readonly biomeCards: BiomeCard[] = Object.values(BIOME_DEFINITIONS).map(
     (biome) => ({

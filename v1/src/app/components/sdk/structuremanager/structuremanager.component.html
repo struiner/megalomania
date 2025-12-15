@@ -1,5 +1,69 @@
-<div class="sdk-placeholder">
-  <h2>Structure Manager</h2>
-  <p>Landing area for the structure management SDK utilities.</p>
-  <p class="hint">Connect APIs and controls as they are built out.</p>
-</div>
+<section class="structure-manager">
+  <header>
+    <div>
+      <p class="eyebrow">SDK / Structures</p>
+      <h2>Structure Manager</h2>
+      <p class="lede">Track build status and ownership for structures under construction.</p>
+    </div>
+    <div class="filter">
+      <label>
+        <span>Filter by status</span>
+        <select [formControl]="filter">
+          <option value="">All</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="form">
+      <h3>Add structure</h3>
+      <form [formGroup]="form" (ngSubmit)="addStructure()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Signal Tower" />
+        </label>
+
+        <label>
+          <span>Type</span>
+          <select formControlName="type">
+            <option *ngFor="let type of structureTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Status</span>
+          <select formControlName="status">
+            <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Owner</span>
+          <input type="text" formControlName="owner" />
+        </label>
+
+        <button type="submit">Queue</button>
+      </form>
+    </div>
+
+    <div class="list">
+      <h3>Queue ({{ filteredStructures().length }})</h3>
+      <ul>
+        <li *ngFor="let structure of filteredStructures(); let i = index">
+          <div>
+            <p class="eyebrow">{{ structure.type }}</p>
+            <h4>{{ structure.name }}</h4>
+            <p class="lede">Owner: {{ structure.owner }}</p>
+            <span class="status" [class]="'status status--' + (structure.status | lowercase)">{{ structure.status }}</span>
+          </div>
+          <div class="actions">
+            <button type="button" (click)="markCompleted(structure)" [disabled]="structure.status === 'Completed'">Complete</button>
+            <button type="button" (click)="removeStructure(i)">Remove</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
