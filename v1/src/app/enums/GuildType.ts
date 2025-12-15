@@ -10,7 +10,11 @@ export enum GuildType {
   Priests = "priests",
   Guards = "guards",
   Thieves = "thieves",
-  Assassins = "assassins"
+  Assassins = "assassins",
+  Hunters = "hunters",
+  Mages = "mages",
+  Naturalists = "naturalist",
+  Explorers = "explorers"
 }
 
 export enum GuildRank {
@@ -27,5 +31,7 @@ export enum GuildRelation {
   Neutral = "neutral",
   Rival = "rival",
   Enemy = "enemy",
-  Banned = "banned"
+  Banned = "banned",
+  Indentured = "indentured",
+  Revered = "revered"
 }

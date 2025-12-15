@@ -2,6 +2,7 @@ import { MenuItem } from '../models/menu.model';
 import { CityWrapperComponent } from '../pages/city/city-wrapper.component';
 import { GoodsOverviewComponent } from '../pages/config/econ/goods-overview.component';
 import { WorldGenerationComponent } from '../pages/config/gen/world-generation.component';
+import { DesignDocumentComponent } from '../pages/design/design-document.component';
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
 
@@ -13,6 +14,12 @@ export const MENU: MenuItem[] = [
             type: 'route',
             route:'game/interface',
             component: KitchenSinkComponent,
+        },
+        {
+            title: 'Design Doc',
+            type: 'route',
+            route: 'game/design-doc',
+            component: DesignDocumentComponent,
         }]
     },
   {

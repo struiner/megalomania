@@ -4,7 +4,7 @@ export enum GoodsType {
     Grain = "Grain",
     Hemp = "Hemp",
     Wool = "Wool",
-    RawMetal = "RawMetal",
+    Iron = "Iron",
     Honey = "Honey",
     Salt = "Salt",
     MetalGoods = "MetalGoods",
