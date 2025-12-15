@@ -217,6 +217,22 @@ export class BiomeOverviewComponent {
     (flora): flora is FloraMetadata => !!flora,
   );
 
+  readonly useOrder: FloraUseType[] = [
+    FloraUseType.Food,
+    FloraUseType.Medicine,
+    FloraUseType.Material,
+    FloraUseType.Construction,
+    FloraUseType.Fodder,
+    FloraUseType.Fertilizer,
+    FloraUseType.Trade,
+    FloraUseType.Fuel,
+    FloraUseType.Industry,
+    FloraUseType.Water,
+    FloraUseType.Insulation,
+    FloraUseType.Dye,
+    FloraUseType.Ritual,
+  ];
+
   readonly biomeCards: BiomeCard[] = Object.values(BIOME_DEFINITIONS).map(
     (biome) => ({
       ...biome,
@@ -235,22 +251,6 @@ export class BiomeOverviewComponent {
     (count, biome) => count + biome.floraDetails.length,
     0,
   );
-
-  readonly useOrder: FloraUseType[] = [
-    FloraUseType.Food,
-    FloraUseType.Medicine,
-    FloraUseType.Material,
-    FloraUseType.Construction,
-    FloraUseType.Fodder,
-    FloraUseType.Fertilizer,
-    FloraUseType.Trade,
-    FloraUseType.Fuel,
-    FloraUseType.Industry,
-    FloraUseType.Water,
-    FloraUseType.Insulation,
-    FloraUseType.Dye,
-    FloraUseType.Ritual,
-  ];
 
   private formatFloraLabel(type: string): string {
     return type.replace(/([A-Z])/g, ' $1').trim();
