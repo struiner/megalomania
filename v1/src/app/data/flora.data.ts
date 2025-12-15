@@ -1340,7 +1340,7 @@ export const FLORA_METADATA: Record<FloraType, FloraMetadata> = {
   biome: BiomeType.Woodland,
   uses: [FloraUseType.Material],
   description: 'Fibrous plant used for mats and weaving.'
-}
+},
 
 [FloraType.ForestOak]: {
   id: FloraType.ForestOak,
