@@ -5,6 +5,7 @@ import { WorldGenerationComponent } from '../pages/config/gen/world-generation.c
 import { DesignDocumentComponent } from '../pages/design/design-document.component';
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
+import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
 
 export const MENU: MenuItem[] = [
     {
@@ -49,12 +50,12 @@ export const MENU: MenuItem[] = [
       {
         title: 'Biomes',
         children: [
-            {
+          {
             title: 'Overview',
             type: 'route',
             keybind: 'b',
             route: 'biomes/overview',
-            component: KirbyComponent,
+            component: BiomeOverviewComponent,
           },
           {
             title: 'Flora',
