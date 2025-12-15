@@ -60,4 +60,14 @@ export class SettlementManagerComponent {
   removeSettlement(index: number): void {
     this.settlements.update(list => list.filter((_, i) => i !== index));
   }
+
+  toggleConcern(concern: string, checked: boolean): void {
+    const concerns = this.form.controls.concerns.value;
+    const updated = checked
+      ? concerns.includes(concern)
+        ? concerns
+        : [...concerns, concern]
+      : concerns.filter(item => item !== concern);
+    this.form.controls.concerns.setValue(updated);
+  }
 }

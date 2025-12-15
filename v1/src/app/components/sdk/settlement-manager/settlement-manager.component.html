@@ -50,9 +50,7 @@
             <input
               type="checkbox"
               [value]="concern"
-              (change)="form.controls.concerns.setValue($event.target.checked
-                ? [...form.controls.concerns.value, concern]
-                : form.controls.concerns.value.filter(c => c !== concern))"
+              (change)="toggleConcern(concern, $any($event.target).checked)"
               [checked]="form.controls.concerns.value.includes(concern)"
             />
             {{ concern }}

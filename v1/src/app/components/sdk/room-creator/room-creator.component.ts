@@ -56,4 +56,14 @@ export class RoomCreatorComponent {
   removeRoom(index: number): void {
     this.rooms.update(list => list.filter((_, i) => i !== index));
   }
+
+  toggleHazard(hazard: string, checked: boolean): void {
+    const hazards = this.form.controls.hazards.value;
+    const next = checked
+      ? hazards.includes(hazard)
+        ? hazards
+        : [...hazards, hazard]
+      : hazards.filter(existing => existing !== hazard);
+    this.form.controls.hazards.setValue(next);
+  }
 }

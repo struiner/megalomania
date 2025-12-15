@@ -28,7 +28,7 @@ export class StructureCreatorComponent {
 
   readonly form = this.formBuilder.group({
     name: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
-    type: this.formBuilder.nonNullable.control<StructureType>(StructureType.Temple, Validators.required),
+    type: this.formBuilder.nonNullable.control<StructureType>(StructureType.House, Validators.required),
     complexity: this.formBuilder.nonNullable.control(2, [Validators.required, Validators.min(1), Validators.max(5)]),
     upkeep: this.formBuilder.nonNullable.control('Stone + timber each week'),
     modules: this.formBuilder.nonNullable.control<string[]>(['Dock']),
@@ -55,5 +55,15 @@ export class StructureCreatorComponent {
 
   removeBlueprint(index: number): void {
     this.blueprints.update(list => list.filter((_, i) => i !== index));
+  }
+
+  toggleModule(module: string, checked: boolean): void {
+    const modules = this.form.controls.modules.value;
+    const updated = checked
+      ? modules.includes(module)
+        ? modules
+        : [...modules, module]
+      : modules.filter(m => m !== module);
+    this.form.controls.modules.setValue(updated);
   }
 }

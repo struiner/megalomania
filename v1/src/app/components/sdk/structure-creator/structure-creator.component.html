@@ -43,9 +43,7 @@
             <input
               type="checkbox"
               [value]="module"
-              (change)="form.controls.modules.setValue($event.target.checked
-                ? [...form.controls.modules.value, module]
-                : form.controls.modules.value.filter(m => m !== module))"
+              (change)="toggleModule(module, $any($event.target).checked)"
               [checked]="form.controls.modules.value.includes(module)"
             />
             {{ module }}

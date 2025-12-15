@@ -5,10 +5,10 @@
       <h2>Room Creator</h2>
       <p class="lede">Block out interior spaces, capture hazards, and keep track of the latest draft.</p>
     </div>
-    <div class="summary" *ngIf="lastCreated()">
+    <div class="summary" *ngIf="lastCreated() as last">
       <p class="eyebrow">Last saved</p>
-      <h3>{{ lastCreated()?.name }}</h3>
-      <p class="lede">{{ lastCreated()?.purpose }}</p>
+      <h3>{{ last.name }}</h3>
+      <p class="lede">{{ last.purpose }}</p>
     </div>
   </header>
 
@@ -43,9 +43,7 @@
             <input
               type="checkbox"
               [value]="hazard"
-              (change)="form.controls.hazards.setValue($event.target.checked
-                ? [...form.controls.hazards.value, hazard]
-                : form.controls.hazards.value.filter(h => h !== hazard))"
+              (change)="toggleHazard(hazard, $any($event.target).checked)"
               [checked]="form.controls.hazards.value.includes(hazard)"
             />
             {{ hazard }}
