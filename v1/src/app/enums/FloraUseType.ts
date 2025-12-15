@@ -1,0 +1,15 @@
+export enum FloraUseType {
+  Construction = 'Construction',
+  Dye = 'Dye',
+  Fertilizer = 'Fertilizer',
+  Fodder = 'Fodder',
+  Food = 'Food',
+  Fuel = 'Fuel',
+  Industry = 'Industry',
+  Insulation = 'Insulation',
+  Material = 'Material',
+  Medicine = 'Medicine',
+  Ritual = 'Ritual',
+  Trade = 'Trade',
+  Water = 'Water',
+}
