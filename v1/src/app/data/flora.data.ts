@@ -10,7 +10,8 @@ export interface FloraMetadata {
 }
 
 
-export const FLORA_METADATA: Record<FloraType, FloraMetadata> = {
+// Coverage is partial for now while metadata is being authored for every flora entry.
+export const FLORA_METADATA: Partial<Record<FloraType, FloraMetadata>> = {
   [FloraType.GiantKelp]: {
     id: FloraType.GiantKelp,
     biome: BiomeType.Ocean,

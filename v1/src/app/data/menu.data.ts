@@ -6,6 +6,11 @@ import { DesignDocumentComponent } from '../pages/design/design-document.compone
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
 import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
+import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
+import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
+import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
+import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
+import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
 
 export const MENU: MenuItem[] = [
     {

@@ -1,5 +1,87 @@
-<div class="sdk-placeholder">
-  <h2>Settlement Manager</h2>
-  <p>Use this view to stitch the settlement management SDK widgets together.</p>
-  <p class="hint">Wire data providers and UI flows as they become available.</p>
-</div>
+<section class="settlement-manager">
+  <header>
+    <div>
+      <p class="eyebrow">SDK / World</p>
+      <h2>Settlement Manager</h2>
+      <p class="lede">Sketch new settlements, track prosperity, and surface emerging issues.</p>
+    </div>
+    <div class="stats">
+      <div class="pill">
+        <p class="eyebrow">Average prosperity</p>
+        <strong>{{ averageProsperity() }}%</strong>
+      </div>
+      <div class="pill" *ngIf="mostStressed() as stressed">
+        <p class="eyebrow">Most stressed</p>
+        <strong>{{ stressed.name }} ({{ stressed.concerns.length }} concerns)</strong>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="form">
+      <h3>Create settlement</h3>
+      <form [formGroup]="form" (ngSubmit)="addSettlement()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Port Selene" />
+        </label>
+
+        <label>
+          <span>Type</span>
+          <select formControlName="type">
+            <option *ngFor="let type of settlementTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+
+        <div class="split">
+          <label>
+            <span>Population</span>
+            <input type="number" formControlName="population" />
+          </label>
+          <label>
+            <span>Prosperity</span>
+            <input type="number" formControlName="prosperity" min="0" max="100" />
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>Concerns</legend>
+          <label *ngFor="let concern of concernOptions">
+            <input
+              type="checkbox"
+              [value]="concern"
+              (change)="toggleConcern(concern, $any($event.target).checked)"
+              [checked]="form.controls.concerns.value.includes(concern)"
+            />
+            {{ concern }}
+          </label>
+        </fieldset>
+
+        <label>
+          <span>Notes</span>
+          <textarea formControlName="notes" rows="3" placeholder="Trade notes, political pressure, etc."></textarea>
+        </label>
+
+        <button type="submit">Add settlement</button>
+      </form>
+    </div>
+
+    <div class="list">
+      <h3>Settlements ({{ settlements().length }})</h3>
+      <ul>
+        <li *ngFor="let settlement of settlements(); let i = index">
+          <div>
+            <p class="eyebrow">{{ settlement.type }}</p>
+            <h4>{{ settlement.name }}</h4>
+            <p class="lede">Population {{ settlement.population }} · Prosperity {{ settlement.prosperity }}%</p>
+            <p class="lede" *ngIf="settlement.notes">{{ settlement.notes }}</p>
+            <div class="tags">
+              <span class="tag" *ngFor="let concern of settlement.concerns">{{ concern }}</span>
+            </div>
+          </div>
+          <button type="button" (click)="removeSettlement(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

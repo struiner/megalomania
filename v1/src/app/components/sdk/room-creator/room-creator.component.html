@@ -1,5 +1,92 @@
-<div class="sdk-placeholder">
-  <h2>Room Creator</h2>
-  <p>Drop future room creation widgets here to exercise the SDK.</p>
-  <p class="hint">Use the toolbar navigation to return as the tool matures.</p>
-</div>
+<section class="room-creator">
+  <header>
+    <div>
+      <p class="eyebrow">SDK / Interiors</p>
+      <h2>Room Creator</h2>
+      <p class="lede">Block out interior spaces, capture hazards, and keep track of the latest draft.</p>
+    </div>
+    <div class="summary" *ngIf="lastCreated() as last">
+      <p class="eyebrow">Last saved</p>
+      <h3>{{ last.name }}</h3>
+      <p class="lede">{{ last.purpose }}</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="form">
+      <h3>Blueprint</h3>
+      <form [formGroup]="form" (ngSubmit)="createRoom()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Engine access" />
+        </label>
+
+        <div class="split">
+          <label>
+            <span>Width (m)</span>
+            <input type="number" formControlName="width" />
+          </label>
+          <label>
+            <span>Height (m)</span>
+            <input type="number" formControlName="height" />
+          </label>
+        </div>
+
+        <label>
+          <span>Purpose</span>
+          <input type="text" formControlName="purpose" placeholder="Workshop, medbay..." />
+        </label>
+
+        <fieldset>
+          <legend>Hazards</legend>
+          <label *ngFor="let hazard of hazards">
+            <input
+              type="checkbox"
+              [value]="hazard"
+              (change)="toggleHazard(hazard, $any($event.target).checked)"
+              [checked]="form.controls.hazards.value.includes(hazard)"
+            />
+            {{ hazard }}
+          </label>
+        </fieldset>
+
+        <label>
+          <span>Notable features</span>
+          <textarea formControlName="features" rows="3"></textarea>
+        </label>
+
+        <button type="submit">Save blueprint</button>
+      </form>
+
+      <div class="metrics">
+        <div>
+          <p class="eyebrow">Footprint</p>
+          <strong>{{ form.controls.width.value }}m × {{ form.controls.height.value }}m</strong>
+        </div>
+        <div>
+          <p class="eyebrow">Area</p>
+          <strong>{{ area() }} m²</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="list">
+      <div class="list__header">
+        <h3>Saved rooms ({{ rooms().length }})</h3>
+      </div>
+      <ul>
+        <li *ngFor="let room of rooms(); let i = index">
+          <div>
+            <p class="eyebrow">{{ room.purpose }}</p>
+            <h4>{{ room.name }} · {{ room.width }}m × {{ room.height }}m</h4>
+            <p class="lede">{{ room.features }}</p>
+            <div class="tags">
+              <span class="tag" *ngFor="let hazard of room.hazards">{{ hazard }}</span>
+            </div>
+          </div>
+          <button type="button" (click)="removeRoom(i)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
