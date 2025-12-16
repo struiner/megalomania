@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BiomeType } from '../../enums/BiomeType';
 import { NatureFeatureType } from '../../enums/NaturalFeatureType';
@@ -164,8 +164,9 @@ interface WorldConfig {
               <p class="eyebrow">Terrain & biomes</p>
               <h2>Elevation plane with overlays</h2>
               <p class="meta">
-                {{ mapSize }}×{{ mapSize }} cells ·
-                {{ tileCount }} tiles analysed · {{ featureTotal }} features ·
+                {{ worldSize }}×{{ worldSize }} cells ·
+                {{ mapSize }}×{{ mapSize }} chunks ({{ chunkResolution }}×{{ chunkResolution }} cells each)
+                · {{ tileCount }} tiles analysed · {{ featureTotal }} features ·
                 {{ faunaTotal }} fauna groups · {{ floraTotal }} flora clusters
                 · {{ settlementTotal }} urban footprints
               </p>
@@ -181,50 +182,72 @@ interface WorldConfig {
             </div>
           </header>
 
-          <div class="map">
-            <ng-container *ngFor="let row of worldGrid">
-              <div class="map__row" [style.gridTemplateColumns]="gridTemplate">
-                <div
-                  *ngFor="let cell of row"
-                  class="map__cell"
-                  [style.background]="biomeFill(cell)"
-                  [title]="tooltip(cell)"
-                >
-                  <div class="map__cell-top">
-                    <span class="pill pill--biome">{{ shortBiome(cell.biome) }}</span>
-                    <span class="pill pill--height">
-                      {{ cell.elevation | number: '1.1-1' }}
-                    </span>
-                  </div>
-                  <div class="map__cell-bottom">
-                    <span
-                      class="pill pill--feature"
-                      *ngFor="let feature of cell.features"
-                    >
-                      {{ feature }}
-                    </span>
-                  <span
-                    class="pill pill--settlement"
-                    *ngIf="cell.settlement"
+          <div class="map-display">
+            <div class="minimap">
+              <div class="minimap__header">
+                <div>
+                  <p class="eyebrow">Minimap</p>
+                  <p class="meta">Biome colors, elevation lighting, 512×512 coverage</p>
+                </div>
+                <span class="pill pill--biome">Live</span>
+              </div>
+              <canvas
+                #minimapCanvas
+                class="minimap__canvas"
+                [attr.width]="minimapSize"
+                [attr.height]="minimapSize"
+                aria-label="World minimap"
+              ></canvas>
+              <p class="minimap__hint">
+                Updates whenever you render a new seed and scales to the full 512×512 world.
+              </p>
+            </div>
+
+            <div class="map">
+              <ng-container *ngFor="let row of worldGrid">
+                <div class="map__row" [style.gridTemplateColumns]="gridTemplate">
+                  <div
+                    *ngFor="let cell of row"
+                    class="map__cell"
+                    [style.background]="biomeFill(cell)"
+                    [title]="tooltip(cell)"
                   >
-                    {{ formatSettlement(cell.settlement) }}
-                  </span>
-                  <span
-                    class="pill pill--flora"
-                    *ngFor="let flora of cell.flora"
-                  >
-                    {{ flora.name }} ×{{ flora.clusters }}
-                  </span>
-                  <span
-                    class="pill pill--fauna"
-                    *ngFor="let herd of cell.fauna"
-                  >
-                    {{ herd.name }} ×{{ herd.count }}
-                    </span>
+                    <div class="map__cell-top">
+                      <span class="pill pill--biome">{{ shortBiome(cell.biome) }}</span>
+                      <span class="pill pill--height">
+                        {{ cell.elevation | number: '1.1-1' }}
+                      </span>
+                    </div>
+                    <div class="map__cell-bottom">
+                      <span
+                        class="pill pill--feature"
+                        *ngFor="let feature of cell.features"
+                      >
+                        {{ feature }}
+                      </span>
+                      <span
+                        class="pill pill--settlement"
+                        *ngIf="cell.settlement"
+                      >
+                        {{ formatSettlement(cell.settlement) }}
+                      </span>
+                      <span
+                        class="pill pill--flora"
+                        *ngFor="let flora of cell.flora"
+                      >
+                        {{ flora.name }} ×{{ flora.clusters }}
+                      </span>
+                      <span
+                        class="pill pill--fauna"
+                        *ngFor="let herd of cell.fauna"
+                      >
+                        {{ herd.name }} ×{{ herd.count }}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ng-container>
+              </ng-container>
+            </div>
           </div>
         </article>
 
@@ -436,6 +459,43 @@ interface WorldConfig {
         grid-column: 1 / span 2;
       }
 
+      .map-display {
+        display: grid;
+        grid-template-columns: minmax(240px, 280px) 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .minimap {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .minimap__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      .minimap__canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .minimap__hint {
+        margin: 8px 0 0;
+        font-size: 12px;
+        opacity: 0.76;
+      }
+
       .map {
         margin-top: 12px;
         display: grid;
@@ -592,7 +652,9 @@ export class WorldRenderComponent implements OnInit {
   private readonly designDoc = inject(DesignDocService);
   readonly worldgen: WorldGenerationSection = this.designDoc.getDocument().worldgen;
 
-  mapSize = 14;
+  readonly worldSize = 512;
+  readonly chunkResolution = 32;
+  readonly mapSize = this.worldSize / this.chunkResolution;
   config: WorldConfig = {
     seed: 'ANNA-7742',
     seaLevel: 0.32,
@@ -604,6 +666,7 @@ export class WorldRenderComponent implements OnInit {
   };
 
   worldGrid: MapCell[][] = [];
+  worldCells: MapCell[][] = [];
   biomeTotals: Record<string, number> = {};
   faunaNotes: string[] = [];
   floraNotes: string[] = [];
@@ -613,6 +676,10 @@ export class WorldRenderComponent implements OnInit {
   faunaTotal = 0;
   floraTotal = 0;
   settlementTotal = 0;
+  minimapSize = 240;
+
+  @ViewChild('minimapCanvas', { static: true })
+  minimapCanvas?: ElementRef<HTMLCanvasElement>;
 
   readonly biomeLegend = [
     { label: 'Water / ocean', color: 'linear-gradient(180deg, #0b456e, #082a4a)' },
@@ -628,18 +695,32 @@ export class WorldRenderComponent implements OnInit {
     return `repeat(${this.mapSize}, minmax(0, 1fr))`;
   }
 
+  private readonly biomeColorMap: Record<BiomeType | string, string> = {
+    [BiomeType.Ocean]: '#0b456e',
+    [BiomeType.Water]: '#0b456e',
+    [BiomeType.Beach]: '#f4d6a8',
+    [BiomeType.Grassland]: '#6ba95d',
+    [BiomeType.Woodland]: '#4d7a38',
+    [BiomeType.Forest]: '#1f5f46',
+    [BiomeType.Rainforest]: '#0f4b32',
+    [BiomeType.Desert]: '#f6c18b',
+    [BiomeType.Taiga]: '#9bc0d6',
+    [BiomeType.Alpine]: '#c2d9e8',
+    [BiomeType.AlpineGrassland]: '#8ec8a2',
+  };
+
   ngOnInit() {
     this.renderWorld();
   }
 
   renderWorld() {
     const seed = this.hashSeed(this.config.seed);
-    const grid: MapCell[][] = [];
+    const world: MapCell[][] = [];
     const flat: MapCell[] = [];
 
-    for (let y = 0; y < this.mapSize; y++) {
+    for (let y = 0; y < this.worldSize; y++) {
       const row: MapCell[] = [];
-      for (let x = 0; x < this.mapSize; x++) {
+      for (let x = 0; x < this.worldSize; x++) {
         const cellSeed = seed ^ (x * 374761393) ^ (y * 668265263);
         const rng = this.mulberry32(cellSeed);
         const elevation = this.generateElevation(x, y, rng);
@@ -663,10 +744,11 @@ export class WorldRenderComponent implements OnInit {
         row.push(cell);
         flat.push(cell);
       }
-      grid.push(row);
+      world.push(row);
     }
 
-    this.worldGrid = grid;
+    this.worldCells = world;
+    this.worldGrid = this.buildChunks(world);
     this.biomeTotals = this.countBiomes(flat);
     this.tileCount = flat.length;
     this.featureTotal = flat.reduce((sum, cell) => sum + cell.features.length, 0);
@@ -676,6 +758,179 @@ export class WorldRenderComponent implements OnInit {
     this.faunaNotes = this.generateFaunaNotes(flat);
     this.floraNotes = this.generateFloraNotes(flat);
     this.ledger = this.buildLedger(seed);
+    this.drawMinimap();
+  }
+
+  private buildChunks(world: MapCell[][]): MapCell[][] {
+    const chunks: MapCell[][] = [];
+
+    for (let chunkY = 0; chunkY < this.mapSize; chunkY++) {
+      const row: MapCell[] = [];
+      for (let chunkX = 0; chunkX < this.mapSize; chunkX++) {
+        const cells: MapCell[] = [];
+        const startY = chunkY * this.chunkResolution;
+        const startX = chunkX * this.chunkResolution;
+
+        for (let y = 0; y < this.chunkResolution; y++) {
+          const worldRow = world[startY + y];
+          for (let x = 0; x < this.chunkResolution; x++) {
+            cells.push(worldRow[startX + x]);
+          }
+        }
+
+        row.push(this.aggregateChunk(cells, chunkX, chunkY));
+      }
+      chunks.push(row);
+    }
+
+    return chunks;
+  }
+
+  private aggregateChunk(cells: MapCell[], chunkX: number, chunkY: number): MapCell {
+    const elevation = cells.reduce((sum, cell) => sum + cell.elevation, 0) / cells.length;
+    const moisture = cells.reduce((sum, cell) => sum + cell.moisture, 0) / cells.length;
+    const biome = this.mostCommon(cells.map((cell) => cell.biome));
+
+    const featureCounts = new Map<string, number>();
+    const floraCounts = new Map<string, number>();
+    const faunaCounts = new Map<string, number>();
+    const settlements: SettlementType[] = [];
+
+    for (const cell of cells) {
+      for (const feature of cell.features) {
+        featureCounts.set(feature, (featureCounts.get(feature) ?? 0) + 1);
+      }
+
+      for (const flora of cell.flora) {
+        floraCounts.set(flora.name, (floraCounts.get(flora.name) ?? 0) + flora.clusters);
+      }
+
+      for (const fauna of cell.fauna) {
+        faunaCounts.set(fauna.name, (faunaCounts.get(fauna.name) ?? 0) + fauna.count);
+      }
+
+      if (cell.settlement) {
+        settlements.push(cell.settlement);
+      }
+    }
+
+    const features = [...featureCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name]) => name);
+
+    const flora = [...floraCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, clusters]) => ({ id: name, name, clusters, note: '' }));
+
+    const fauna = [...faunaCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, count]) => ({ id: name, name, count, note: '' }));
+
+    const settlement = this.pickStrongestSettlement(settlements);
+
+    return {
+      x: chunkX,
+      y: chunkY,
+      elevation,
+      moisture,
+      biome,
+      features,
+      flora,
+      fauna,
+      settlement,
+    };
+  }
+
+  private pickStrongestSettlement(settlements: SettlementType[]): SettlementType | undefined {
+    if (!settlements.length) {
+      return undefined;
+    }
+
+    const hierarchy: SettlementType[] = [
+      SettlementType.Hamlet,
+      SettlementType.TradingPost,
+      SettlementType.Village,
+      SettlementType.Town,
+      SettlementType.Fortress,
+      SettlementType.TradeHub,
+      SettlementType.City,
+      SettlementType.Metropolis,
+      SettlementType.Capital,
+    ];
+
+    return settlements.reduce<SettlementType | undefined>((current, candidate) => {
+      if (!current) return candidate;
+      return hierarchy.indexOf(candidate) > hierarchy.indexOf(current) ? candidate : current;
+    }, undefined);
+  }
+
+  private mostCommon<T>(items: T[]): T {
+    const counts = items.reduce<Map<T, number>>((map, item) => {
+      map.set(item, (map.get(item) ?? 0) + 1);
+      return map;
+    }, new Map());
+
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+  }
+
+  private drawMinimap() {
+    if (!this.minimapCanvas || !this.worldCells.length) {
+      return;
+    }
+
+    const canvas = this.minimapCanvas.nativeElement;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      return;
+    }
+
+    const size = Math.max(256, Math.min(512, Math.round(this.worldSize * 0.75)));
+    this.minimapSize = size;
+    canvas.width = size;
+    canvas.height = size;
+
+    const cellSize = size / this.worldSize;
+    context.clearRect(0, 0, size, size);
+
+    for (const row of this.worldCells) {
+      for (const cell of row) {
+        context.fillStyle = this.getTileColor(cell);
+        context.fillRect(
+          cell.x * cellSize,
+          cell.y * cellSize,
+          Math.ceil(cellSize),
+          Math.ceil(cellSize)
+        );
+      }
+    }
+
+    context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    context.lineWidth = 1;
+    context.strokeRect(0.5, 0.5, size - 1, size - 1);
+  }
+
+  private getTileColor(cell: MapCell): string {
+    const base = this.biomeColorMap[cell.biome] ?? '#666666';
+    const elevationFactor = Math.max(0, Math.min(1, cell.elevation));
+    return this.lightenColor(base, 0.25 + elevationFactor * 0.35);
+  }
+
+  private lightenColor(hex: string, factor: number): string {
+    const normalized = hex.replace('#', '');
+    const r = parseInt(normalized.substring(0, 2), 16);
+    const g = parseInt(normalized.substring(2, 4), 16);
+    const b = parseInt(normalized.substring(4, 6), 16);
+
+    const mix = (value: number) =>
+      Math.min(255, Math.round(value + (255 - value) * factor));
+
+    const toHex = (value: number) => value.toString(16).padStart(2, '0');
+
+    return `#${toHex(mix(r))}${toHex(mix(g))}${toHex(mix(b))}`;
   }
 
   shortBiome(biome: BiomeType): string {
@@ -783,8 +1038,8 @@ export class WorldRenderComponent implements OnInit {
   }
 
   private generateElevation(x: number, y: number, rng: () => number): number {
-    const nx = x / (this.mapSize - 1) - 0.5;
-    const ny = y / (this.mapSize - 1) - 0.5;
+    const nx = x / (this.worldSize - 1) - 0.5;
+    const ny = y / (this.worldSize - 1) - 0.5;
     const radial = 1 - Math.hypot(nx, ny) * 1.12;
     const ridge =
       0.16 * Math.sin((x + this.config.rainfall * 10) / 3.6) *
@@ -795,8 +1050,8 @@ export class WorldRenderComponent implements OnInit {
   }
 
   private generateMoisture(x: number, y: number, rng: () => number): number {
-    const latBand = 0.5 + 0.25 * Math.sin((y / this.mapSize) * Math.PI * 1.2);
-    const coastalBias = 0.18 * (1 - Math.abs(0.5 - x / (this.mapSize - 1)) * 2);
+    const latBand = 0.5 + 0.25 * Math.sin((y / this.worldSize) * Math.PI * 1.2);
+    const coastalBias = 0.18 * (1 - Math.abs(0.5 - x / (this.worldSize - 1)) * 2);
     const noise = (rng() - 0.5) * 0.22;
     const rainfall = this.config.rainfall * 0.6;
     return this.clamp(latBand + coastalBias + rainfall + noise, 0, 1);
