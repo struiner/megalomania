@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TileInfo } from '../../services/mk2/tools/tilemap-analysis.service';
+import { TileInfo } from '../../../services/mk2/tools/tilemap-analysis.service';
 
 @Component({
   selector: 'app-tile-basic-properties',

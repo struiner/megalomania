@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { TileInfo } from '../../services/mk2/tools/tilemap-analysis.service';
+import { TileInfo } from '../../../services/mk2/tools/tilemap-analysis.service';
 
 @Component({
   selector: 'app-tile-tags-editor',
@@ -41,7 +41,7 @@ export class TileTagsEditorComponent {
 
   removeTag(tag: string) {
     if (this.editForm.tags) {
-      this.editForm.tags = this.editForm.tags.filter(t => t !== tag);
+      this.editForm.tags = this.editForm.tags.filter((t: string) => t !== tag);
       this.formChange.emit();
     }
   }

@@ -7,7 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { TilemapProject } from '../../../services/mk2/tools/tilemap-analysis.service';
+import { TilemapProject } from '../../../../services/mk2/tools/tilemap-analysis.service';
 
 @Component({
   selector: 'app-project-management',

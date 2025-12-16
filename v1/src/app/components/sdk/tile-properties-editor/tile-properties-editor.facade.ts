@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { TileInfo, TilemapProject } from '../../services/mk2/tools/tilemap-analysis.service';
+import { TileInfo, TilemapProject } from '../../../services/mk2/tools/tilemap-analysis.service';
 
 @Injectable({ providedIn: 'root' })
 export class TilePropertiesEditorFacade {

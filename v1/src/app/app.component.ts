@@ -9,4 +9,6 @@ import { ToolbarComponent } from './components/toolbar-menu/toolbar.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {}
+export class AppComponent {
+  title = 'v1';
+}

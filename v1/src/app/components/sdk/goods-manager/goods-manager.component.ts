@@ -8,6 +8,7 @@ import { GoodsType } from '../../../enums/GoodsType';
 import { FloraType } from '../../../enums/FloraType';
 import { GOODS_DATA, GoodsInfo, GoodComponent } from '../../../data/goods/data';
 import { FLORA_METADATA, FloraMetadata } from '../../../data/flora.data';
+import { Goods as GoodsBasePriceService } from '../../../data/goods/basePrice';
 
 type GoodsTier = 'Common' | 'Uncommon' | 'Rare' | 'Legendary';
 
@@ -28,6 +29,11 @@ type ManagedGood = GoodsInfo & {
 export class GoodsManagerComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly designDoc = inject(DesignDocService);
+  private readonly basePriceService = inject(GoodsBasePriceService);
+
+  readonly goodsTypeOptions = Object.values(GoodsType);
+  readonly floraOptions = Object.keys(FLORA_METADATA) as FloraType[];
+  readonly floraMetadata = FLORA_METADATA as Record<FloraType, FloraMetadata>;
 
   readonly goodsTypeOptions = Object.values(GoodsType);
   readonly floraOptions = Object.keys(FLORA_METADATA) as FloraType[];
@@ -43,11 +49,15 @@ export class GoodsManagerComponent {
   readonly form = this.formBuilder.group({
     type: this.formBuilder.nonNullable.control<GoodsType>(this.goodsTypeOptions[0], Validators.required),
     title: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+    description: this.formBuilder.nonNullable.control<string>(''),
     category: this.formBuilder.nonNullable.control<string>(this.categories[0]?.name ?? '', Validators.required),
     tier: this.formBuilder.nonNullable.control<GoodsTier>('Common'),
     rarity: this.formBuilder.nonNullable.control<number>(1, [Validators.min(1), Validators.max(5)]),
     complexity: this.formBuilder.nonNullable.control<number>(1, [Validators.min(1), Validators.max(5)]),
-    basePrice: this.formBuilder.nonNullable.control<number>(0, [Validators.min(0)]),
+    basePrice: this.formBuilder.nonNullable.control<number>(
+      this.getBasePriceForType(this.goodsTypeOptions[0]),
+      [Validators.min(0)]
+    ),
     floraSources: this.formBuilder.nonNullable.control<FloraType[]>([]),
     tags: this.formBuilder.nonNullable.control<string>('')
   });
@@ -63,6 +73,7 @@ export class GoodsManagerComponent {
     if (!term) return goods;
     return goods.filter(good =>
       good.title.toLowerCase().includes(term) ||
+      good.description?.toLowerCase().includes(term) ||
       this.readableGoods(good.type).toLowerCase().includes(term) ||
       good.category.toLowerCase().includes(term) ||
       good.tags.some(tag => tag.toLowerCase().includes(term)) ||
@@ -91,6 +102,7 @@ export class GoodsManagerComponent {
     const entry: ManagedGood = {
       type: value.type,
       title: value.title,
+      description: value.description?.trim() ?? '',
       rarity: Number(value.rarity ?? 1),
       complexity: Number(value.complexity ?? 1),
       basePrice: Number(value.basePrice ?? 0),
@@ -105,11 +117,12 @@ export class GoodsManagerComponent {
     this.form.reset({
       type: this.goodsTypeOptions[0],
       title: '',
+      description: '',
       category: this.categories[0]?.name ?? '',
       tier: 'Common',
       rarity: 1,
       complexity: 1,
-      basePrice: 0,
+      basePrice: this.getBasePriceForType(this.goodsTypeOptions[0]),
       floraSources: [],
       tags: '',
     });
@@ -118,6 +131,17 @@ export class GoodsManagerComponent {
 
   removeGood(index: number): void {
     this.goods.update(list => list.filter((_, i) => i !== index));
+  }
+
+  exportGoods(): void {
+    const data = JSON.stringify(this.goods(), null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'goods-catalog.json';
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   readableFlora(type: FloraType): string {
@@ -140,6 +164,8 @@ export class GoodsManagerComponent {
       const category = this.categoryLookup.get(good.type) ?? 'Uncategorized';
       seeds.push({
         ...good,
+        basePrice: this.getBasePriceForType(good.type) ?? good.basePrice,
+        description: good.description ?? '',
         components: good.components ?? [],
         category,
         tier: this.mapRarityToTier(good.rarity),
@@ -161,9 +187,10 @@ export class GoodsManagerComponent {
 
     this.form.patchValue({
       title: match.title,
+      description: match.description ?? '',
       rarity: match.rarity,
       complexity: match.complexity,
-      basePrice: match.basePrice,
+      basePrice: this.getBasePriceForType(type) ?? match.basePrice,
       tier: this.mapRarityToTier(match.rarity),
       category: this.categoryLookup.get(type) ?? this.categories[0]?.name ?? '',
     }, { emitEvent: false });
@@ -202,6 +229,10 @@ export class GoodsManagerComponent {
     if (rarity === 3) return 'Rare';
     if (rarity === 2) return 'Uncommon';
     return 'Common';
+  }
+
+  private getBasePriceForType(type: GoodsType): number {
+    return this.basePriceService.getBasePrice(type);
   }
 
   private titleCase(input: string): string {
