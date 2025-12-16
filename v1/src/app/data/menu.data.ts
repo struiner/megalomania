@@ -40,6 +40,13 @@ export const MENU: MenuItem[] = [
         component: WorldRenderComponent,
       },
       {
+        title: 'Ledger',
+        type: 'route',
+        route: 'world/ledger',
+            keybind: 'l',
+        component: KirbyComponent,
+      },
+      {
         title: 'Generation',
         type: 'route',
         route: 'world/generation',
