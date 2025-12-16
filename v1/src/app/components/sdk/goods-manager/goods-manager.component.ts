@@ -35,6 +35,10 @@ export class GoodsManagerComponent {
   readonly floraOptions = Object.keys(FLORA_METADATA) as FloraType[];
   readonly floraMetadata = FLORA_METADATA as Record<FloraType, FloraMetadata>;
 
+  readonly goodsTypeOptions = Object.values(GoodsType);
+  readonly floraOptions = Object.keys(FLORA_METADATA) as FloraType[];
+  readonly floraMetadata = FLORA_METADATA as Record<FloraType, FloraMetadata>;
+
   readonly categories: GoodsCategoryDefinition[] = this.designDoc.getDocument().goodsCategories;
   private readonly categoryLookup = this.buildCategoryLookup();
 
