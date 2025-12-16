@@ -164,8 +164,9 @@ interface WorldConfig {
               <p class="eyebrow">Terrain & biomes</p>
               <h2>Elevation plane with overlays</h2>
               <p class="meta">
-                {{ mapSize }}×{{ mapSize }} cells ·
-                {{ tileCount }} tiles analysed · {{ featureTotal }} features ·
+                {{ worldSize }}×{{ worldSize }} cells ·
+                {{ mapSize }}×{{ mapSize }} chunks ({{ chunkResolution }}×{{ chunkResolution }} cells each)
+                · {{ tileCount }} tiles analysed · {{ featureTotal }} features ·
                 {{ faunaTotal }} fauna groups · {{ floraTotal }} flora clusters
                 · {{ settlementTotal }} urban footprints
               </p>
@@ -186,7 +187,7 @@ interface WorldConfig {
               <div class="minimap__header">
                 <div>
                   <p class="eyebrow">Minimap</p>
-                  <p class="meta">Biome colors, elevation lighting</p>
+                  <p class="meta">Biome colors, elevation lighting, 512×512 coverage</p>
                 </div>
                 <span class="pill pill--biome">Live</span>
               </div>
@@ -198,7 +199,7 @@ interface WorldConfig {
                 aria-label="World minimap"
               ></canvas>
               <p class="minimap__hint">
-                Updates whenever you render a new seed and scales to the current grid size.
+                Updates whenever you render a new seed and scales to the full 512×512 world.
               </p>
             </div>
 
@@ -651,7 +652,9 @@ export class WorldRenderComponent implements OnInit {
   private readonly designDoc = inject(DesignDocService);
   readonly worldgen: WorldGenerationSection = this.designDoc.getDocument().worldgen;
 
-  mapSize = 14;
+  readonly worldSize = 512;
+  readonly chunkResolution = 32;
+  readonly mapSize = this.worldSize / this.chunkResolution;
   config: WorldConfig = {
     seed: 'ANNA-7742',
     seaLevel: 0.32,
@@ -663,6 +666,7 @@ export class WorldRenderComponent implements OnInit {
   };
 
   worldGrid: MapCell[][] = [];
+  worldCells: MapCell[][] = [];
   biomeTotals: Record<string, number> = {};
   faunaNotes: string[] = [];
   floraNotes: string[] = [];
@@ -711,12 +715,12 @@ export class WorldRenderComponent implements OnInit {
 
   renderWorld() {
     const seed = this.hashSeed(this.config.seed);
-    const grid: MapCell[][] = [];
+    const world: MapCell[][] = [];
     const flat: MapCell[] = [];
 
-    for (let y = 0; y < this.mapSize; y++) {
+    for (let y = 0; y < this.worldSize; y++) {
       const row: MapCell[] = [];
-      for (let x = 0; x < this.mapSize; x++) {
+      for (let x = 0; x < this.worldSize; x++) {
         const cellSeed = seed ^ (x * 374761393) ^ (y * 668265263);
         const rng = this.mulberry32(cellSeed);
         const elevation = this.generateElevation(x, y, rng);
@@ -740,10 +744,11 @@ export class WorldRenderComponent implements OnInit {
         row.push(cell);
         flat.push(cell);
       }
-      grid.push(row);
+      world.push(row);
     }
 
-    this.worldGrid = grid;
+    this.worldCells = world;
+    this.worldGrid = this.buildChunks(world);
     this.biomeTotals = this.countBiomes(flat);
     this.tileCount = flat.length;
     this.featureTotal = flat.reduce((sum, cell) => sum + cell.features.length, 0);
@@ -756,8 +761,123 @@ export class WorldRenderComponent implements OnInit {
     this.drawMinimap();
   }
 
+  private buildChunks(world: MapCell[][]): MapCell[][] {
+    const chunks: MapCell[][] = [];
+
+    for (let chunkY = 0; chunkY < this.mapSize; chunkY++) {
+      const row: MapCell[] = [];
+      for (let chunkX = 0; chunkX < this.mapSize; chunkX++) {
+        const cells: MapCell[] = [];
+        const startY = chunkY * this.chunkResolution;
+        const startX = chunkX * this.chunkResolution;
+
+        for (let y = 0; y < this.chunkResolution; y++) {
+          const worldRow = world[startY + y];
+          for (let x = 0; x < this.chunkResolution; x++) {
+            cells.push(worldRow[startX + x]);
+          }
+        }
+
+        row.push(this.aggregateChunk(cells, chunkX, chunkY));
+      }
+      chunks.push(row);
+    }
+
+    return chunks;
+  }
+
+  private aggregateChunk(cells: MapCell[], chunkX: number, chunkY: number): MapCell {
+    const elevation = cells.reduce((sum, cell) => sum + cell.elevation, 0) / cells.length;
+    const moisture = cells.reduce((sum, cell) => sum + cell.moisture, 0) / cells.length;
+    const biome = this.mostCommon(cells.map((cell) => cell.biome));
+
+    const featureCounts = new Map<string, number>();
+    const floraCounts = new Map<string, number>();
+    const faunaCounts = new Map<string, number>();
+    const settlements: SettlementType[] = [];
+
+    for (const cell of cells) {
+      for (const feature of cell.features) {
+        featureCounts.set(feature, (featureCounts.get(feature) ?? 0) + 1);
+      }
+
+      for (const flora of cell.flora) {
+        floraCounts.set(flora.name, (floraCounts.get(flora.name) ?? 0) + flora.clusters);
+      }
+
+      for (const fauna of cell.fauna) {
+        faunaCounts.set(fauna.name, (faunaCounts.get(fauna.name) ?? 0) + fauna.count);
+      }
+
+      if (cell.settlement) {
+        settlements.push(cell.settlement);
+      }
+    }
+
+    const features = [...featureCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name]) => name);
+
+    const flora = [...floraCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, clusters]) => ({ id: name, name, clusters, note: '' }));
+
+    const fauna = [...faunaCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, count]) => ({ id: name, name, count, note: '' }));
+
+    const settlement = this.pickStrongestSettlement(settlements);
+
+    return {
+      x: chunkX,
+      y: chunkY,
+      elevation,
+      moisture,
+      biome,
+      features,
+      flora,
+      fauna,
+      settlement,
+    };
+  }
+
+  private pickStrongestSettlement(settlements: SettlementType[]): SettlementType | undefined {
+    if (!settlements.length) {
+      return undefined;
+    }
+
+    const hierarchy: SettlementType[] = [
+      SettlementType.Hamlet,
+      SettlementType.TradingPost,
+      SettlementType.Village,
+      SettlementType.Town,
+      SettlementType.Fortress,
+      SettlementType.TradeHub,
+      SettlementType.City,
+      SettlementType.Metropolis,
+      SettlementType.Capital,
+    ];
+
+    return settlements.reduce<SettlementType | undefined>((current, candidate) => {
+      if (!current) return candidate;
+      return hierarchy.indexOf(candidate) > hierarchy.indexOf(current) ? candidate : current;
+    }, undefined);
+  }
+
+  private mostCommon<T>(items: T[]): T {
+    const counts = items.reduce<Map<T, number>>((map, item) => {
+      map.set(item, (map.get(item) ?? 0) + 1);
+      return map;
+    }, new Map());
+
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+  }
+
   private drawMinimap() {
-    if (!this.minimapCanvas || !this.worldGrid.length) {
+    if (!this.minimapCanvas || !this.worldCells.length) {
       return;
     }
 
@@ -768,15 +888,15 @@ export class WorldRenderComponent implements OnInit {
       return;
     }
 
-    const size = Math.max(160, Math.min(360, this.mapSize * 18));
+    const size = Math.max(256, Math.min(512, Math.round(this.worldSize * 0.75)));
     this.minimapSize = size;
     canvas.width = size;
     canvas.height = size;
 
-    const cellSize = size / this.mapSize;
+    const cellSize = size / this.worldSize;
     context.clearRect(0, 0, size, size);
 
-    for (const row of this.worldGrid) {
+    for (const row of this.worldCells) {
       for (const cell of row) {
         context.fillStyle = this.getTileColor(cell);
         context.fillRect(
@@ -918,8 +1038,8 @@ export class WorldRenderComponent implements OnInit {
   }
 
   private generateElevation(x: number, y: number, rng: () => number): number {
-    const nx = x / (this.mapSize - 1) - 0.5;
-    const ny = y / (this.mapSize - 1) - 0.5;
+    const nx = x / (this.worldSize - 1) - 0.5;
+    const ny = y / (this.worldSize - 1) - 0.5;
     const radial = 1 - Math.hypot(nx, ny) * 1.12;
     const ridge =
       0.16 * Math.sin((x + this.config.rainfall * 10) / 3.6) *
@@ -930,8 +1050,8 @@ export class WorldRenderComponent implements OnInit {
   }
 
   private generateMoisture(x: number, y: number, rng: () => number): number {
-    const latBand = 0.5 + 0.25 * Math.sin((y / this.mapSize) * Math.PI * 1.2);
-    const coastalBias = 0.18 * (1 - Math.abs(0.5 - x / (this.mapSize - 1)) * 2);
+    const latBand = 0.5 + 0.25 * Math.sin((y / this.worldSize) * Math.PI * 1.2);
+    const coastalBias = 0.18 * (1 - Math.abs(0.5 - x / (this.worldSize - 1)) * 2);
     const noise = (rng() - 0.5) * 0.22;
     const rainfall = this.config.rainfall * 0.6;
     return this.clamp(latBand + coastalBias + rainfall + noise, 0, 1);
