@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BiomeType } from '../../enums/BiomeType';
 import { NatureFeatureType } from '../../enums/NaturalFeatureType';
@@ -181,50 +181,72 @@ interface WorldConfig {
             </div>
           </header>
 
-          <div class="map">
-            <ng-container *ngFor="let row of worldGrid">
-              <div class="map__row" [style.gridTemplateColumns]="gridTemplate">
-                <div
-                  *ngFor="let cell of row"
-                  class="map__cell"
-                  [style.background]="biomeFill(cell)"
-                  [title]="tooltip(cell)"
-                >
-                  <div class="map__cell-top">
-                    <span class="pill pill--biome">{{ shortBiome(cell.biome) }}</span>
-                    <span class="pill pill--height">
-                      {{ cell.elevation | number: '1.1-1' }}
-                    </span>
-                  </div>
-                  <div class="map__cell-bottom">
-                    <span
-                      class="pill pill--feature"
-                      *ngFor="let feature of cell.features"
-                    >
-                      {{ feature }}
-                    </span>
-                  <span
-                    class="pill pill--settlement"
-                    *ngIf="cell.settlement"
+          <div class="map-display">
+            <div class="minimap">
+              <div class="minimap__header">
+                <div>
+                  <p class="eyebrow">Minimap</p>
+                  <p class="meta">Biome colors, elevation lighting</p>
+                </div>
+                <span class="pill pill--biome">Live</span>
+              </div>
+              <canvas
+                #minimapCanvas
+                class="minimap__canvas"
+                [attr.width]="minimapSize"
+                [attr.height]="minimapSize"
+                aria-label="World minimap"
+              ></canvas>
+              <p class="minimap__hint">
+                Updates whenever you render a new seed and scales to the current grid size.
+              </p>
+            </div>
+
+            <div class="map">
+              <ng-container *ngFor="let row of worldGrid">
+                <div class="map__row" [style.gridTemplateColumns]="gridTemplate">
+                  <div
+                    *ngFor="let cell of row"
+                    class="map__cell"
+                    [style.background]="biomeFill(cell)"
+                    [title]="tooltip(cell)"
                   >
-                    {{ formatSettlement(cell.settlement) }}
-                  </span>
-                  <span
-                    class="pill pill--flora"
-                    *ngFor="let flora of cell.flora"
-                  >
-                    {{ flora.name }} ×{{ flora.clusters }}
-                  </span>
-                  <span
-                    class="pill pill--fauna"
-                    *ngFor="let herd of cell.fauna"
-                  >
-                    {{ herd.name }} ×{{ herd.count }}
-                    </span>
+                    <div class="map__cell-top">
+                      <span class="pill pill--biome">{{ shortBiome(cell.biome) }}</span>
+                      <span class="pill pill--height">
+                        {{ cell.elevation | number: '1.1-1' }}
+                      </span>
+                    </div>
+                    <div class="map__cell-bottom">
+                      <span
+                        class="pill pill--feature"
+                        *ngFor="let feature of cell.features"
+                      >
+                        {{ feature }}
+                      </span>
+                      <span
+                        class="pill pill--settlement"
+                        *ngIf="cell.settlement"
+                      >
+                        {{ formatSettlement(cell.settlement) }}
+                      </span>
+                      <span
+                        class="pill pill--flora"
+                        *ngFor="let flora of cell.flora"
+                      >
+                        {{ flora.name }} ×{{ flora.clusters }}
+                      </span>
+                      <span
+                        class="pill pill--fauna"
+                        *ngFor="let herd of cell.fauna"
+                      >
+                        {{ herd.name }} ×{{ herd.count }}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ng-container>
+              </ng-container>
+            </div>
           </div>
         </article>
 
@@ -436,6 +458,43 @@ interface WorldConfig {
         grid-column: 1 / span 2;
       }
 
+      .map-display {
+        display: grid;
+        grid-template-columns: minmax(240px, 280px) 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .minimap {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .minimap__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      .minimap__canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .minimap__hint {
+        margin: 8px 0 0;
+        font-size: 12px;
+        opacity: 0.76;
+      }
+
       .map {
         margin-top: 12px;
         display: grid;
@@ -613,6 +672,10 @@ export class WorldRenderComponent implements OnInit {
   faunaTotal = 0;
   floraTotal = 0;
   settlementTotal = 0;
+  minimapSize = 240;
+
+  @ViewChild('minimapCanvas', { static: true })
+  minimapCanvas?: ElementRef<HTMLCanvasElement>;
 
   readonly biomeLegend = [
     { label: 'Water / ocean', color: 'linear-gradient(180deg, #0b456e, #082a4a)' },
@@ -627,6 +690,20 @@ export class WorldRenderComponent implements OnInit {
   get gridTemplate() {
     return `repeat(${this.mapSize}, minmax(0, 1fr))`;
   }
+
+  private readonly biomeColorMap: Record<BiomeType | string, string> = {
+    [BiomeType.Ocean]: '#0b456e',
+    [BiomeType.Water]: '#0b456e',
+    [BiomeType.Beach]: '#f4d6a8',
+    [BiomeType.Grassland]: '#6ba95d',
+    [BiomeType.Woodland]: '#4d7a38',
+    [BiomeType.Forest]: '#1f5f46',
+    [BiomeType.Rainforest]: '#0f4b32',
+    [BiomeType.Desert]: '#f6c18b',
+    [BiomeType.Taiga]: '#9bc0d6',
+    [BiomeType.Alpine]: '#c2d9e8',
+    [BiomeType.AlpineGrassland]: '#8ec8a2',
+  };
 
   ngOnInit() {
     this.renderWorld();
@@ -676,6 +753,64 @@ export class WorldRenderComponent implements OnInit {
     this.faunaNotes = this.generateFaunaNotes(flat);
     this.floraNotes = this.generateFloraNotes(flat);
     this.ledger = this.buildLedger(seed);
+    this.drawMinimap();
+  }
+
+  private drawMinimap() {
+    if (!this.minimapCanvas || !this.worldGrid.length) {
+      return;
+    }
+
+    const canvas = this.minimapCanvas.nativeElement;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      return;
+    }
+
+    const size = Math.max(160, Math.min(360, this.mapSize * 18));
+    this.minimapSize = size;
+    canvas.width = size;
+    canvas.height = size;
+
+    const cellSize = size / this.mapSize;
+    context.clearRect(0, 0, size, size);
+
+    for (const row of this.worldGrid) {
+      for (const cell of row) {
+        context.fillStyle = this.getTileColor(cell);
+        context.fillRect(
+          cell.x * cellSize,
+          cell.y * cellSize,
+          Math.ceil(cellSize),
+          Math.ceil(cellSize)
+        );
+      }
+    }
+
+    context.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    context.lineWidth = 1;
+    context.strokeRect(0.5, 0.5, size - 1, size - 1);
+  }
+
+  private getTileColor(cell: MapCell): string {
+    const base = this.biomeColorMap[cell.biome] ?? '#666666';
+    const elevationFactor = Math.max(0, Math.min(1, cell.elevation));
+    return this.lightenColor(base, 0.25 + elevationFactor * 0.35);
+  }
+
+  private lightenColor(hex: string, factor: number): string {
+    const normalized = hex.replace('#', '');
+    const r = parseInt(normalized.substring(0, 2), 16);
+    const g = parseInt(normalized.substring(2, 4), 16);
+    const b = parseInt(normalized.substring(4, 6), 16);
+
+    const mix = (value: number) =>
+      Math.min(255, Math.round(value + (255 - value) * factor));
+
+    const toHex = (value: number) => value.toString(16).padStart(2, '0');
+
+    return `#${toHex(mix(r))}${toHex(mix(g))}${toHex(mix(b))}`;
   }
 
   shortBiome(biome: BiomeType): string {
