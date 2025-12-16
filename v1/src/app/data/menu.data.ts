@@ -12,6 +12,7 @@ import { SettlementManagerComponent } from '../components/sdk/settlement-manager
 import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
 import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
 import { WorldRenderComponent } from '../pages/world/world-render.component';
+import { WorldLedgerComponent } from '../pages/world/world-ledger.component';
 
 export const MENU: MenuItem[] = [
     {
@@ -38,6 +39,13 @@ export const MENU: MenuItem[] = [
         route: 'world/render',
             keybind: 'v',
         component: WorldRenderComponent,
+      },
+      {
+        title: 'Ledger',
+        type: 'route',
+        route: 'world/ledger',
+            keybind: 'l',
+        component: WorldLedgerComponent,
       },
       {
         title: 'Generation',
