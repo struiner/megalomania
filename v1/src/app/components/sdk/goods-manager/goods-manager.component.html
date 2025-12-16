@@ -92,7 +92,7 @@
             <p class="eyebrow">{{ good.category }} · {{ readableGoods(good.type) }}</p>
             <h4>{{ good.title }}</h4>
             <p class="lede">Rarity {{ good.rarity }} · Complexity {{ good.complexity }} · {{ good.basePrice | number:'1.0-0' }} coins</p>
-            <p class="eyebrow" *ngIf="good.components?.length">Components: {{ good.components.map(component => readableGoods(component.type)).join(', ') }}</p>
+            <p class="eyebrow" *ngIf="good.components?.length">Components: {{ joinComponents(good.components) }}</p>
             <div class="tags">
               <span class="tag" *ngFor="let tag of good.tags">{{ tag }}</span>
               <span class="tag tag--sub" *ngFor="let flora of good.floraSources">Flora: {{ readableFlora(flora) }}</span>

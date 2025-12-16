@@ -6,7 +6,7 @@ import { DesignDocService } from '../../../services/design/design-doc.service';
 import { GoodsCategoryDefinition } from '../../../models/design-doc.models';
 import { GoodsType } from '../../../enums/GoodsType';
 import { FloraType } from '../../../enums/FloraType';
-import { GOODS_DATA, GoodsInfo } from '../../../data/goods/data';
+import { GOODS_DATA, GoodsInfo, GoodComponent } from '../../../data/goods/data';
 import { FLORA_METADATA, FloraMetadata } from '../../../data/flora.data';
 
 type GoodsTier = 'Common' | 'Uncommon' | 'Rare' | 'Legendary';
@@ -94,7 +94,7 @@ export class GoodsManagerComponent {
       rarity: Number(value.rarity ?? 1),
       complexity: Number(value.complexity ?? 1),
       basePrice: Number(value.basePrice ?? 0),
-      components: GOODS_DATA.find(good => good.type === value.type)?.components,
+      components: GOODS_DATA.find(good => good.type === value.type)?.components ?? [],
       category: value.category,
       tier: value.tier,
       floraSources: value.floraSources,
@@ -129,6 +129,10 @@ export class GoodsManagerComponent {
     return this.titleCase(type.toString().replace(/_/g, ' '));
   }
 
+  joinComponents(components?: GoodComponent[]): string {
+    return components?.map(component => this.readableGoods(component.type)).join(', ') ?? '';
+  }
+
   private buildSeedGoods(): ManagedGood[] {
     const seeds: ManagedGood[] = [];
 
@@ -136,6 +140,7 @@ export class GoodsManagerComponent {
       const category = this.categoryLookup.get(good.type) ?? 'Uncategorized';
       seeds.push({
         ...good,
+        components: good.components ?? [],
         category,
         tier: this.mapRarityToTier(good.rarity),
         floraSources: [],
