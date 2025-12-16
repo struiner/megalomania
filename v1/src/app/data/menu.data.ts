@@ -11,6 +11,7 @@ import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creato
 import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
 import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
 import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
+import { WorldRenderComponent } from '../pages/world/world-render.component';
 
 export const MENU: MenuItem[] = [
     {
@@ -34,9 +35,9 @@ export const MENU: MenuItem[] = [
       {
         title: 'Render',
         type: 'route',
-        route: 'world/view',
+        route: 'world/render',
             keybind: 'v',
-        component: KirbyComponent,
+        component: WorldRenderComponent,
       },
       {
         title: 'Generation',
