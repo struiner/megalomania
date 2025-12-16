@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TilemapAnalysisService, TilemapProject, TileInfo } from '../../services/mk2/tools/tilemap-analysis.service';
-import { TilemapFilesystemService } from '../../services/mk2/tools/tilemap-filesystem.service';
-import { AssetManagementService } from '../../services/mk2/tools/asset-management.service';
+import { TilemapAnalysisService, TilemapProject, TileInfo } from '../../../services/mk2/tools/tilemap-analysis.service';
+import { TilemapFilesystemService } from '../../../services/mk2/tools/tilemap-filesystem.service';
+import { AssetManagementService } from '../../../services/mk2/tools/asset-management.service';
 
 @Injectable()
 export class TilemapCreationToolFacade {
@@ -269,11 +269,11 @@ export class TilemapCreationToolFacade {
       return;
     }
 
-    const tiles = project.tiles.filter(tile => tileIds.includes(tile.id));
+    const tiles = project.tiles.filter((tile: TileInfo) => tileIds.includes(tile.id));
     console.log('🎯 Facade selecting tiles:', {
       requestedIds: tileIds.length,
       foundTiles: tiles.length,
-      tileNames: tiles.map(t => t.name || t.id)
+      tileNames: tiles.map((t: TileInfo) => t.name || t.id)
     });
     this.selectedTiles$.next(tiles);
   }
@@ -284,17 +284,17 @@ export class TilemapCreationToolFacade {
 
   private initializeSubscriptions(): void {
     // Subscribe to analysis progress
-    this.tilemapAnalysis.getAnalysisProgress().subscribe(progress => {
+    this.tilemapAnalysis.getAnalysisProgress().subscribe((progress: number) => {
       this.analysisProgress$.next(progress);
     });
 
     // Subscribe to analyzing state
-    this.tilemapAnalysis.getAnalyzingState().subscribe(analyzing => {
+    this.tilemapAnalysis.getAnalyzingState().subscribe((analyzing: boolean) => {
       this.isAnalyzing$.next(analyzing);
     });
 
     // Subscribe to current project
-    this.tilemapAnalysis.getCurrentProject().subscribe(project => {
+    this.tilemapAnalysis.getCurrentProject().subscribe((project: TilemapProject | null) => {
       this.currentProject$.next(project);
       if (project) {
         this.selectedTiles$.next([]);
@@ -344,7 +344,7 @@ export class TilemapCreationToolFacade {
 
   private exportToCsv(project: TilemapProject): string {
     const headers = ['ID', 'Name', 'Category', 'Subcategory', 'GridX', 'GridY', 'PixelX', 'PixelY', 'Width', 'Height', 'Tags', 'Rarity', 'Cost'];
-    const rows = project.tiles.map(tile => [
+    const rows = project.tiles.map((tile: TileInfo) => [
       tile.id,
       tile.name,
       tile.category,
@@ -360,6 +360,6 @@ export class TilemapCreationToolFacade {
       tile.metadata.cost.toString()
     ]);
 
-    return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    return [headers, ...rows].map(row => row.map((cell: string | number | undefined) => `"${cell}"`).join(',')).join('\n');
   }
 }

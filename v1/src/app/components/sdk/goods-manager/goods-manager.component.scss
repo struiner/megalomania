@@ -85,7 +85,13 @@ label {
   font-size: 14px;
 }
 
-input, select, button {
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+input, select, button, textarea {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: inherit;
@@ -104,6 +110,16 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+}
+
+.list__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list__actions input {
+  flex: 1 1 auto;
 }
 
 ul {
@@ -141,6 +157,15 @@ h4 {
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 12px;
+}
+
+.tag--sub {
+  opacity: 0.75;
+}
+
+.description {
+  margin: 6px 0;
+  opacity: 0.9;
 }
 
 .meta {

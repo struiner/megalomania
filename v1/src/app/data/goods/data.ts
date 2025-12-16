@@ -7,6 +7,7 @@ export interface GoodsInfo {
   rarity: number;        // 1–5
   complexity: number;    // 1–5
   basePrice: number;
+  description?: string;
   components?: GoodComponent[];
 }
 export interface GoodComponent {

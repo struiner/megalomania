@@ -19,8 +19,20 @@
       <h3>Create good</h3>
       <form [formGroup]="form" (ngSubmit)="addGood()">
         <label>
-          <span>Name</span>
-          <input type="text" formControlName="name" placeholder="Skyfruit" />
+          <span>Good</span>
+          <select formControlName="type">
+            <option *ngFor="let type of goodsTypeOptions" [ngValue]="type">{{ readableGoods(type) }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Title</span>
+          <input type="text" formControlName="title" placeholder="Skyfruit" />
+        </label>
+
+        <label>
+          <span>Description</span>
+          <textarea rows="3" formControlName="description" placeholder="Flavor text or quick notes"></textarea>
         </label>
 
         <label>
@@ -40,6 +52,30 @@
           </select>
         </label>
 
+        <div class="grid">
+          <label>
+            <span>Rarity (1-5)</span>
+            <input type="number" min="1" max="5" formControlName="rarity" />
+          </label>
+
+          <label>
+            <span>Complexity (1-5)</span>
+            <input type="number" min="1" max="5" formControlName="complexity" />
+          </label>
+
+          <label>
+            <span>Base price</span>
+            <input type="number" min="0" formControlName="basePrice" />
+          </label>
+        </div>
+
+        <label>
+          <span>Flora sources</span>
+          <select multiple formControlName="floraSources">
+            <option *ngFor="let flora of floraOptions" [ngValue]="flora">{{ readableFlora(flora) }}</option>
+          </select>
+        </label>
+
         <label>
           <span>Tags (comma separated)</span>
           <input type="text" formControlName="tags" placeholder="Food, trade, staple" />
@@ -52,16 +88,23 @@
     <div class="list">
       <div class="list__header">
         <h3>Catalog</h3>
-        <input type="search" placeholder="Filter by name, tag, or category" [formControl]="filter" />
+        <div class="list__actions">
+          <input type="search" placeholder="Filter by name, tag, or category" [formControl]="filter" />
+          <button type="button" (click)="exportGoods()">Export JSON</button>
+        </div>
       </div>
 
       <ul>
         <li *ngFor="let good of filteredGoods(); let i = index">
           <div>
-            <p class="eyebrow">{{ good.category }}</p>
-            <h4>{{ good.name }}</h4>
+            <p class="eyebrow">{{ good.category }} · {{ readableGoods(good.type) }}</p>
+            <h4>{{ good.title }}</h4>
+            <p class="lede">Rarity {{ good.rarity }} · Complexity {{ good.complexity }} · {{ good.basePrice | number:'1.0-0' }} coins</p>
+            <p class="description" *ngIf="good.description">{{ good.description }}</p>
+            <p class="eyebrow" *ngIf="good.components?.length">Components: {{ joinComponents(good.components) }}</p>
             <div class="tags">
               <span class="tag" *ngFor="let tag of good.tags">{{ tag }}</span>
+              <span class="tag tag--sub" *ngFor="let flora of good.floraSources">Flora: {{ readableFlora(flora) }}</span>
             </div>
           </div>
           <div class="meta">

@@ -8,7 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
-import { TilemapConfig, TileInfo } from '../../services/mk2/tools/tilemap-analysis.service';
+import { TilemapConfig, TileInfo } from '../../../services/mk2/tools/tilemap-analysis.service';
 
 @Component({
   selector: 'app-tile-grid-viewer',

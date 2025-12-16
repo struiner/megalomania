@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TileMapCreatorComponent } from './tile-map-creator.component';
+import { TilemapCreationToolComponent } from './tile-map-creator.component';
 
-describe('TileMapCreatorComponent', () => {
-  let component: TileMapCreatorComponent;
-  let fixture: ComponentFixture<TileMapCreatorComponent>;
+describe('TilemapCreationToolComponent', () => {
+  let component: TilemapCreationToolComponent;
+  let fixture: ComponentFixture<TilemapCreationToolComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TileMapCreatorComponent]
+      imports: [TilemapCreationToolComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TileMapCreatorComponent);
+    fixture = TestBed.createComponent(TilemapCreationToolComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

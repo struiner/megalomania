@@ -14,7 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, takeUntil } from 'rxjs';
 
 
-import { TileInfo, TilemapProject } from '../../services/mk2/tools/tilemap-analysis.service';
+import { TileInfo, TilemapProject } from '../../../services/mk2/tools/tilemap-analysis.service';
 import { TileBasicPropertiesComponent } from './tile-basic-properties.component';
 import { TileMetadataEditorComponent } from './tile-metadata-editor.component';
 import { TileTagsEditorComponent } from './tile-tags-editor.component';
@@ -72,13 +72,13 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
   constructor() {}
 
   // Getters and setters for metadata properties to handle two-way binding
-  get metadataRarity(): string {
-    return this.editForm.metadata?.rarity || 'common';
+  get metadataRarity(): string | number {
+    return this.editForm.metadata?.rarity ?? 'common';
   }
 
-  set metadataRarity(value: string) {
+  set metadataRarity(value: string | number) {
     this.ensureMetadata();
-    this.editForm.metadata!.rarity = value as any;
+    this.editForm.metadata!.rarity = value;
   }
 
   get metadataCost(): number {
@@ -91,7 +91,7 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
   }
 
   get metadataUnlockLevel(): number {
-    return this.editForm.metadata?.unlockLevel || 1;
+    return this.editForm.metadata?.unlockLevel ?? 1;
   }
 
   set metadataUnlockLevel(value: number) {
@@ -100,7 +100,7 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
   }
 
   get metadataSeason(): string {
-    return this.editForm.metadata?.season || '';
+    return this.editForm.metadata?.season ?? '';
   }
 
   set metadataSeason(value: string) {
@@ -109,7 +109,7 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
   }
 
   get metadataAnimated(): boolean {
-    return this.editForm.metadata?.animated || false;
+    return this.editForm.metadata?.animated ?? false;
   }
 
   set metadataAnimated(value: boolean) {
@@ -118,7 +118,7 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
   }
 
   get metadataFrames(): number {
-    return this.editForm.metadata?.frames || 2;
+    return this.editForm.metadata?.frames ?? 2;
   }
 
   set metadataFrames(value: number) {
@@ -209,7 +209,7 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
       if (tile.subcategory !== common.subcategory) common.subcategory = '';
       
       // For tags, only keep common ones
-      common.tags = common.tags?.filter(tag => tile.tags.includes(tag)) || [];
+      common.tags = common.tags?.filter((tag: string) => tile.tags.includes(tag)) || [];
       
       // For metadata, only keep common values
       if (tile.metadata.rarity !== common.metadata?.rarity) {
@@ -222,14 +222,14 @@ export class TilePropertiesEditorComponent implements OnInit, OnDestroy {
 
   private updateCategories(): void {
     if (this.project) {
-      this.availableCategories = this.project.categories;
+      this.availableCategories = this.project.categories ?? [];
       this.updateSubcategories();
     }
   }
 
   private updateSubcategories(): void {
     if (this.project && this.editForm.category) {
-      this.availableSubcategories = this.project.subcategories[this.editForm.category] || [];
+      this.availableSubcategories = this.project.subcategories?.[this.editForm.category] || [];
     } else {
       this.availableSubcategories = [];
     }

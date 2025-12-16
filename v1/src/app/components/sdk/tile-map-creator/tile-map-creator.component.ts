@@ -80,7 +80,7 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
     if (!this.currentProject) return;
 
     // Update tiles in the current project
-    this.currentProject.tiles.forEach(tile => {
+    this.currentProject.tiles.forEach((tile: TileInfo) => {
       if (event.tileIds.includes(tile.id)) {
         Object.assign(tile, event.updates);
       }

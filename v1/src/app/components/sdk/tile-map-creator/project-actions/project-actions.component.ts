@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { TilemapProject } from '../../../services/mk2/tools/tilemap-analysis.service';
+import { TilemapProject } from '../../../../services/mk2/tools/tilemap-analysis.service';
 
 @Component({
   selector: 'app-project-actions',

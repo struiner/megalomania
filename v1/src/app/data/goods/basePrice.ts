@@ -107,7 +107,11 @@ export class Goods {
 [GoodsType.Xenthium]: 49900,
 [GoodsType.Myrralith]: 49950,
 [GoodsType.Zephyrite]: 49980,
-[GoodsType.Nexos]: 49990,
-[GoodsType.Berillium]: 50000
+  [GoodsType.Nexos]: 49990,
+  [GoodsType.Berillium]: 50000
+  }
+
+  getBasePrice(type: GoodsType): number {
+    return this.basePrice[type] ?? 0;
   }
 }
