@@ -1,6 +1,6 @@
 # Task Specification — HUD Minimap Scaling Policy
 
-**STATUS: NEW — pending Game Designer + Architecture Steward guidance on pixel integrity and device handling.**
+**STATUS: COMPLETE — scaling clamps + snapping codified in `hud-minimap.component.ts`; README summarizes policy with TODOs for letterboxing.**
 
 ## Task Summary
 Define and implement the minimap's pixel density, scaling clamps, and low-resolution behavior so the HUD minimap can progress from representative data to functional rendering without violating pixel-integrity rules.

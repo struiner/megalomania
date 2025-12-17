@@ -1,6 +1,6 @@
 # Task Specification — HUD Theme Consistency & Retrofit
 
-**STATUS: OPEN — depends on Hanseatic theme foundation tokens.**
+**STATUS: COMPLETE (planning) — audit + hook plan captured in `v1/src/app/pages/hud/hud-theme-retrofit-checklist.md`; follow-up asset tasks filed.**
 
 ## Task Summary
 Audit and retrofit HUD surfaces to apply the Hanseatic/medieval visual tokens consistently, ensuring pixel integrity and ergonomics remain intact across components and dialogs.
