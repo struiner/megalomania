@@ -56,6 +56,7 @@ Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without a
 - Close/back always returns to the prior HUD route or clears the overlay route when invoked from the top-level HUD.
 - ESC and clicking the shell close affordance both collapse the overlay and restore focus to the originating HUD control.
 - Route-driven state: closing removes the `/hud/<panel>` segment; tab switches change only the terminal segment without re-instantiating the overlay shell.
+
 ## Review Notes (Architecture Steward)
 - Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
 - Findings:
