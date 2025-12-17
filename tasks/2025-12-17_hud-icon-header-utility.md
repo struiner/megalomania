@@ -1,5 +1,7 @@
 # Task Specification — HUD Icon Header Utility
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Provide a reusable HUD utility for pairing compact icons with short titles/captions, ensuring **integer-scaled, pixel-aligned** rendering suitable for repeated use in peripheral HUD panes.
 
@@ -30,9 +32,9 @@ Provide a reusable HUD utility for pairing compact icons with short titles/capti
 - Example usage snippet illustrating integration within HUD info panes or headers (without binding to live data).
 
 ## Review Gate
-- [ ] Icon + text remain crisp at integer scales; no sub-pixel offsets.
-- [ ] Complies with UI & Ergonomics Charter attention hierarchy (peripheral weight, restrained density).
-- [ ] No gameplay logic or data ownership; inputs are fully externalized.
+- [x] Icon + text remain crisp at integer scales; no sub-pixel offsets.
+- [x] Complies with UI & Ergonomics Charter attention hierarchy (peripheral weight, restrained density).
+- [x] No gameplay logic or data ownership; inputs are fully externalized.
 - **Approvers:** Architecture Steward + Project Manager; Game Designer optional for tone alignment.
 
 ## Dependencies & Sequencing

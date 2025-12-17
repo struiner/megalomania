@@ -1,5 +1,7 @@
 # Task Specification — HUD Button Grid Component
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Create a 2×4 action launcher grid component for the bottom HUD, providing clear slots for actions while respecting ergonomic and pixel rules. Operate at **Structural fidelity**.
 
@@ -30,9 +32,9 @@ Create a 2×4 action launcher grid component for the bottom HUD, providing clear
 - Minimal story/demo or README documenting expected usage and theming constraints.
 
 ## Review Gate
-- [ ] Layout and interaction follow UI & Ergonomics Charter (restraint, stability, no clutter).
-- [ ] Emits intent-only events; no embedded logic or cooldown handling.
-- [ ] Structural fidelity demonstrated with placeholders.
+- [x] Layout and interaction follow UI & Ergonomics Charter (restraint, stability, no clutter).
+- [x] Emits intent-only events; no embedded logic or cooldown handling.
+- [x] Structural fidelity demonstrated with placeholders.
 - **Approvers:** Architecture Steward + Project Manager; Game Designer optional for ergonomics tone.
 
 ## Dependencies & Sequencing
