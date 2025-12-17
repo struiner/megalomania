@@ -10,3 +10,6 @@ This folder contains the Phase 2 structural HUD implementation scoped by the Gam
 - Placeholder data is intentionally static; no gameplay truth is derived here.
 - Spacing follows 16px multiples with 4px/8px gutters for pixel integrity.
 - TODOs annotate pending clarifications (icon headers, tile density, action targets, route guards).
+- A reusable icon/header utility now frames info panes, dialogs, and overlay content for consistent hierarchy.
+- HUD minimap sizing preserves a 512px baseline; scale is currently capped structurally until DPI rules are confirmed.
+- Route guarding for `/game/interface/:panel` is allow-list-based; feature-flag predicates remain TODO.

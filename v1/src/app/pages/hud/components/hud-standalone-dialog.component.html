@@ -1,0 +1,10 @@
+<section class="hud-dialog" [style.maxWidth.px]="width" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="dialog-header">
+    <app-hud-icon-header [title]="heading" [subtitle]="subheading" [icon]="icon"></app-hud-icon-header>
+    <button type="button" class="close" (click)="requestClose()" aria-label="Close dialog">✕</button>
+  </div>
+
+  <div class="dialog-body">
+    <ng-content></ng-content>
+  </div>
+</section>

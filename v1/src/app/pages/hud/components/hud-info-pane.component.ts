@@ -1,15 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { HudIconHeaderComponent } from './hud-icon-header.component';
 
 export interface HudInfoPaneContent {
   heading: string;
   items: string[];
+  icon?: string;
+  subtitle?: string;
+  badge?: string;
 }
 
 @Component({
   selector: 'app-hud-info-pane',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HudIconHeaderComponent],
   templateUrl: './hud-info-pane.component.html',
   styleUrls: ['./hud-info-pane.component.scss'],
 })
@@ -20,5 +24,5 @@ export class HudInfoPaneComponent {
   @Input()
   align: 'left' | 'right' = 'left';
 
-  // TODO: Integrate shared icon/header utility once defined in the referenced epic.
+  // TODO: Confirm whether badges should be driven by notifications vs. caller-provided values.
 }

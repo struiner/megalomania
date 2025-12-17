@@ -3,23 +3,17 @@
   bottom: 176px;
   left: 50%;
   transform: translateX(-50%);
-  min-width: 420px;
+  min-width: 440px;
   max-width: 720px;
-  background: rgba(14, 10, 22, 0.92);
-  border: 2px solid #3d2b5c;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
   color: #efe4ff;
-  backdrop-filter: blur(2px);
 }
 
 .overlay-header {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 6px;
+  padding: 10px 12px 0;
 }
 
 .overlay-tabs {
@@ -43,29 +37,8 @@
   border-color: #6f57a9;
 }
 
-.close {
-  background: #2c1f43;
-  border: 2px solid #4a3568;
-  color: #f1e7ff;
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
-  font-size: 16px;
-}
-
-.overlay-body {
-  padding: 12px;
-  display: grid;
-  gap: 6px;
-  font-size: 13px;
-}
-
-.overlay-description {
-  margin: 0;
-}
-
 .overlay-hint {
-  margin: 0;
-  opacity: 0.8;
+  margin: 0 0 4px;
+  opacity: 0.78;
   font-size: 12px;
 }

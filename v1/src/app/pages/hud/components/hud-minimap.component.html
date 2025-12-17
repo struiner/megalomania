@@ -1,4 +1,4 @@
-<section class="minimap">
+<section class="minimap" [style.width.px]="renderSize + 16" [style.maxWidth.px]="renderSize + 16">
   <div class="minimap-frame">
     <div class="tile" *ngFor="let row of tiles; let y = index">
       <div class="pixel" *ngFor="let value of row; let x = index" [style.background]="'var(--shade-' + value + ')'"></div>
@@ -6,6 +6,6 @@
   </div>
   <footer class="minimap-footer">
     <span class="label">Minimap stub</span>
-    <span class="scale">{{ tileSize }}px tiles</span>
+    <span class="scale">{{ renderFootnote }}</span>
   </footer>
 </section>
