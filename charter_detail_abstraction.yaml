@@ -1,0 +1,76 @@
+charter: detail_abstraction
+scope: all_work_products
+binding: true
+
+core_principle:
+  statement: correct_shape_beats_complete_implementation
+
+fidelity_stages:
+
+  conceptual:
+    purpose: shape_finding
+    allows:
+      - interfaces
+      - pseudocode
+      - stubs
+      - comments
+    forbids:
+      - full_algorithms
+      - optimization
+
+  structural:
+    purpose: skeleton
+    allows:
+      - minimal_implementations
+      - deterministic_flow
+      - extension_points
+    forbids:
+      - feature_complete_logic
+      - exhaustive_edge_cases
+
+  functional:
+    purpose: usable_feedback
+    allows:
+      - end_to_end_flows
+      - partial_ui
+    forbids:
+      - premature_abstractions
+      - cosmetic_polish_only
+
+  refinement:
+    purpose: hardening
+    allows:
+      - error_handling
+      - validation
+      - performance_work
+    forbids:
+      - unjustified_structural_change
+
+abstraction_biases:
+  - deletable_code
+  - interfaces_before_factories
+  - explicit_over_clever
+
+codex_constraints:
+  default_fidelity: lowest_viable
+  must:
+    - stop_early
+    - explain_omissions
+    - ask_before_escalation
+
+review_heuristics:
+  questions:
+    - is_this_right_stage
+    - could_it_be_simpler
+    - can_half_be_deleted
+
+anti_patterns:
+  - just_in_case_code
+  - over_general_frameworks
+  - single_impl_abstract_bases
+  - early_optimization
+  - borrowed_patterns
+
+governance:
+  owner: project_manager
+  enforcement: architecture_steward

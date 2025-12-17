@@ -1,0 +1,88 @@
+charter: ui_ergonomics
+scope: ui_and_hud
+binding: true
+
+philosophy:
+  hud_is: operational_instrument
+  priority: world_first
+  center_screen: sacred
+
+attention_hierarchy:
+  primary:
+    - spatial_orientation
+    - movement
+    - situational_awareness
+    rule: never_obstructed
+  secondary:
+    - player_actions
+    - management_entry_points
+    properties:
+      - visually_grouped
+      - stable_position
+  peripheral:
+    - stats
+    - counts
+    - summaries
+    constraints:
+      - no_aggressive_animation
+
+layout_biases:
+  bottom_hud:
+    traits: [heavy, stable, grounded]
+    must_not: dynamic_shift
+  grouping:
+    prefer: horizontal
+  symmetry:
+    default: true
+    asymmetry_requires: semantic_reason
+
+density_rules:
+  max_primary_interactions: 8
+  preference_order:
+    - icons
+    - text
+    - numbers
+  empty_space: encouraged
+
+interaction_rules:
+  one_action_one_result: true
+  hidden_gestures: forbidden
+  modal_depth_max: 2
+  time_control:
+    centralized: true
+    implicit_pause: forbidden
+
+visual_tone:
+  style: retro_pixel_16bit
+  inspirations:
+    - Patrician
+    - Masters_of_Magic
+    - Secret_of_Mana
+    - New_World_Computing
+    - Colonization
+  pixel_integrity:
+    grid_aligned: true
+    integer_scaling_only: true
+  fantasy_tone:
+    type: hanseatic
+    magic: systemic_not_spectacle
+  motion:
+    purpose: informational
+    interpolation: stepped
+
+anti_goals:
+  - mmo_hotbars
+  - realtime_graphs_in_hud
+  - cursor_chasing_tooltips
+  - novelty_layouts
+  - ui_owns_state
+
+truth_ownership:
+  ui: derived_views_only
+  design: intent_only
+
+governance:
+  owner: game_designer
+  enforcement:
+    - architecture_steward
+    - project_manager
