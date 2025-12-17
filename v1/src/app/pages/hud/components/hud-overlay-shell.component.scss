@@ -1,11 +1,12 @@
 .overlay-shell {
   position: fixed;
-  bottom: 176px;
+  bottom: calc(var(--bottom-hud-height, 160px) + var(--hud-gap, 16px));
   left: 50%;
   transform: translateX(-50%);
   min-width: 440px;
   max-width: 720px;
   color: #efe4ff;
+  z-index: 9;
 }
 
 .overlay-header {
@@ -14,6 +15,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 12px 0;
+  cursor: grab;
 }
 
 .overlay-tabs {
@@ -35,6 +37,11 @@
 .tab.active {
   background: #2a1d44;
   border-color: #6f57a9;
+}
+
+.tab:disabled {
+  opacity: 0.6;
+  border-style: dashed;
 }
 
 .overlay-hint {

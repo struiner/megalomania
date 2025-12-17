@@ -1,6 +1,6 @@
 # Task Specification — HUD Minimap Representative Data
 
-**STATUS: TODO — pending execution.**
+**STATUS: COMPLETE — minimap now renders TilemapService preview data with marker hooks.**
 
 ## Task Summary
 Replace the static placeholder minimap grid with representative data sourced from map-generation services, honoring the 512×512 source resolution and preserving pixel integrity within the HUD slot.【F:v1/src/app/pages/hud/components/hud-minimap.component.ts†L12-L34】

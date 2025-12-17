@@ -1,7 +1,12 @@
 <section class="minimap" [style.width.px]="renderSize + 16" [style.maxWidth.px]="renderSize + 16">
-  <div class="minimap-frame">
-    <div class="tile" *ngFor="let row of tiles; let y = index">
+  <div class="minimap-frame" [style.gridTemplateRows]="gridTemplate" [style.gridTemplateColumns]="gridTemplate">
+    <div class="tile" *ngFor="let row of tiles; let y = index" [style.gridTemplateColumns]="gridTemplate">
       <div class="pixel" *ngFor="let value of row; let x = index" [style.background]="'var(--shade-' + value + ')'"></div>
+    </div>
+
+    <div class="marker" *ngFor="let marker of markers" [style.left.%]="marker.x * 100" [style.top.%]="marker.y * 100">
+      <span class="glyph">{{ marker.glyph ?? '◆' }}</span>
+      <span class="sr-only">{{ marker.label }}</span>
     </div>
   </div>
   <footer class="minimap-footer">

@@ -1,6 +1,6 @@
 # Task Specification — HUD Standalone Dialog Draggability
 
-**STATUS: TODO — pending execution.**
+**STATUS: COMPLETE — overlay/dialog shell now draggable with bounded offsets.**
 
 ## Task Summary
 Promote the standalone HUD dialog shell into a draggable, pixel-aligned overlay so players can reposition dialogs without obscuring the world viewport, while keeping escape/close semantics consistent with HUD routing flows.【F:v1/src/app/pages/hud/components/hud-standalone-dialog.component.ts†L12-L36】

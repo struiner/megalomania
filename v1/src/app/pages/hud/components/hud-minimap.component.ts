@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { HudMinimapDataService, HudMinimapMarker } from '../hud-minimap-data.service';
 
 @Component({
   selector: 'app-hud-minimap',
@@ -8,7 +9,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './hud-minimap.component.html',
   styleUrls: ['./hud-minimap.component.scss'],
 })
-export class HudMinimapComponent {
+export class HudMinimapComponent implements OnInit {
   @Input()
   tileSize = 8; // TODO: Confirm baseline pixel density for live tiles.
 
@@ -30,14 +31,36 @@ export class HudMinimapComponent {
     [0, 0, 1, 1, 1, 1, 0, 0],
   ];
 
-  // TODO: Accept frame overlays (e.g., markers) once view models are defined.
+  @Input()
+  markers: HudMinimapMarker[] = [];
+
+  constructor(private readonly data: HudMinimapDataService) {}
+
+  ngOnInit(): void {
+    if (!this.tiles.length) {
+      const preview = this.data.getPreview();
+      this.tiles = preview.tiles;
+      this.sourceResolution = preview.sourceResolution;
+      this.tileSize = preview.tileSize;
+      this.displayScale = preview.displayScale;
+      this.markers = preview.markers;
+    }
+  }
 
   protected get renderSize(): number {
     return Math.floor(this.sourceResolution * this.displayScale);
   }
 
   protected get renderFootnote(): string {
-    return `${this.sourceResolution} baseline, ${this.renderSize}px displayed`;
+    return `${this.sourceResolution}px baseline (${this.tileCount} tiles @ ${this.tileSize}px) → ${this.renderSize}px displayed`;
+  }
+
+  protected get tileCount(): number {
+    return this.tiles?.length ?? 0;
+  }
+
+  protected get gridTemplate(): string {
+    return `repeat(${this.tileCount}, 1fr)`;
   }
 
   // TODO: Should the HUD enforce a maximum scale to prevent blurry magnification on low DPI screens?
