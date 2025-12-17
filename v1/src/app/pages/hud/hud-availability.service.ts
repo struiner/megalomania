@@ -22,15 +22,19 @@ export class HudAvailabilityService {
   constructor(private readonly capabilities: HudCapabilityService) {}
 
   evaluatePanel(panel: HudPanelDefinition): HudPanelGateDecision {
-    if (panel.featureFlag && !this.capabilities.getFeatureFlag(panel.featureFlag)) {
+    const capability = this.capabilities.getPanelCapability(panel.id);
+    const featureFlag = panel.featureFlag ?? capability?.featureFlag;
+    const requiresInit = panel.requiresInit ?? capability?.requiresInit;
+
+    if (featureFlag && !this.capabilities.getFeatureFlag(featureFlag)) {
       return {
         allowed: false,
         blockedBy: 'featureFlag',
-        reason: `${panel.label} is gated by feature flag ${panel.featureFlag}.`,
+        reason: `${panel.label} is gated by feature flag ${featureFlag}.`,
       };
     }
 
-    if (panel.requiresInit && !this.capabilities.isPanelInitialized(panel.id)) {
+    if (requiresInit && !this.capabilities.isPanelInitialized(panel.id)) {
       return {
         allowed: false,
         blockedBy: 'initialization',
