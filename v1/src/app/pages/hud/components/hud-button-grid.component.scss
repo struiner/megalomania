@@ -21,6 +21,7 @@
   font-size: 13px;
   letter-spacing: 0.3px;
   transition: background 120ms ease, border-color 120ms ease;
+  gap: 6px;
 }
 
 .hud-button:hover,
@@ -28,11 +29,6 @@
   background: #241a3f;
   border-color: #6e57a6;
   outline: none;
-}
-
-.hud-icon {
-  font-size: 20px;
-  line-height: 1;
 }
 
 .hud-label {

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { HudIconComponent } from './hud-icon.component';
 
 @Component({
   selector: 'app-hud-icon-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HudIconComponent],
   templateUrl: './hud-icon-header.component.html',
   styleUrls: ['./hud-icon-header.component.scss'],
 })

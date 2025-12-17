@@ -6,7 +6,7 @@
     [attr.data-slot]="idx"
     (click)="onAction(action)"
   >
-    <span class="hud-icon" aria-hidden="true">{{ action.icon || '⬜' }}</span>
+    <app-hud-icon [glyph]="action.icon || '⬜'" [label]="action.label" size="2x"></app-hud-icon>
     <span class="hud-label">{{ action.label }}</span>
   </button>
 </section>

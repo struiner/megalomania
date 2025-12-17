@@ -9,6 +9,13 @@ interface HudMinimapScalePolicy {
   preferredSteps: number[];
 }
 
+interface HudMinimapLetterboxInsets {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
 @Component({
   selector: 'app-hud-minimap',
   standalone: true,
@@ -52,6 +59,8 @@ export class HudMinimapComponent implements OnInit {
   };
 
   protected resolvedScale = this.scalePolicy.minScale;
+  protected letterboxInsets: HudMinimapLetterboxInsets = { top: 0, bottom: 0, left: 0, right: 0 };
+  protected readonly framePadding = 4;
 
   constructor(private readonly data: HudMinimapDataService) {}
 
@@ -66,6 +75,14 @@ export class HudMinimapComponent implements OnInit {
     }
 
     this.applyScalingPolicy();
+  }
+
+  protected get frameViewportSize(): number {
+    return Math.max(Math.round(this.desiredDisplaySize), this.renderSize);
+  }
+
+  protected get frameOuterSize(): number {
+    return this.frameViewportSize + this.framePadding * 4; // accounts for padding + border/frame chrome.
   }
 
   protected get renderSize(): number {
@@ -92,8 +109,9 @@ export class HudMinimapComponent implements OnInit {
 
     this.resolvedScale = this.snapToPreferredScale(clamped);
 
-    // TODO: Decide on letterboxing vs. dynamic resampling for lower-resolution devices when desired size is smaller than the
-    // TODO: preferred step results (task 2025-12-18_hud-minimap-scaling-policy).
+    this.computeLetterboxInsets();
+
+    // TODO: Decide on letterboxing fill (flat color vs. textured swatch) for constrained resolutions once theme tokens land.
   }
 
   private snapToPreferredScale(scale: number): number {
@@ -107,5 +125,17 @@ export class HudMinimapComponent implements OnInit {
 
       return nearest;
     }, this.scalePolicy.preferredSteps[0]);
+  }
+
+  private computeLetterboxInsets(): void {
+    const horizontalGap = Math.max(this.frameViewportSize - this.renderSize, 0);
+    const verticalGap = Math.max(this.frameViewportSize - this.renderSize, 0);
+
+    const left = Math.floor(horizontalGap / 2);
+    const right = horizontalGap - left;
+    const top = Math.floor(verticalGap / 2);
+    const bottom = verticalGap - top;
+
+    this.letterboxInsets = { top, bottom, left, right };
   }
 }

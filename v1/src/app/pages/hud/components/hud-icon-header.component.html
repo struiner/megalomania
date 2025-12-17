@@ -1,5 +1,5 @@
 <header class="hud-icon-header">
-  <div class="icon" *ngIf="icon" aria-hidden="true">{{ icon }}</div>
+  <app-hud-icon *ngIf="icon" [glyph]="icon" size="2x"></app-hud-icon>
   <div class="text-block">
     <div class="title-row">
       <span class="title">{{ title }}</span>
