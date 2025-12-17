@@ -11,7 +11,7 @@ import { HudMinimapDataService, HudMinimapMarker } from '../hud-minimap-data.ser
 })
 export class HudMinimapComponent implements OnInit {
   @Input()
-  tileSize = 8; // TODO: Confirm baseline pixel density for live tiles.
+  tileSize = 8; // TODO: Confirm baseline pixel density for live tiles (see task 2025-12-18_hud-minimap-scaling-policy).
 
   @Input()
   sourceResolution = 512;
@@ -65,4 +65,5 @@ export class HudMinimapComponent implements OnInit {
 
   // TODO: Should the HUD enforce a maximum scale to prevent blurry magnification on low DPI screens?
   // TODO: Decide on letterboxing vs. dynamic resampling for lower-resolution devices.
+  // TODO: Task 2025-12-18_hud-minimap-scaling-policy — document scaling/resolution strategy for the minimap surface.
 }
