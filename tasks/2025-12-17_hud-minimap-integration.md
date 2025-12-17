@@ -42,4 +42,6 @@ Introduce a pixel-aligned minimap surface within the bottom HUD scaffold, provid
 
 ## Open Questions / Clarifications
 - Desired aspect ratio (e.g., square vs. slight rectangle) for default minimap frame?
+    Answer: Square.
 - Should minimap accept tile size configuration for different pixel densities?
+    Answer: yes, it should be generic in it's input and lenient in it's display.

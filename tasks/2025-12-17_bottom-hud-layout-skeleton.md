@@ -41,4 +41,6 @@ Establish the foundational grid, anchoring, and spatial rules for the bottom HUD
 
 ## Open Questions / Clarifications
 - Preferred baseline pixel height for the HUD bar (e.g., multiples of 16px)?
+    Answer: Multiples and fractions of 16px are preferable, where 4px is condidered a universal margin and 2px is considered a base line width.
 - Should the minimap slot reserve additional margin for frame/chrome when promoted to Functional fidelity?
+    Answer: Yes, the minimap will eventually have to be decorated in a typically fitting style, along with navigation controls for panning and zooming, so a border of 16px to 32px would be prudent.

@@ -41,4 +41,6 @@ Create a 2×4 action launcher grid component for the bottom HUD, providing clear
 
 ## Open Questions / Clarifications
 - Preferred default cell size and padding multiples (e.g., 16px grid)?
+    Answer: 16px;
 - Should the grid support configurable columns/rows, or remain fixed at 2×4 for now?
+    Answer: let it be fixed for now.

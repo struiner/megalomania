@@ -41,4 +41,6 @@ Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without a
 
 ## Open Questions / Clarifications
 - Preferred dialog stacking model (single overlay vs. multiple panels)?
+    Answer: Multiple completely overlapping panels, where active panels are indicated with a tab.
 - Should routes use guarded entry (e.g., feature flags) or stay open for now?
+    Answer: Let routes remain open for now, adding a TODO for more generic dynamic route guarding and it's indication.

@@ -41,4 +41,6 @@ Establish left/right secondary info pane scaffolding within the HUD for peripher
 
 ## Open Questions / Clarifications
 - Should panes reserve header areas for icons/titles, or remain minimalist labels?
+    Answer: Yes, this will be referenced in another epic for generic icon functionality integration, to be included as specific TODO comments.
 - Expected maximum width per pane before it threatens central world focus?
+    Answer: 40% of the viewport
