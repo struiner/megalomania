@@ -1,0 +1,89 @@
+task:
+id: ui.ledger.verification
+title: Ledger Verification & Testing Interface
+type: ui
+status: planned
+
+meta:
+epic: merkle_ledger_v1
+phase: phase_3_views_and_queries
+target_fidelity: structural
+
+ownership:
+owner: frontend_developer
+reviewers:
+- architecture_steward
+- ledger_engineer
+- qa_test_engineer
+
+references:
+agents: agents.yaml
+charters:
+- ui_ergonomics
+- detail_abstraction
+vocabulary: vocabulary.yaml
+epic: epic_merkle_ledger.yaml
+
+purpose:
+provide_a_user_interface_to:
+- inspect_ledger_blocks
+- verify_merkle_inclusion_proofs
+- observe_view_rebuild_status
+
+scope:
+include:
+- block_list_view
+- block_detail_view
+- entry_list_view
+- merkle_proof_visualization
+- verification_status_indicators
+exclude:
+- ledger_mutation_actions
+- gameplay_features
+- backend_logic_changes
+
+ui_constraints:
+surface: debug_page
+style: retro_pixel_16bit
+hud_interaction: none
+allowed_components:
+- tables
+- lists
+- fixed_panels
+
+functional_requirements:
+
+* display_block_chain_order
+* show_block_hash_and_merkle_root
+* allow_entry_selection
+* generate_and_verify_merkle_proof
+* display_verification_result
+
+non_goals:
+
+* no_editing_of_entries
+* no_block_sealing_controls
+* no_real_time_graphs
+
+acceptance_criteria:
+
+* ui_displays_only_derived_data
+* proof_verification_matches_ledger_api
+* page_load_does_not_mutate_state
+* complies_with_ui_ergonomics_charter
+
+progress_signals:
+
+* route_exists_and_renders
+* sample_ledger_loads
+* proof_verification_visible
+
+exit_conditions:
+
+* all_acceptance_criteria_met
+* reviewer_signoff_recorded
+
+notes:
+
+* this_is_a_debug_and_validation_surface
+* prioritize_clarity_over_polish
