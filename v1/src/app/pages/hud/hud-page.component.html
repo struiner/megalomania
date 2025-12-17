@@ -6,6 +6,15 @@
     </div>
   </div>
 
+  <div class="hud-block-message" *ngIf="blockNotice">
+    <div class="glyph" aria-hidden="true">⚠️</div>
+    <div class="copy">
+      <p class="title">{{ blockNotice.panelLabel }} unavailable</p>
+      <p class="detail">{{ blockNotice.decision.reason ?? 'Selected panel is unavailable.' }}</p>
+    </div>
+    <button type="button" class="dismiss" (click)="clearBlockedNotice()">Dismiss</button>
+  </div>
+
   <app-bottom-hud
     [leftPane]="leftPane"
     [rightPane]="rightPane"
@@ -19,5 +28,24 @@
     [activePanel]="activePanel!"
     (closeRequested)="closeOverlay()"
     (panelSelected)="handleActionSelected($event)"
+    (panelBlocked)="handlePanelBlocked($event.decision, $event.panelId)"
   ></app-hud-overlay-shell>
+
+  <app-hud-standalone-dialog
+    *ngIf="auxiliaryDialog"
+    [heading]="auxiliaryDialog.heading"
+    [subheading]="auxiliaryDialog.subheading"
+    [icon]="auxiliaryDialog.icon"
+    (closeRequested)="closeAuxiliaryDialog()"
+  >
+    <p class="aux-body">{{ auxiliaryDialog.body }}</p>
+    <button
+      *ngIf="auxiliaryDialog.ctaRoute"
+      type="button"
+      class="aux-cta"
+      (click)="triggerAuxiliaryCta()"
+    >
+      {{ auxiliaryDialog.ctaLabel ?? 'Open linked route' }}
+    </button>
+  </app-hud-standalone-dialog>
 </section>

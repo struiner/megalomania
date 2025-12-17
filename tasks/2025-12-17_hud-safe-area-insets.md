@@ -1,6 +1,6 @@
 # Task Specification — HUD Safe-Area Insets & Viewport Reserves
 
-**STATUS: TODO — requires guidance for devices with cutouts/notches and embedded scroll containers.**
+**STATUS: COMPLETE — bottom HUD/overlays honor env() safe-area insets with reserved padding.**
 
 ## Task Summary
 Define and implement safe-area inset handling for the fixed bottom HUD and overlay shells so they remain pinned without clipping on devices with display cutouts or nested scroll contexts.

@@ -1,6 +1,6 @@
 .overlay-shell {
   position: fixed;
-  bottom: calc(var(--bottom-hud-height, 160px) + var(--hud-gap, 16px));
+  bottom: calc(var(--bottom-hud-height, 160px) + var(--hud-gap, 16px) + var(--hud-safe-area-inset, 0px));
   left: 50%;
   transform: translateX(-50%);
   min-width: 440px;

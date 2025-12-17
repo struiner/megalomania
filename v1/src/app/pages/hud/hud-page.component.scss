@@ -1,6 +1,9 @@
 :host {
   display: block;
   min-height: calc(100vh - 48px);
+  --hud-safe-area-inset: max(env(safe-area-inset-bottom, 0px), 0px);
+  --bottom-hud-height: 160px;
+  padding-bottom: calc(var(--bottom-hud-height) + var(--hud-safe-area-inset) + 8px);
   background: linear-gradient(180deg, #0f0a1f 0%, #0a0615 60%, #070510 100%);
   color: #e7d9ff;
 }
@@ -20,6 +23,53 @@
   box-sizing: border-box;
 }
 
+.hud-block-message {
+  position: fixed;
+  left: 32px;
+  bottom: calc(var(--bottom-hud-height) + 18px + var(--hud-safe-area-inset));
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(27, 20, 46, 0.92);
+  border: 2px solid rgba(255, 196, 120, 0.6);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #f6e2c3;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.hud-block-message .glyph {
+  font-size: 16px;
+}
+
+.hud-block-message .copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hud-block-message .title {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.hud-block-message .detail {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.hud-block-message .dismiss {
+  background: #2d2342;
+  color: #f6e2c3;
+  border: 1px solid rgba(255, 196, 120, 0.5);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 .world-placeholder {
   border: 2px dashed rgba(255, 255, 255, 0.18);
   border-radius: 8px;
@@ -27,6 +77,29 @@
   text-align: center;
   max-width: 720px;
   background: rgba(15, 10, 31, 0.4);
+}
+
+.aux-body {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.aux-cta {
+  width: fit-content;
+  background: #2f2444;
+  border: 2px solid #523b7b;
+  color: #f1e7ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+app-hud-standalone-dialog {
+  position: fixed;
+  right: 32px;
+  bottom: calc(var(--bottom-hud-height) + 18px + var(--hud-safe-area-inset));
+  z-index: 9;
 }
 
 .world-title {

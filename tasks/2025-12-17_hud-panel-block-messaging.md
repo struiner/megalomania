@@ -1,6 +1,6 @@
 # Task Specification — HUD Panel Block Messaging & Capability Wiring
 
-**STATUS: TODO — needs UX-approved messaging and live capability sources.**
+**STATUS: COMPLETE — capability snapshot drives guards with HUD-native block notices.**
 
 ## Task Summary
 Wire `HudAvailabilityService` and `HudRouteGuard` to real feature-flag/initialization sources and surface blocked panel feedback through HUD-native messaging instead of silent redirects or inline text toasts.

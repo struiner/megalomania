@@ -1,5 +1,6 @@
 :host {
   --bottom-hud-height: 160px;
+  --hud-safe-area-inset: max(env(safe-area-inset-bottom, 0px), 0px);
 }
 
 .bottom-hud {
@@ -9,7 +10,7 @@
   display: grid;
   grid-template-columns: 1fr minmax(320px, 360px) 1fr minmax(192px, 208px);
   gap: 8px;
-  padding: 8px 16px 12px;
+  padding: 8px 16px calc(12px + var(--hud-safe-area-inset));
   width: 100%;
   background: linear-gradient(180deg, rgba(11, 7, 20, 0.94) 0%, rgba(6, 4, 12, 0.98) 80%);
   border-top: 2px solid rgba(255, 255, 255, 0.12);
@@ -17,7 +18,7 @@
   align-items: stretch;
   box-sizing: border-box;
   z-index: 8;
-  /* TODO: Confirm safe-area inset handling for devices with cutouts/notches. */
+  /* TODO: Confirm whether safe-area inset should be overridable per embedding surface. */
 }
 
 .pane-region {

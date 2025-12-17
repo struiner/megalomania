@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { HudPanelDefinition } from './hud-panel-registry';
+import { HudCapabilityService } from './hud-capability.service';
 
 export interface HudPanelGateDecision {
   allowed: boolean;
@@ -7,23 +9,20 @@ export interface HudPanelGateDecision {
   blockedBy?: 'featureFlag' | 'initialization';
 }
 
+export interface HudPanelBlockNotice {
+  panelId: string;
+  panelLabel: string;
+  decision: HudPanelGateDecision;
+}
+
 @Injectable({ providedIn: 'root' })
 export class HudAvailabilityService {
-  // TODO: Replace stubbed feature flag map with live capability service once available.
-  private readonly featureFlags: Record<string, boolean> = {
-    inventory: true,
-    ledger: true,
-    map: true,
-    crew: true,
-    trade: true,
-    quests: true,
-  };
+  private readonly blockedPanels$ = new Subject<HudPanelBlockNotice>();
 
-  // TODO: Wire initialization readiness to actual HUD bootstrap lifecycle.
-  private readonly initializedPanels = new Set<string>(['inventory', 'ledger', 'map']);
+  constructor(private readonly capabilities: HudCapabilityService) {}
 
   evaluatePanel(panel: HudPanelDefinition): HudPanelGateDecision {
-    if (panel.featureFlag && !this.featureFlags[panel.featureFlag]) {
+    if (panel.featureFlag && !this.capabilities.getFeatureFlag(panel.featureFlag)) {
       return {
         allowed: false,
         blockedBy: 'featureFlag',
@@ -31,7 +30,7 @@ export class HudAvailabilityService {
       };
     }
 
-    if (panel.requiresInit && !this.initializedPanels.has(panel.id)) {
+    if (panel.requiresInit && !this.capabilities.isPanelInitialized(panel.id)) {
       return {
         allowed: false,
         blockedBy: 'initialization',
@@ -40,5 +39,17 @@ export class HudAvailabilityService {
     }
 
     return { allowed: true };
+  }
+
+  announceBlockedPanel(panel: HudPanelDefinition, decision: HudPanelGateDecision): void {
+    this.blockedPanels$.next({
+      panelId: panel.id,
+      panelLabel: panel.label,
+      decision,
+    });
+  }
+
+  getBlockedPanels(): Observable<HudPanelBlockNotice> {
+    return this.blockedPanels$.asObservable();
   }
 }
