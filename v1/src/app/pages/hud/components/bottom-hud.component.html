@@ -1,0 +1,17 @@
+<section class="bottom-hud" [style.height.px]="hudHeight">
+  <div class="pane-region">
+    <app-hud-info-pane [content]="leftPane"></app-hud-info-pane>
+  </div>
+
+  <div class="button-region">
+    <app-hud-button-grid [actions]="actions" (actionSelected)="handleAction($event)"></app-hud-button-grid>
+  </div>
+
+  <div class="pane-region">
+    <app-hud-info-pane [content]="rightPane" align="right"></app-hud-info-pane>
+  </div>
+
+  <div class="minimap-region">
+    <app-hud-minimap></app-hud-minimap>
+  </div>
+</section>

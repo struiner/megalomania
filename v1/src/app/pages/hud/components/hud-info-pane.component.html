@@ -1,0 +1,6 @@
+<section class="info-pane" [class.align-right]="align === 'right'">
+  <header class="info-header">{{ content.heading }}</header>
+  <ul class="info-list">
+    <li *ngFor="let item of content.items">{{ item }}</li>
+  </ul>
+</section>

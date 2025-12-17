@@ -1,0 +1,43 @@
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.hud-button {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  background: #1b132f;
+  border: 2px solid #3c2b59;
+  color: #f5e9ff;
+  border-radius: 4px;
+  padding: 8px 6px 6px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.hud-button:hover,
+.hud-button:focus-visible {
+  background: #241a3f;
+  border-color: #6e57a6;
+  outline: none;
+}
+
+.hud-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.hud-label {
+  margin-top: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}

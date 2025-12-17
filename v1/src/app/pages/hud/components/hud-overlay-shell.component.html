@@ -1,0 +1,24 @@
+<section class="overlay-shell">
+  <header class="overlay-header">
+    <nav class="overlay-tabs" aria-label="HUD dialogs">
+      <button
+        *ngFor="let panel of panels"
+        type="button"
+        class="tab"
+        [class.active]="panel.id === activePanel"
+        aria-current="page"
+        (click)="requestPanel(panel.id)"
+      >
+        {{ panel.label }}
+      </button>
+    </nav>
+    <button type="button" class="close" (click)="requestClose()" aria-label="Close dialog">✕</button>
+  </header>
+
+  <section class="overlay-body">
+    <p class="overlay-description">{{ getPanelDescription(activePanel) }}</p>
+    <p class="overlay-hint">
+      Future dialog content renders here; world stays visible beneath.
+    </p>
+  </section>
+</section>
