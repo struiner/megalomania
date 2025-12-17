@@ -29,9 +29,7 @@ function createDefaultFeatureFlags(): Record<string, boolean> {
 
 @Injectable({ providedIn: 'root' })
 export class HudCapabilityService {
-  private readonly resolution$ = new BehaviorSubject<HudCapabilityResolution>(
-    this.provider.getFallbackResolution(),
-  );
+  private readonly resolution$: BehaviorSubject<HudCapabilityResolution>;
   private readonly loading$ = new BehaviorSubject<boolean>(true);
   private readonly error$ = new BehaviorSubject<string | null>(null);
   // TODO: Replace hardcoded defaults with authoritative capability feed (ledger/config backed).
@@ -41,6 +39,9 @@ export class HudCapabilityService {
   };
 
   constructor(private readonly provider: HudCapabilityProvider) {
+    this.resolution$ = new BehaviorSubject<HudCapabilityResolution>(
+      this.provider.getFallbackResolution(),
+    );
     this.bootstrap();
   }
 
@@ -68,6 +69,8 @@ export class HudCapabilityService {
 
   isPanelInitialized(panelId: string): boolean {
     return this.resolution$.value.snapshot.initializedPanels.has(panelId);
+  }
+
   updateSnapshot(partial: Partial<HudCapabilitySnapshot>): void {
     this.snapshot = {
       featureFlags: partial.featureFlags ? { ...this.snapshot.featureFlags, ...partial.featureFlags } : this.snapshot.featureFlags,
@@ -104,6 +107,8 @@ export class HudCapabilityService {
 
   isFallback(): boolean {
     return this.resolution$.value.fallback;
+  }
+
   getPanelCapability(panelId: string): HudPanelCapabilityRequirement | undefined {
     return HUD_PANEL_CAPABILITY_REGISTRY[panelId];
   }
