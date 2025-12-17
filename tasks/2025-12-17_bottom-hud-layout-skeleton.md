@@ -1,5 +1,7 @@
 # Task Specification — Bottom HUD Layout Skeleton
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Establish the foundational grid, anchoring, and spatial rules for the bottom HUD bar so that future HUD components can be slotted in without layout churn. This task operates at **Structural fidelity** per the Level of Detail & Abstraction Charter.
 
@@ -30,9 +32,9 @@ Establish the foundational grid, anchoring, and spatial rules for the bottom HUD
 - README-style notes within the component folder documenting intended child slots and sizing assumptions.
 
 ## Review Gate
-- [ ] UI aligns with the UI & Ergonomics Charter (anchoring, symmetry, restraint).
-- [ ] No gameplay logic or derived truth embedded in the UI layer.
-- [ ] Layout validated at Structural fidelity (placeholder content only).
+- [x] UI aligns with the UI & Ergonomics Charter (anchoring, symmetry, restraint).
+- [x] No gameplay logic or derived truth embedded in the UI layer.
+- [x] Layout validated at Structural fidelity (placeholder content only).
 - **Approvers:** Architecture Steward + Project Manager; optional Game Designer sign-off on tone.
 
 ## Dependencies & Sequencing

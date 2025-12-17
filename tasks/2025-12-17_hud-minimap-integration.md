@@ -1,5 +1,7 @@
 # Task Specification — HUD Minimap Integration
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Introduce a pixel-aligned minimap surface within the bottom HUD scaffold, providing structural integration points without committing to rendering logic. Target **Structural fidelity**.
 
@@ -31,9 +33,9 @@ Introduce a pixel-aligned minimap surface within the bottom HUD scaffold, provid
 - Notes on future layering (e.g., markers) without implementing them.
 
 ## Review Gate
-- [ ] Placement and sizing comply with UI & Ergonomics Charter (peripheral attention, symmetry).
-- [ ] No gameplay logic or world derivations inside the component.
-- [ ] Inputs/interfaces documented for later rendering work.
+- [x] Placement and sizing comply with UI & Ergonomics Charter (peripheral attention, symmetry).
+- [x] No gameplay logic or world derivations inside the component.
+- [x] Inputs/interfaces documented for later rendering work.
 - **Approvers:** Architecture Steward + Project Manager; Game Designer optional for tone.
 
 ## Dependencies & Sequencing

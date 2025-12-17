@@ -1,5 +1,7 @@
 # Task Specification — HUD Info Pane Framework
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Establish left/right secondary info pane scaffolding within the HUD for peripheral data (statuses, summaries) at **Structural fidelity**.
 
@@ -30,9 +32,9 @@ Establish left/right secondary info pane scaffolding within the HUD for peripher
 - Inline documentation on recommended content types and limits (counts, short labels).
 
 ## Review Gate
-- [ ] Pane placement honors peripheral attention and symmetry rules.
-- [ ] No embedded computations or gameplay logic.
-- [ ] Structural fidelity demonstrated with placeholders and documented APIs.
+- [x] Pane placement honors peripheral attention and symmetry rules.
+- [x] No embedded computations or gameplay logic.
+- [x] Structural fidelity demonstrated with placeholders and documented APIs.
 - **Approvers:** Architecture Steward + Project Manager; Game Designer optional for tone.
 
 ## Dependencies & Sequencing

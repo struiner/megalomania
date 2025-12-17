@@ -1,5 +1,7 @@
 # Task Specification — HUD Routing & Dialog Wiring
 
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
 ## Task Summary
 Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without adding gameplay logic, ensuring navigation scaffolding is stable and charter-compliant. Target **Structural fidelity**.
 
@@ -30,9 +32,9 @@ Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without a
 - Notes on intended future content ownership to prevent UI from inventing state.
 
 ## Review Gate
-- [ ] Routing complies with Angular best practices and avoids hidden global state.
-- [ ] Dialog shells respect UI & Ergonomics Charter (restraint, minimal obstruction).
-- [ ] No gameplay logic or derived truth inside HUD routing/dialog code.
+- [x] Routing complies with Angular best practices and avoids hidden global state.
+- [x] Dialog shells respect UI & Ergonomics Charter (restraint, minimal obstruction).
+- [x] No gameplay logic or derived truth inside HUD routing/dialog code.
 - **Approvers:** Architecture Steward + Project Manager; Game Designer optional for UX tone.
 
 ## Dependencies & Sequencing
