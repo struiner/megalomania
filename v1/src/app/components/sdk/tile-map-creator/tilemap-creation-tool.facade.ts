@@ -173,6 +173,36 @@ export class TilemapCreationToolFacade {
     }
   }
 
+  async loadProjectFromRecent(projectId: string): Promise<TilemapProject | null> {
+    const serialized = localStorage.getItem(this.storageKey(projectId));
+    if (!serialized) {
+      this.snackBar.open('Stored project not found', 'Close', { duration: 2000 });
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(serialized) as TilemapProject;
+      this.currentProject$.next(parsed);
+      this.selectedTiles$.next([]);
+      this.snackBar.open('Project loaded', 'Close', { duration: 2000 });
+      return parsed;
+    } catch (error) {
+      console.error('Failed to parse stored project', error);
+      this.snackBar.open('Could not load project', 'Close', { duration: 2000 });
+      return null;
+    }
+  }
+
+  async loadMostRecentProject(): Promise<void> {
+    const recent = await this.loadRecentProjects();
+    if (!recent.length) {
+      this.snackBar.open('No recent projects to load', 'Close', { duration: 2000 });
+      return;
+    }
+
+    await this.loadProjectFromRecent(recent[0].id);
+  }
+
   async exportPalette(): Promise<void> {
     const project = this.currentProject$.value;
     if (!project) return;
@@ -253,9 +283,14 @@ export class TilemapCreationToolFacade {
       const limited = filtered.slice(0, 10);
 
       localStorage.setItem('recentTilemapProjects', JSON.stringify(limited));
+      localStorage.setItem(this.storageKey(projectInfo.id), this.tilemapAnalysis.saveProjectAsJson());
     } catch (error) {
       console.error('Failed to save to recent projects:', error);
     }
+  }
+
+  private storageKey(projectId: string): string {
+    return `tilemap_project_${projectId}`;
   }
 
   setDragOver(isDragOver: boolean): void {
