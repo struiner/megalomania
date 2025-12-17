@@ -1,10 +1,12 @@
-<section class="minimap" [style.width.px]="frameOuterSize" [style.maxWidth.px]="frameOuterSize">
+<section class="minimap" [style.width.px]="frameOuterSize" [style.maxWidth]="'100%'">
   <div
     class="minimap-frame"
+    [class.textured-letterbox]="usesTexturedLetterbox"
     [style.--lb-top.px]="letterboxInsets.top"
     [style.--lb-bottom.px]="letterboxInsets.bottom"
     [style.--lb-left.px]="letterboxInsets.left"
     [style.--lb-right.px]="letterboxInsets.right"
+    [style.--hud-minimap-letterbox-fill]="letterboxFillToken"
     [style.--frame-padding.px]="framePadding"
     [style.gridTemplateRows]="`${letterboxInsets.top}px ${renderSize}px ${letterboxInsets.bottom}px`"
     [style.gridTemplateColumns]="`${letterboxInsets.left}px ${renderSize}px ${letterboxInsets.right}px`"

@@ -18,6 +18,7 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Backplates**: Flat fills with subtle 1px dither using Primary Ink over Parchment or Secondary Background; no gradients or blur.
 - **Framing**: 2px brass edge (`Accent Brass`) with 1px inner shadow (`Cool Shadow`) snapped to 4px grid corners.
 - **Motifs**: Rope/cord segments allowed on pane headers and minimap frame corners; keep repeats in 12–16px steps.
+- **Minimap letterbox fills**: `--hud-minimap-letterbox-flat-fill` anchors dark primary ink for shallow gutters; `--hud-minimap-letterbox-texture` overlays a brass/ink dither for 8px+ padding to avoid flat voids on constrained renders while keeping contrast legible.
 - **Prohibitions**: No glow, bloom, or semi-transparent overlays; avoid tile repeats tighter than 12px to prevent noise on ultra-wide viewports.
 
 > TODO: Provide pixel dither swatches (2–3 patterns) sized for 2× integer scaling; requires art direction confirmation.
