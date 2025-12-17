@@ -72,7 +72,7 @@ export class TilemapService {
     return rivers;
   }
 
-  private findLowestNeighbor(tilemap: number[][], x: number, y: number): [number, number] {
+  private findLowestNeighbor(tilemap: number[][], x: number, y: number): number[] {
     let minHeight = tilemap[y][x];
     let lowest = [x, y];
     const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
