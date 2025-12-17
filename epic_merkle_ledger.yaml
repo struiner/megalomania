@@ -1,0 +1,103 @@
+epic:
+  id: merkle_ledger_v1
+  title: Merkle-Tree Ledger Blueprint (Trading Sim)
+  status: planned
+  visibility: tracked
+
+  meta:
+    purpose: implement_deterministic_event_sourced_ledger
+    non_goals_v1:
+      - distributed_consensus
+      - proof_of_work
+      - networking
+      - byzantine_fault_tolerance
+
+  principles:
+    - deterministic_given_seed_and_events
+    - append_only_immutable_ledger
+    - auditable_via_merkle_proofs
+    - event_sourced_all_state_derived
+    - domain_friendly
+
+  phases:
+    - phase: phase_1_foundations
+      description: canonicalization_hashing_and_merkle_primitives
+      goals:
+        - canonical_serialization
+        - deterministic_hashing
+        - merkle_tree_construction
+      deliverables:
+        - stable_stringify
+        - canonical_encoder
+        - hash_helpers
+        - merkle_tree_impl
+        - merkle_proof_verification
+      checks:
+        - same_input_same_root
+        - proof_verifies
+
+    - phase: phase_2_ledger_core
+      description: append_only_blocks_and_storage
+      goals:
+        - ledger_entries
+        - block_sealing
+        - hash_chain
+        - persistence_adapters
+      deliverables:
+        - entry_factory
+        - ledger_impl
+        - in_memory_store
+        - file_or_db_store
+      checks:
+        - append_only
+        - idempotent_seal
+        - block_hash_chain_valid
+
+    - phase: phase_3_views_and_queries
+      description: derived_state_and_observability
+      goals:
+        - query_api
+        - derived_views
+        - rebuildability
+        - validation_rules
+      deliverables:
+        - ledger_query_engine
+        - view_manager
+        - inventory_view
+        - cash_view
+      checks:
+        - rebuild_from_ledger
+        - no_truth_in_views
+
+  progress_tracking:
+    page: ledger_progress_dashboard
+    tracked_metrics:
+      - phase_completion
+      - block_height
+      - entry_count
+      - view_sync_status
+
+  constraints:
+    block_boundary: fixed_tick_window
+    merkle_ordering: append_order
+    ext_policy: included_in_hash
+    money_model: resource_id_based
+
+  config:
+    required:
+      - ticks_per_block
+      - deterministic_subsystem_order
+      - validation_strictness
+
+  ownership:
+    epic_owner: project_manager
+    primary_agents:
+      - ledger_engineer
+      - architecture_steward
+      - qa_test_engineer
+
+  completion_criteria:
+    - all_phases_completed
+    - determinism_tests_pass
+    - proofs_verify
+    - views_rebuild_cleanly
