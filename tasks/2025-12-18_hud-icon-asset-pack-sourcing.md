@@ -1,0 +1,41 @@
+# Task Specification — HUD Icon Asset Pack Sourcing
+
+**STATUS: NEW — requires Game Designer/Art direction decision**
+
+## Task Summary
+Select and authorize a canonical pixel icon asset pack (or sprite sheet commission) to replace placeholder glyphs used by the HUD icon component while maintaining licensing clarity.
+
+## Purpose and Scope
+- Choose a 16×16 (with 2× scale) pixel-art icon set that aligns with the Hanseatic HUD aesthetic.
+- Confirm licensing for production use (commercial-friendly, redistributable).
+- Provide a small pilot set mapped to existing HUD actions and headers.
+
+## Explicit Non-Goals
+- No direct code integration beyond referencing the chosen pack.
+- No icon animation or shader effects.
+- No redesign of the HUD icon framing component.
+
+## Fidelity & Constraints
+- **Decision/clarification fidelity**: outputs are asset selections and licensing notes.
+- Icons must respect pixel-grid integrity (integer scaling) and avoid sub-pixel smoothing.
+- Prefer etched/engraved tonality over flat glyphs to match the HUD instrument framing.
+
+## Agent Assignments
+- **Owner / Executor:** Game Designer (with Art direction support)
+- **Consulted:** Frontend Developer (technical delivery), Legal/Publishing (licensing verification)
+- **QA:** Verify accessibility contrast and fallback behavior if assets fail to load.
+
+## Deliverables
+- Named icon pack selection with licensing summary and source links.
+- Mapping table from HUD actions/headers to sprite identifiers.
+- Recommendation for fallback glyph policy if assets are unavailable.
+
+## Review Gate
+- [ ] Licensing cleared for commercial redistribution.
+- [ ] Icon tone validated against UI & Ergonomics Charter.
+- [ ] Mapping covers all current HUD icon usages.
+- **Approvers:** Project Manager + Architecture Steward; Game Designer owns aesthetic decision.
+
+## Open Questions / Clarifications
+- Should primary action icons receive a heavier bevel or color accent compared to informational headers?
+- Is a custom commission preferred over an existing pack to guarantee exclusivity?

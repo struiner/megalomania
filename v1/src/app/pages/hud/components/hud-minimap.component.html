@@ -1,0 +1,36 @@
+<section class="minimap" [style.width.px]="frameOuterSize" [style.maxWidth]="'100%'">
+  <div
+    class="minimap-frame"
+    [class.textured-letterbox]="usesTexturedLetterbox"
+    [style.--lb-top.px]="letterboxInsets.top"
+    [style.--lb-bottom.px]="letterboxInsets.bottom"
+    [style.--lb-left.px]="letterboxInsets.left"
+    [style.--lb-right.px]="letterboxInsets.right"
+    [style.--hud-minimap-letterbox-fill]="letterboxFillToken"
+    [style.--frame-padding.px]="framePadding"
+    [style.gridTemplateRows]="`${letterboxInsets.top}px ${renderSize}px ${letterboxInsets.bottom}px`"
+    [style.gridTemplateColumns]="`${letterboxInsets.left}px ${renderSize}px ${letterboxInsets.right}px`"
+    [style.width.px]="frameViewportSize"
+    [style.height.px]="frameViewportSize"
+  >
+    <div class="letterbox top" *ngIf="letterboxInsets.top"></div>
+    <div class="letterbox bottom" *ngIf="letterboxInsets.bottom"></div>
+    <div class="letterbox left" *ngIf="letterboxInsets.left"></div>
+    <div class="letterbox right" *ngIf="letterboxInsets.right"></div>
+
+    <div class="minimap-canvas" [style.gridTemplateRows]="gridTemplate" [style.gridTemplateColumns]="gridTemplate">
+      <div class="tile" *ngFor="let row of tiles; let y = index" [style.gridTemplateColumns]="gridTemplate">
+        <div class="pixel" *ngFor="let value of row; let x = index" [style.background]="'var(--shade-' + value + ')'"></div>
+      </div>
+
+      <div class="marker" *ngFor="let marker of markers" [style.left.%]="marker.x * 100" [style.top.%]="marker.y * 100">
+        <span class="glyph">{{ marker.glyph ?? '◆' }}</span>
+        <span class="sr-only">{{ marker.label }}</span>
+      </div>
+    </div>
+  </div>
+  <footer class="minimap-footer">
+    <span class="label">Minimap stub</span>
+    <span class="scale">{{ renderFootnote }}</span>
+  </footer>
+</section>

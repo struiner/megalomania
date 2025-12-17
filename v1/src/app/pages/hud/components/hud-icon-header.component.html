@@ -1,0 +1,10 @@
+<header class="hud-icon-header">
+  <app-hud-icon *ngIf="icon" [glyph]="icon" size="2x"></app-hud-icon>
+  <div class="text-block">
+    <div class="title-row">
+      <span class="title">{{ title }}</span>
+      <span class="badge" *ngIf="badge">{{ badge }}</span>
+    </div>
+    <div class="subtitle" *ngIf="subtitle">{{ subtitle }}</div>
+  </div>
+</header>

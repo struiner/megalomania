@@ -1,0 +1,9 @@
+<span
+  class="hud-icon"
+  [class.hud-icon--frameless]="!framed"
+  [style.--hud-icon-size.px]="pixelSize"
+>
+  <span class="hud-icon__frame" *ngIf="framed" aria-hidden="true"></span>
+  <span class="hud-icon__glyph" aria-hidden="true">{{ glyph || '□' }}</span>
+  <span class="sr-only" *ngIf="label">{{ label }}</span>
+</span>

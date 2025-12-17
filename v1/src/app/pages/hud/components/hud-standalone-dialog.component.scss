@@ -1,0 +1,36 @@
+.hud-dialog {
+  display: grid;
+  gap: 10px;
+  background: rgba(14, 10, 22, 0.92);
+  border: 2px solid #3d2b5c;
+  border-radius: 8px;
+  padding: 12px 12px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  color: #efe4ff;
+  outline: none;
+}
+
+.dialog-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 6px;
+}
+
+.close {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid #4a3568;
+  background: #2c1f43;
+  color: #f1e7ff;
+  font-size: 16px;
+}
+
+.dialog-body {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}

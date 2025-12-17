@@ -93,8 +93,23 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
   }
 
   onLoadProject(): void {
-    // TODO: Implement load project functionality
-    console.log('Load project requested');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      try {
+        await this.facade.loadProjectFromFile(file);
+        this.selectedTabIndex = 1;
+      } catch (error) {
+        console.error('Failed to load project', error);
+      }
+    };
+
+    input.click();
   }
 
   onSaveProject(): void {
@@ -204,8 +219,12 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
   }
 
   async onLoadRecentProject(project: any): Promise<void> {
-    // This would load the project from filesystem
-    console.log('Loading recent project:', project);
+    if (!project) return;
+
+    const projectData = project.data || project;
+
+    this.facade.loadProjectFromSelection(projectData);
+    this.selectedTabIndex = 1;
   }
 
   async onImportProject(): Promise<void> {

@@ -1,0 +1,51 @@
+:host {
+  --bottom-hud-height: 160px;
+  --hud-safe-area-inset: max(env(safe-area-inset-bottom, 0px), 0px);
+}
+
+.bottom-hud {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: var(--bottom-hud-height);
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 360px) 1fr minmax(192px, 208px);
+  gap: 8px;
+  padding: 8px 16px calc(12px + var(--hud-safe-area-inset));
+  width: 100%;
+  background: linear-gradient(180deg, rgba(11, 7, 20, 0.94) 0%, rgba(6, 4, 12, 0.98) 80%);
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.45);
+  align-items: stretch;
+  box-sizing: border-box;
+  z-index: 8;
+  /* TODO: Confirm whether safe-area inset should be overridable per embedding surface. */
+}
+
+.pane-region {
+  display: flex;
+  align-items: center;
+}
+
+.button-region {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minimap-region {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1200px) {
+  .bottom-hud {
+    grid-template-columns: 1fr minmax(288px, 320px) 1fr minmax(160px, 192px);
+  }
+}
+
+@media (max-width: 960px) {
+  .bottom-hud {
+    grid-template-columns: 1fr minmax(264px, 288px) 1fr minmax(144px, 168px);
+  }
+}

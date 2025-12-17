@@ -1,0 +1,56 @@
+# Task Specification — HUD Info Pane Framework
+
+**STATUS: COMPLETE — verified at HUD Epic Phase 2 review; no remaining open items.**
+
+## Task Summary
+Establish left/right secondary info pane scaffolding within the HUD for peripheral data (statuses, summaries) at **Structural fidelity**.
+
+## Purpose and Scope
+- Provide panel shells that can host contextual info (resources, party status) without implementing data sources.
+- Define sizing, margins, and typographic constraints consistent with peripheral attention and pixel integrity.
+- Offer slot/content projection APIs so panes can be populated by future tasks.
+
+## Explicit Non-Goals
+- No live data wiring, sorting logic, or computed gameplay summaries.
+- No complex typography or decorative frames beyond clear hierarchy cues.
+- No animations or collapsible behaviors in this stage.
+
+## Fidelity & Constraints
+- Structural-only: placeholder text/blocks permitted; emphasize readability and restraint.
+- Respect UI & Ergonomics attention hierarchy: panes are peripheral, unobtrusive, and stable.
+- Avoid truth ownership: panes display passed-in view models; no calculations inside.
+
+## Agent Assignments
+- **Owner / Executor:** Frontend Developer
+- **Design Intent Blurb (Game Designer):** Panes should feel like ledger margins—concise, glanceable, with crisp pixel-aligned dividers; avoid visual weight that competes with world view.
+- **Architecture Steward:** Check for separation of concerns and over-abstraction.
+- **QA:** Validate consistent spacing and visibility at common resolutions.
+
+## Deliverables
+- Angular components for left/right info panes with slot/content-projection support and documented input contracts.
+- SCSS defining padding, typography scale (integer-friendly), and divider rules.
+- Inline documentation on recommended content types and limits (counts, short labels).
+
+## Review Gate
+- [x] Pane placement honors peripheral attention and symmetry rules.
+- [x] No embedded computations or gameplay logic.
+- [x] Structural fidelity demonstrated with placeholders and documented APIs.
+- **Approvers:** Architecture Steward + Project Manager; Game Designer optional for tone.
+
+## Dependencies & Sequencing
+- Depends on: Bottom HUD layout skeleton for anchoring regions.
+- Can run in parallel with button grid and minimap tasks.
+
+## Open Questions / Clarifications
+- Should panes reserve header areas for icons/titles, or remain minimalist labels?
+    Answer: Yes, this will be referenced in another epic for generic icon functionality integration, to be included as specific TODO comments.
+- Expected maximum width per pane before it threatens central world focus?
+    Answer: 40% of the viewport
+
+## Review Notes (Architecture Steward)
+- Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
+- Findings:
+  - Structural fidelity remains appropriate per the Level of Detail & Abstraction Charter; keep APIs thin and content-projected.
+  - Peripheral placement, symmetry, and pixel alignment adhere to the UI & Ergonomics Charter; enforce the 40% width guardrail to protect world focus.
+  - No additional recursion layers are needed; avoid nested pane abstractions beyond the current slots.
+- Required Amendments: Keep header/icon TODO markers explicit and document stub data to prevent UI truth ownership.

@@ -1,0 +1,11 @@
+<section class="info-pane" [class.align-right]="align === 'right'">
+  <app-hud-icon-header
+    [title]="content.heading"
+    [subtitle]="content.subtitle"
+    [icon]="content.icon"
+    [badge]="content.badge"
+  ></app-hud-icon-header>
+  <ul class="info-list">
+    <li *ngFor="let item of content.items">{{ item }}</li>
+  </ul>
+</section>

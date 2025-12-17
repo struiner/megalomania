@@ -1,0 +1,12 @@
+<section class="button-grid" role="group" aria-label="HUD actions">
+  <button
+    *ngFor="let action of actions; let idx = index"
+    type="button"
+    class="hud-button"
+    [attr.data-slot]="idx"
+    (click)="onAction(action)"
+  >
+    <app-hud-icon [glyph]="action.icon || '⬜'" [label]="action.label" size="2x"></app-hud-icon>
+    <span class="hud-label">{{ action.label }}</span>
+  </button>
+</section>

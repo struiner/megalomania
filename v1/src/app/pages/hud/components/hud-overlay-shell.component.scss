@@ -1,0 +1,51 @@
+.overlay-shell {
+  position: fixed;
+  bottom: calc(var(--bottom-hud-height, 160px) + var(--hud-gap, 16px) + var(--hud-safe-area-inset, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 440px;
+  max-width: 720px;
+  color: #efe4ff;
+  z-index: 9;
+}
+
+.overlay-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 0;
+  cursor: grab;
+}
+
+.overlay-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: #1f1631;
+  color: #e7daff;
+  border: 2px solid #34254e;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+
+.tab.active {
+  background: #2a1d44;
+  border-color: #6f57a9;
+}
+
+.tab:disabled {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.overlay-hint {
+  margin: 0 0 4px;
+  opacity: 0.78;
+  font-size: 12px;
+}
