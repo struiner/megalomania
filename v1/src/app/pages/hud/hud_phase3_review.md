@@ -25,12 +25,13 @@ Phase 3 surfaced clarifications that must be handled as new tasks (see `tasks/20
 ### Phase 3 Outputs (this iteration)
 - Theme tokens captured in `hud-theme-foundations.md`; remaining TODOs: font licensing, dither swatches, warning/alert accessibility variants.
 - Retrofit audit + hook plan recorded in `hud-theme-retrofit-checklist.md`; follow-up tasks opened for icon pilot set, texture swatches, and accessibility palette validation.
-- Minimap scaling policy codified in `hud-minimap.component.ts` (scale clamp + snapping) with README summary; TODO for letterboxing vs. resampling on constrained devices.
+- Minimap scaling policy codified in `hud-minimap.component.ts` (scale clamp + snapping) with README summary; letterboxing now cushions undersized renders with TODO for fill treatment on constrained devices.
 - Auxiliary dialog wiring now deterministic (CTA routes for settings/help) with TODO to confirm final ownership and fallback display rules.
+- Shared icon framing (`HudIconComponent`) added to button grid + headers to enforce consistent sizing; asset pack + bevel rules remain open for design confirmation.
 
 ## Outstanding Clarifications (tracked via TODOs)
 - Auxiliary dialog destinations and CTA routing ownership in `hud-page.component.ts`.
-- Minimap pixel density, scale clamping, and resolution policy in `hud-minimap.component.ts`.
+- Minimap letterbox fill treatment and low-resolution policy in `hud-minimap.component.ts`.
 
 ## Exit Notes
 - No gameplay truth was added or derived in Phase 3; work remains UI-structural.

@@ -49,7 +49,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
   protected overlayPanels: HudPanelDefinition[] = HUD_OVERLAY_PANELS;
 
   private readonly auxiliaryTargets: Record<string, AuxiliaryActionTarget> = {
-    // TODO: Task 2025-12-18_hud-auxiliary-destination-clarification — confirm final destinations and CTA routing ownership.
+    // TODO: Task 2025-12-18_hud-auxiliary-dialog-ownership-clarification — confirm final destinations and CTA routing ownership.
     settings: {
       type: 'dialog',
       dialog: {

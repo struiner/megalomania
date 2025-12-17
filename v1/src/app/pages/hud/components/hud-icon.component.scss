@@ -1,0 +1,49 @@
+:host {
+  display: inline-grid;
+}
+
+.hud-icon {
+  --hud-icon-size: 16px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--hud-icon-size);
+  height: var(--hud-icon-size);
+  color: #f3e9ff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  image-rendering: pixelated;
+}
+
+.hud-icon__frame {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #3c2b59;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #1e1434, #24193b);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.hud-icon--frameless .hud-icon__frame {
+  display: none;
+}
+
+.hud-icon__glyph {
+  position: relative;
+  font-size: calc(var(--hud-icon-size) * 0.7);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

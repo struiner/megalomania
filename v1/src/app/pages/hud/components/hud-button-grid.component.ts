@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { HudIconComponent } from './hud-icon.component';
 
 export interface HudAction {
   id: string;
@@ -10,7 +11,7 @@ export interface HudAction {
 @Component({
   selector: 'app-hud-button-grid',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HudIconComponent],
   templateUrl: './hud-button-grid.component.html',
   styleUrls: ['./hud-button-grid.component.scss'],
 })

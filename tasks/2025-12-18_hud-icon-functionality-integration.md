@@ -1,6 +1,6 @@
 # Task Specification — HUD Icon Functionality Integration
 
-**STATUS: PENDING — referenced by multiple completed tasks as prerequisite for header/icon functionality**
+**STATUS: COMPLETED (functional integration) — asset/bevel decisions pending**
 
 ## Task Summary
 Implement the generic icon functionality that was referenced in multiple HUD component tasks as a prerequisite for header areas, button icons, and pane decorations.
@@ -45,3 +45,4 @@ Implement the generic icon functionality that was referenced in multiple HUD com
 ## Open Questions / Clarifications
 - Original: "Preferred default icon size (e.g., 16×16 vs 24×24) given pixel heritage?"
 - Additional: Should icon treatment vary between primary actions (buttons) and secondary information (headers)?
+- New: Confirm asset pack/sprite source to replace placeholder glyphs in `HudIconComponent` while keeping licensing clear.

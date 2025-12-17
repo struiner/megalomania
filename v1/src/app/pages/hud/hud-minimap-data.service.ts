@@ -29,7 +29,7 @@ export class HudMinimapDataService {
     const preview = this.tilemapService.generateTilemapPreview(this.seed, this.tilesPerAxis);
     const tiles = preview.tilemap.map((row) => row.map((height) => this.normalizeHeight(height)));
 
-    // TODO: Select fixture markers with Game Designer input (biome centers, settlements, etc.).
+    // TODO: Select fixture markers with Game Designer input (biome centers, settlements, etc.). Track via task 2025-12-18_hud-minimap-marker-fixtures.
     const markers: HudMinimapMarker[] = [
       { label: 'Origin', x: 0.5, y: 0.5, glyph: '✦' },
       { label: 'Harbor stub', x: 0.32, y: 0.68, glyph: '⚓' },

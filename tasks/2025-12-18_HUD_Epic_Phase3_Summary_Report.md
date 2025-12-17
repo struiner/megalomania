@@ -47,6 +47,10 @@ Phase 3 of the HUD Epic has been successfully completed. All 21 planned HUD foun
    - Resolves routing strategy for auxiliary actions
    - Establishes clear ownership boundaries
 
+### ✅ Follow-up Execution Progress (post-review)
+- Icon framing integrated across HUD headers and button grid; awaiting asset pack/bevel decisions.
+- Minimap letterboxing implemented to cushion undersized renders; fill treatment still pending design call.
+
 ## Charter Compliance Review
 
 ### ✅ UI & Ergonomics Charter
