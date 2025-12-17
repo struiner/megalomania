@@ -43,6 +43,19 @@ export class HudAvailabilityService {
     }
 
     if (panel.requiresInit && !snapshot.initializedPanels.has(panel.id)) {
+    const capability = this.capabilities.getPanelCapability(panel.id);
+    const featureFlag = panel.featureFlag ?? capability?.featureFlag;
+    const requiresInit = panel.requiresInit ?? capability?.requiresInit;
+
+    if (featureFlag && !this.capabilities.getFeatureFlag(featureFlag)) {
+      return {
+        allowed: false,
+        blockedBy: 'featureFlag',
+        reason: `${panel.label} is gated by feature flag ${featureFlag}.`,
+      };
+    }
+
+    if (requiresInit && !this.capabilities.isPanelInitialized(panel.id)) {
       return {
         allowed: false,
         blockedBy: 'initialization',

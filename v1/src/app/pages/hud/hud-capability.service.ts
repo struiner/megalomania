@@ -3,6 +3,30 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HudCapabilityProvider } from './hud-capability.provider';
 import { HudCapabilityResolution, HudCapabilitySnapshot } from './hud-capability.models';
 
+export interface HudPanelCapabilityRequirement {
+  featureFlag?: string;
+  requiresInit?: boolean;
+}
+
+export const HUD_PANEL_CAPABILITY_REGISTRY: Record<string, HudPanelCapabilityRequirement> = {
+  inventory: { featureFlag: 'inventory', requiresInit: true },
+  ledger: { featureFlag: 'ledger', requiresInit: true },
+  map: { featureFlag: 'map', requiresInit: true },
+  crew: { featureFlag: 'crew', requiresInit: true },
+  trade: { featureFlag: 'trade', requiresInit: true },
+  quests: { featureFlag: 'quests', requiresInit: true },
+};
+
+function createDefaultFeatureFlags(): Record<string, boolean> {
+  return Object.values(HUD_PANEL_CAPABILITY_REGISTRY).reduce((flags, requirement) => {
+    if (requirement.featureFlag) {
+      flags[requirement.featureFlag] = true;
+    }
+
+    return flags;
+  }, {} as Record<string, boolean>);
+}
+
 @Injectable({ providedIn: 'root' })
 export class HudCapabilityService {
   private readonly resolution$ = new BehaviorSubject<HudCapabilityResolution>(
@@ -10,6 +34,11 @@ export class HudCapabilityService {
   );
   private readonly loading$ = new BehaviorSubject<boolean>(true);
   private readonly error$ = new BehaviorSubject<string | null>(null);
+  // TODO: Replace hardcoded defaults with authoritative capability feed (ledger/config backed).
+  private snapshot: HudCapabilitySnapshot = {
+    featureFlags: createDefaultFeatureFlags(),
+    initializedPanels: new Set<string>(['inventory', 'ledger', 'map']),
+  };
 
   constructor(private readonly provider: HudCapabilityProvider) {
     this.bootstrap();
@@ -39,6 +68,11 @@ export class HudCapabilityService {
 
   isPanelInitialized(panelId: string): boolean {
     return this.resolution$.value.snapshot.initializedPanels.has(panelId);
+  updateSnapshot(partial: Partial<HudCapabilitySnapshot>): void {
+    this.snapshot = {
+      featureFlags: partial.featureFlags ? { ...this.snapshot.featureFlags, ...partial.featureFlags } : this.snapshot.featureFlags,
+      initializedPanels: partial.initializedPanels ?? this.snapshot.initializedPanels,
+    };
   }
 
   getSnapshot(): HudCapabilitySnapshot {
@@ -70,5 +104,7 @@ export class HudCapabilityService {
 
   isFallback(): boolean {
     return this.resolution$.value.fallback;
+  getPanelCapability(panelId: string): HudPanelCapabilityRequirement | undefined {
+    return HUD_PANEL_CAPABILITY_REGISTRY[panelId];
   }
 }

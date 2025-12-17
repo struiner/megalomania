@@ -3,6 +3,16 @@
   --shade-1: #1e1434;
   --shade-2: #30214d;
   --shade-3: #4b3470;
+  --hud-minimap-letterbox-flat-fill: #14122b;
+  --hud-minimap-letterbox-texture: repeating-linear-gradient(
+      135deg,
+      rgba(192, 138, 59, 0.2) 0px,
+      rgba(192, 138, 59, 0.2) 8px,
+      rgba(27, 36, 51, 0.48) 8px,
+      rgba(27, 36, 51, 0.48) 16px
+    ),
+    var(--hud-minimap-letterbox-flat-fill);
+  --hud-minimap-letterbox-contrast-stroke: rgba(240, 228, 194, 0.22);
 }
 
 .minimap {
@@ -24,6 +34,7 @@
   --lb-bottom: 0px;
   --lb-left: 0px;
   --lb-right: 0px;
+  --hud-minimap-letterbox-fill: var(--hud-minimap-letterbox-flat-fill);
   position: relative;
   display: grid;
   grid-template-rows: var(--lb-top) 1fr var(--lb-bottom);
@@ -38,10 +49,15 @@
 
 
 .letterbox {
-  background: #120c1f;
-  opacity: 0.9;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  background: var(--hud-minimap-letterbox-fill, var(--hud-minimap-letterbox-flat-fill));
+  opacity: 0.95;
+  box-shadow: inset 0 0 0 1px var(--hud-minimap-letterbox-contrast-stroke);
   image-rendering: pixelated;
+  background-size: 16px 16px;
+}
+
+.textured-letterbox {
+  --hud-minimap-letterbox-fill: var(--hud-minimap-letterbox-texture);
 }
 
 .top {
