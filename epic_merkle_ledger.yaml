@@ -1,7 +1,7 @@
 epic:
   id: merkle_ledger_v1
   title: Merkle-Tree Ledger Blueprint (Trading Sim)
-  status: planned
+  status: in_progress
   visibility: tracked
 
   meta:
@@ -22,6 +22,7 @@ epic:
   phases:
     - phase: phase_1_foundations
       description: canonicalization_hashing_and_merkle_primitives
+      status: complete
       goals:
         - canonical_serialization
         - deterministic_hashing
@@ -35,6 +36,11 @@ epic:
       checks:
         - same_input_same_root
         - proof_verifies
+      verification:
+        evidence:
+          - stable_stringify: implemented in v1/src/app/services/ledger/merkle-primitives.ts
+          - merkle_proofs: exercised in v1/src/app/services/ledger/merkle-primitives.spec.ts
+        notes: Phase-one primitives produce deterministic roots and verifiable proofs under the TREE_TAG guardrail.
 
     - phase: phase_2_ledger_core
       description: append_only_blocks_and_storage

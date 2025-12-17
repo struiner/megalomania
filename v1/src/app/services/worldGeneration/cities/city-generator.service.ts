@@ -176,7 +176,7 @@ export class CityGeneratorService {
 
   private generateSettlementName(rand: () => number): string {
 
-    //TODO: nameServiceDI
+    // Task name_service_di: inject naming service for settlements (see tasks_backlog.yaml)
     const roots = ['Port', 'Lake', 'Stone', 'Bay', 'Shore', 'Cliff', 'North', 'South', 'East', 'West'];
     const suffixes = ['ton', 'ville', 'stead', 'burg', 'mouth', 'ford', 'haven', 'holm'];
     return `${roots[Math.floor(rand() * roots.length)]}${suffixes[Math.floor(rand() * suffixes.length)]}`;

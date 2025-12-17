@@ -93,7 +93,7 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
   }
 
   onLoadProject(): void {
-    // TODO: Implement load project functionality
+    // Task load_project_flow: implement load project functionality (see tasks_backlog.yaml)
     console.log('Load project requested');
   }
 
