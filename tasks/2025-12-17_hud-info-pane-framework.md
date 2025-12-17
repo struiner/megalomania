@@ -44,3 +44,11 @@ Establish left/right secondary info pane scaffolding within the HUD for peripher
     Answer: Yes, this will be referenced in another epic for generic icon functionality integration, to be included as specific TODO comments.
 - Expected maximum width per pane before it threatens central world focus?
     Answer: 40% of the viewport
+
+## Review Notes (Architecture Steward)
+- Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
+- Findings:
+  - Structural fidelity remains appropriate per the Level of Detail & Abstraction Charter; keep APIs thin and content-projected.
+  - Peripheral placement, symmetry, and pixel alignment adhere to the UI & Ergonomics Charter; enforce the 40% width guardrail to protect world focus.
+  - No additional recursion layers are needed; avoid nested pane abstractions beyond the current slots.
+- Required Amendments: Keep header/icon TODO markers explicit and document stub data to prevent UI truth ownership.

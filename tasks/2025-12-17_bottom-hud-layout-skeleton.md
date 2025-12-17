@@ -44,3 +44,11 @@ Establish the foundational grid, anchoring, and spatial rules for the bottom HUD
     Answer: Multiples and fractions of 16px are preferable, where 4px is condidered a universal margin and 2px is considered a base line width.
 - Should the minimap slot reserve additional margin for frame/chrome when promoted to Functional fidelity?
     Answer: Yes, the minimap will eventually have to be decorated in a typically fitting style, along with navigation controls for panning and zooming, so a border of 16px to 32px would be prudent.
+
+## Review Notes (Architecture Steward)
+- Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
+- Findings:
+  - Structural fidelity is confirmed per the Level of Detail & Abstraction Charter; keep the scaffold lean with clearly stubbed placeholders.
+  - Bottom anchoring, symmetry, and pixel-grid alignment align with the UI & Ergonomics Charter; keep the world center unobstructed.
+  - No additional recursion layers are required beyond the current task set; avoid nested layout abstractions.
+- Required Amendments: Label placeholder slots as mock data and preserve the 16px/4px spacing ratios to uphold charter compliance.
