@@ -34,6 +34,13 @@ export class LedgerVerificationComponent implements OnInit {
   proofPath: MerkleProofStep[] = [];
   verificationState: 'idle' | 'verifying' | 'valid' | 'invalid' = 'idle';
 
+  getPayloadType(payload: unknown): string {
+    if (payload && typeof payload === 'object' && 'type' in payload) {
+      return String((payload as any).type);
+    }
+    return 'unknown';
+  }
+
   async ngOnInit(): Promise<void> {
     await this.prepareSampleLedger();
   }
@@ -80,7 +87,8 @@ export class LedgerVerificationComponent implements OnInit {
   }
 
   private async buildBlockView(height: number, entries: Omit<LedgerEntryView, 'leafHash'>[]): Promise<LedgerBlockView> {
-    const tree = await MerkleTree.fromValues(entries.map(e => ({ ...e.payload, timestamp: e.timestamp })), this.treeTag);
+    // Simple fix: cast payload to object before spreading
+    const tree = await MerkleTree.fromValues(entries.map(e => ({ ...(e.payload as object), timestamp: e.timestamp })), this.treeTag);
     const proofs: Record<string, MerkleProof> = {};
 
     const entriesWithHashes: LedgerEntryView[] = entries.map((entry, index) => {

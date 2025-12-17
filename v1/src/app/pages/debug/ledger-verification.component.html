@@ -35,15 +35,15 @@
       <div *ngIf="selectedBlock; else noBlock" class="detail">
         <div class="stat">
           <span class="label">Height</span>
-          <span class="value">{{ selectedBlock?.height }}</span>
+          <span class="value">{{ selectedBlock.height }}</span>
         </div>
         <div class="stat">
           <span class="label">Hash</span>
-          <span class="value monospace">{{ selectedBlock?.hash }}</span>
+          <span class="value monospace">{{ selectedBlock.hash }}</span>
         </div>
         <div class="stat">
           <span class="label">Merkle root</span>
-          <span class="value monospace">{{ selectedBlock?.merkleRoot }}</span>
+          <span class="value monospace">{{ selectedBlock.merkleRoot }}</span>
         </div>
       </div>
       <ng-template #noBlock>
@@ -68,7 +68,7 @@
         <tbody>
           <tr *ngFor="let entry of selectedBlock.entries" (click)="selectEntry(entry)" [class.active]="entry === selectedEntry">
             <td class="monospace">{{ entry.id }}</td>
-            <td>{{ (entry.payload as any)?.type || 'unknown' }}</td>
+            <td>{{ getPayloadType(entry.payload) }}</td>
             <td>{{ entry.timestamp }}</td>
             <td class="monospace">{{ entry.leafHash | slice:0:16 }}…</td>
           </tr>
@@ -83,7 +83,7 @@
         <small>Deterministic verification</small>
       </div>
       <div *ngIf="selectedEntry; else noEntry" class="proof-steps">
-        <p class="monospace">Leaf: {{ selectedEntry?.leafHash }}</p>
+        <p class="monospace">Leaf: {{ selectedEntry.leafHash }}</p>
         <ol>
           <li *ngFor="let step of proofPath; let i = index">
             <div class="step-label">Step {{ i + 1 }}</div>
