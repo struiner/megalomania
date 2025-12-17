@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { SimplexNoise } from 'simplex-noise';
+import { createNoise2D } from 'simplex-noise';
 import seedrandom from 'seedrandom';
 
 @Injectable({ providedIn: 'root' })
 export class TilemapService {
   private size = 2048;
   private seaLevel = 0.5;
-  private simplex1: SimplexNoise;
-  private simplex2: SimplexNoise;
+  private simplex1!: (x: number, y: number) => number;
+  private simplex2!: (x: number, y: number) => number;
 
   constructor() {}
 
   generateTilemap(seed: string) {
     const rng = seedrandom(seed);
-    this.simplex1 = new SimplexNoise(rng);
-    this.simplex2 = new SimplexNoise(rng);
+    this.simplex1 = createNoise2D(rng);
+    this.simplex2 = createNoise2D(rng);
     const tilemap = new Array(this.size).fill(null).map(() => new Array(this.size).fill(0));
     
     for (let y = 0; y < this.size; y++) {
@@ -41,8 +41,8 @@ export class TilemapService {
     let maxAmplitude = 0;
 
     for (let i = 0; i < 5; i++) { // Multi-octave noise for ruggedness
-      elevation += amplitude * this.simplex1.noise2D(x * frequency, y * frequency);
-      elevation += amplitude * this.simplex2.noise2D((x - y) * frequency, (x + y) * frequency); // Rotated 45°
+      elevation += amplitude * this.simplex1(x * frequency, y * frequency);
+      elevation += amplitude * this.simplex2((x - y) * frequency, (x + y) * frequency); // Rotated 45°
       maxAmplitude += amplitude;
       frequency *= 2;
       amplitude *= 0.5;
@@ -125,8 +125,8 @@ export class TilemapService {
 
   generateTilemapPreview(seed: string, size = 64) {
     const rng = seedrandom(seed);
-    const simplex1 = new SimplexNoise(rng);
-    const simplex2 = new SimplexNoise(rng);
+    const simplex1 = createNoise2D(rng);
+    const simplex2 = createNoise2D(rng);
     const tilemap = new Array(size).fill(null).map(() => new Array(size).fill(0));
 
     const generateElevation = (x: number, y: number): number => {
@@ -136,8 +136,8 @@ export class TilemapService {
       let maxAmplitude = 0;
 
       for (let i = 0; i < 5; i++) {
-        elevation += amplitude * simplex1.noise2D(x * frequency, y * frequency);
-        elevation += amplitude * simplex2.noise2D((x - y) * frequency, (x + y) * frequency);
+        elevation += amplitude * simplex1(x * frequency, y * frequency);
+        elevation += amplitude * simplex2((x - y) * frequency, (x + y) * frequency);
         maxAmplitude += amplitude;
         frequency *= 2;
         amplitude *= 0.5;
