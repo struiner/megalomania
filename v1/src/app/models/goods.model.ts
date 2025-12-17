@@ -129,7 +129,7 @@ export enum Era {
   Hybridic = "Hybridic",          // Example: Mixed-species or blended-technology societies
   Otherworldly = "Otherworldly"   // Example: Weird, alien-intuition settlements
 
-  //TODO: Implement randomized nicely alliterating suffixes, for uniqueness between cultures/species.
+  // Task goods_alliterating_suffixes: implement randomized nicely alliterating suffixes for uniqueness between cultures/species (see tasks_backlog.yaml).
 }
 
 export enum GoodCategory {

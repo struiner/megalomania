@@ -1,0 +1,18 @@
+tasks:
+  - id: goods_alliterating_suffixes
+    status: todo
+    summary: Implement randomized alliterating suffix generator to differentiate goods by culture/species.
+    location: v1/src/app/models/goods.model.ts
+    notes: Leverage culture/species metadata to vary suffix selection while keeping determinism where needed.
+
+  - id: name_service_di
+    status: todo
+    summary: Replace inline settlement name roots/suffixes with injected naming service for configurability.
+    location: v1/src/app/services/worldGeneration/cities/city-generator.service.ts
+    notes: Keep deterministic generation based on seedable RNG to align with world generation constraints.
+
+  - id: load_project_flow
+    status: todo
+    summary: Implement loading of saved SDK tile map projects within the TileMapCreator dialog.
+    location: v1/src/app/components/sdk/tile-map-creator/tile-map-creator.component.ts
+    notes: Wire to facade persistence and ensure selections/state restore correctly for editing.
