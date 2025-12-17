@@ -224,10 +224,53 @@ export class TilemapCreationToolFacade {
     try {
       // This would typically load from filesystem or local storage
       const recentProjects = JSON.parse(localStorage.getItem('recentTilemapProjects') || '[]');
-      return recentProjects.slice(0, 5); // Return last 5 projects
+      return recentProjects
+        .map((entry: any) => {
+          if (!entry.data) {
+            return entry;
+          }
+
+          try {
+            // Validate eagerly so the selector never shows incompatible projects
+            const validated = this.validateProjectSchema(entry.data);
+            return { ...entry, data: validated };
+          } catch (schemaError) {
+            console.warn('Skipping incompatible recent project', schemaError);
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .slice(0, 5); // Return last 5 projects
     } catch (error) {
       console.error('Failed to load recent projects:', error);
       return [];
+    }
+  }
+
+  async loadProjectFromFile(file: File): Promise<void> {
+    try {
+      const projectText = await file.text();
+      const parsed = JSON.parse(projectText);
+      const validated = this.validateProjectSchema(parsed);
+      this.hydrateProject(validated);
+      this.saveToRecentProjects(validated);
+      this.snackBar.open(`Loaded project "${validated.config.name}"`, 'Close', { duration: 3000 });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.snackBar.open(`Failed to load project: ${message}`, 'Close', { duration: 4000 });
+      throw error;
+    }
+  }
+
+  loadProjectFromSelection(project: any): void {
+    try {
+      const validated = this.validateProjectSchema(project);
+      this.hydrateProject(validated);
+      this.saveToRecentProjects(validated);
+      this.snackBar.open(`Loaded project "${validated.config.name}"`, 'Close', { duration: 3000 });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.snackBar.open(`Failed to load project: ${message}`, 'Close', { duration: 4000 });
     }
   }
 
@@ -240,7 +283,8 @@ export class TilemapCreationToolFacade {
         description: project.config.description,
         tiles: project.tiles.length,
         modified: Date.now(),
-        id: project.config.id
+        id: project.config.id,
+        data: project
       };
 
       // Remove existing entry if it exists
@@ -280,6 +324,11 @@ export class TilemapCreationToolFacade {
 
   updateProject(project: TilemapProject): void {
     this.currentProject$.next(project);
+  }
+
+  private hydrateProject(project: TilemapProject): void {
+    this.currentProject$.next(project);
+    this.selectedTiles$.next([]);
   }
 
   private initializeSubscriptions(): void {
@@ -361,5 +410,91 @@ export class TilemapCreationToolFacade {
     ]);
 
     return [headers, ...rows].map(row => row.map((cell: string | number | undefined) => `"${cell}"`).join(',')).join('\n');
+  }
+
+  private validateProjectSchema(candidate: any): TilemapProject {
+    if (!candidate || typeof candidate !== 'object') {
+      throw new Error('Project payload must be an object');
+    }
+
+    if (!candidate.config || typeof candidate.config !== 'object') {
+      throw new Error('Project config is missing');
+    }
+
+    const { config } = candidate;
+    const requiredNumericFields = ['tileWidth', 'tileHeight', 'marginX', 'marginY', 'spacingX', 'spacingY'];
+
+    if (!config.name || typeof config.name !== 'string') {
+      throw new Error('Project config.name is required');
+    }
+
+    requiredNumericFields.forEach(field => {
+      if (typeof config[field] !== 'number') {
+        throw new Error(`Project config.${field} must be a number`);
+      }
+    });
+
+    if (!Array.isArray(candidate.tiles) || candidate.tiles.length === 0) {
+      throw new Error('Project tiles are missing');
+    }
+
+    const normalizedTiles = candidate.tiles.map((tile: any) => {
+      const requiredTileFields: Array<keyof TileInfo> = ['id', 'gridX', 'gridY', 'pixelX', 'pixelY', 'width', 'height'];
+      requiredTileFields.forEach(field => {
+        if (typeof tile[field] === 'undefined') {
+          throw new Error(`Tile is missing required field: ${String(field)}`);
+        }
+      });
+
+      if (typeof tile.id !== 'string') {
+        throw new Error('Tile id must be a string');
+      }
+
+      const metadata = tile.metadata || {};
+
+      return {
+        ...tile,
+        name: tile.name || tile.id,
+        tags: Array.isArray(tile.tags) ? tile.tags : [],
+        metadata: {
+          cost: typeof metadata.cost === 'number' ? metadata.cost : 0,
+          rarity: metadata.rarity ?? 'common',
+          unlockLevel: metadata.unlockLevel,
+          season: metadata.season,
+          animated: metadata.animated,
+          frames: metadata.frames
+        }
+      } as TileInfo;
+    });
+
+    const normalizedConfig = {
+      id: config.id || config.name,
+      description: config.description,
+      imageUrl: config.imageUrl,
+      imageWidth: config.imageWidth,
+      imageHeight: config.imageHeight,
+      tileWidth: config.tileWidth,
+      tileHeight: config.tileHeight,
+      marginX: config.marginX,
+      marginY: config.marginY,
+      spacingX: config.spacingX,
+      spacingY: config.spacingY,
+      tilesPerRow: typeof config.tilesPerRow === 'number' ? config.tilesPerRow : config.tilesPerRow === 0 ? 0 : normalizedTiles.length,
+      tilesPerColumn: typeof config.tilesPerColumn === 'number' ? config.tilesPerColumn : config.tilesPerColumn === 0 ? 0 : normalizedTiles.length,
+      exportFormat: config.exportFormat || candidate.metadata?.exportFormat || 'json',
+      name: config.name
+    } as TilemapProject['config'];
+
+    const normalizedMetadata = {
+      exportFormat: candidate.metadata?.exportFormat || normalizedConfig.exportFormat
+    } as TilemapProject['metadata'];
+
+    return {
+      config: normalizedConfig,
+      metadata: normalizedMetadata,
+      tiles: normalizedTiles,
+      categories: Array.isArray(candidate.categories) ? candidate.categories : [],
+      subcategories: candidate.subcategories || {}
+    };
   }
 }
