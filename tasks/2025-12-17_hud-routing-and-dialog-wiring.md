@@ -44,3 +44,15 @@ Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without a
     Answer: Multiple completely overlapping panels, where active panels are indicated with a tab.
 - Should routes use guarded entry (e.g., feature flags) or stay open for now?
     Answer: Let routes remain open for now, adding a TODO for more generic dynamic route guarding and it's indication.
+
+## Decision Notes — HUD overlay vs. tabbing vs. stacking
+- **Single overlay (baseline):** Keeps world visibility highest and simplifies focus/esc flows, but makes multi-context work (e.g., toggling ledger + map filters) feel serialized.
+- **Tabbed multi-panel within one overlay (recommended):** Preserves world view by constraining footprint to one overlay frame while allowing fast context switching without extra stacking. Active tab is visually indicated; inactive tabs stay mounted but hidden to avoid reflows during Phase 2 routing. Tabs map cleanly to routes (`/hud/<panel>`) and reuse a common shell/backdrop.
+- **Stacked modals:** Rejected for baseline because they obscure the viewport, complicate z-order/focus, and encourage modal nesting that fights the UI & Ergonomics Charter.
+
+**Chosen model:** Use a single overlay shell with an integrated tab strip; only one overlay is visible at a time. HUD triggers route to the overlay and select the corresponding tab. World remains partially visible behind a restrained backdrop (no full-screen scrim), aligning with the HUD epic goal of preserving situational awareness.
+
+**Close behavior (for Phase 2 routing):**
+- Close/back always returns to the prior HUD route or clears the overlay route when invoked from the top-level HUD.
+- ESC and clicking the shell close affordance both collapse the overlay and restore focus to the originating HUD control.
+- Route-driven state: closing removes the `/hud/<panel>` segment; tab switches change only the terminal segment without re-instantiating the overlay shell.
