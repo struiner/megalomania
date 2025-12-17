@@ -1,5 +1,7 @@
 # Task Specification — HUD Standalone Dynamic Dialog
 
+**STATUS: COMPLETE — structural dialog shell implemented and wired into the HUD overlay.**
+
 ## Task Summary
 Implement a reusable, standalone dynamic dialog shell that can be referenced by `hud-page.component` to host context-specific content without coupling presentation to gameplay logic. Target **Structural fidelity** to unblock later functional wiring.
 
@@ -31,9 +33,9 @@ Implement a reusable, standalone dynamic dialog shell that can be referenced by 
 - Inline README notes documenting usage from HUD routes and buttons.
 
 ## Review Gate
-- [ ] Dialog shell is stateless and free of gameplay logic.
-- [ ] ESC/close affordances return users to prior HUD route without state leakage.
-- [ ] Layout and padding align with the UI & Ergonomics Charter (integer scaling, minimal chrome).
+- [x] Dialog shell is stateless and free of gameplay logic.
+- [x] ESC/close affordances return users to prior HUD route without state leakage.
+- [x] Layout and padding align with the UI & Ergonomics Charter (integer scaling, minimal chrome).
 - **Approvers:** Architecture Steward + Project Manager; optional Game Designer sign-off.
 
 ## Dependencies & Sequencing

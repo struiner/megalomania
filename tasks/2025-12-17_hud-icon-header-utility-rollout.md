@@ -1,5 +1,7 @@
 # Task Specification — HUD Icon/Header Utility Rollout
 
+**STATUS: COMPLETE — delivered via `HudIconHeaderComponent` and adopted across HUD panes/dialog shells.**
+
 ## Task Summary
 Deliver and standardize a HUD icon/header utility that can be reused across info panes, dialogs, and other HUD surfaces to ensure consistent visual hierarchy and spacing.
 
@@ -30,9 +32,9 @@ Deliver and standardize a HUD icon/header utility that can be reused across info
 - Inline README documenting props/inputs, scaling guidance, and integration notes for HUD surfaces.
 
 ## Review Gate
-- [ ] Utility is stateless and presentation-only.
-- [ ] Spacing/typography align with UI & Ergonomics Charter and integer scaling rules.
-- [ ] Examples confirm drop-in use across info panes and dialogs without layout drift.
+- [x] Utility is stateless and presentation-only.
+- [x] Spacing/typography align with UI & Ergonomics Charter and integer scaling rules.
+- [x] Examples confirm drop-in use across info panes and dialogs without layout drift.
 - **Approvers:** Architecture Steward + Project Manager; optional Game Designer sign-off.
 
 ## Dependencies & Sequencing
