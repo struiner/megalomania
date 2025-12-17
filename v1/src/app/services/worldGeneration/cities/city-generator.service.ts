@@ -5,14 +5,14 @@ import { ID } from '../../../../shared/types/ID';
 import { Inventory } from '../../../../shared/types/Inventory';
 import { Position } from '../../../../shared/types/Position';
 import { Settlement } from '../../../../shared/types/Settlement';
-import { CultureService } from './culture/culture.service';
 import { SettlementSpecialization } from '../../../../shared/enums/SettlementSpecialization';
+import { SettlementNamingService } from './names/settlement-naming.service';
 
 @Injectable({ providedIn: 'root' })
 export class CityGeneratorService {
-  constructor() {}
+  constructor(private settlementNaming: SettlementNamingService) {}
 
-  createSettlementAt(x: number, y: number, type: 'coastal' | 'inland', seedRandom: () => number,culture?:CultureService): Settlement {
+  createSettlementAt(x: number, y: number, type: 'coastal' | 'inland', seedRandom: () => number, culture?: unknown): Settlement {
     const settlementType = this.pickSettlementType(type, seedRandom);
     const settlement = this.createBasicSettlement(x, y, settlementType, seedRandom);
 
@@ -26,7 +26,7 @@ export class CityGeneratorService {
   private createBasicSettlement(x: number, y: number, type: SettlementType, rand: () => number): Settlement {
     return {
       id: this.generateID(x, y),
-      name: this.generateSettlementName(rand),
+      name: this.generateSettlementName(rand, type),
       type,
       location: { x, y } as Position,
       x,
@@ -174,12 +174,9 @@ export class CityGeneratorService {
     };
   }
 
-  private generateSettlementName(rand: () => number): string {
-
-    // Task name_service_di: inject naming service for settlements (see tasks_backlog.yaml)
-    const roots = ['Port', 'Lake', 'Stone', 'Bay', 'Shore', 'Cliff', 'North', 'South', 'East', 'West'];
-    const suffixes = ['ton', 'ville', 'stead', 'burg', 'mouth', 'ford', 'haven', 'holm'];
-    return `${roots[Math.floor(rand() * roots.length)]}${suffixes[Math.floor(rand() * suffixes.length)]}`;
+  private generateSettlementName(rand: () => number, settlementType: SettlementType): string {
+    const biomeHint = settlementType === SettlementType.City ? 'coast' : 'inland';
+    return this.settlementNaming.generate(rand, biomeHint);
   }
 
   private generateSimpleID(): ID {

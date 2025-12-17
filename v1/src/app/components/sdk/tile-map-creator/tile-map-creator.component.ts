@@ -93,8 +93,7 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
   }
 
   onLoadProject(): void {
-    // Task load_project_flow: implement load project functionality (see tasks_backlog.yaml)
-    console.log('Load project requested');
+    this.facade.loadMostRecentProject();
   }
 
   onSaveProject(): void {
@@ -204,8 +203,7 @@ export class TilemapCreationToolComponent implements OnInit, OnDestroy {
   }
 
   async onLoadRecentProject(project: any): Promise<void> {
-    // This would load the project from filesystem
-    console.log('Loading recent project:', project);
+    await this.facade.loadProjectFromRecent(project.id);
   }
 
   async onImportProject(): Promise<void> {

@@ -6,6 +6,7 @@ import { DesignDocumentComponent } from '../pages/design/design-document.compone
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
 import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
+import { LedgerVerificationComponent } from '../pages/debug/ledger-verification.component';
 import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
 import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
 import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
@@ -282,6 +283,18 @@ export const MENU: MenuItem[] = [
         route: 'sdk/structure-manager',
         sdkComponent: StructuremanagerComponent,
         description: 'Placeholder view for the structure management tool.',
+      },
+    ],
+  },
+  {
+    title: 'Debug',
+    children: [
+      {
+        title: 'Ledger Verification',
+        type: 'route',
+        route: 'debug/ledger-verification',
+        component: LedgerVerificationComponent,
+        description: 'Inspect block order, roots, and proof validation.',
       },
     ],
   },

@@ -132,6 +132,66 @@ export enum Era {
   // Task goods_alliterating_suffixes: implement randomized nicely alliterating suffixes for uniqueness between cultures/species (see tasks_backlog.yaml).
 }
 
+export interface GoodsNamingContext {
+  baseName?: string;
+  cultureKey?: string;
+  speciesKey?: string;
+  random?: () => number;
+}
+
+const defaultSuffixes = [
+  'craft',
+  'crest',
+  'coil',
+  'charm',
+  'graft',
+  'gloss',
+  'grain',
+  'grove',
+  'mark',
+  'melt',
+  'weave',
+  'weld',
+];
+
+const suffixLibrary: Record<string, string[]> = {
+  a: ['ale', 'art'],
+  b: ['brew', 'bind'],
+  c: ['core', 'cord'],
+  d: ['draft', 'drift'],
+  e: ['etch', 'ember'],
+  f: ['forge', 'flask'],
+  g: ['grain', 'graft'],
+  h: ['hoard', 'husk'],
+  i: ['ingot', 'ink'],
+  j: ['jewel', 'jar'],
+  k: ['knot', 'kiln'],
+  l: ['loom', 'leaf'],
+  m: ['mint', 'mend'],
+  n: ['niche', 'nock'],
+  o: ['ore', 'oil'],
+  p: ['press', 'pouch'],
+  q: ['quill', 'quartz'],
+  r: ['reel', 'root'],
+  s: ['stone', 'silk'],
+  t: ['tome', 'tack'],
+  u: ['urn', 'umbra'],
+  v: ['vat', 'veil'],
+  w: ['ware', 'wisp'],
+  x: ['xylem'],
+  y: ['yarn'],
+  z: ['zeal'],
+};
+
+export function generateAlliteratingSuffix(context: GoodsNamingContext): string {
+  const random = context.random ?? Math.random;
+  const affinitySource = (context.cultureKey || context.speciesKey || context.baseName || 'good').toLowerCase();
+  const initial = affinitySource.charAt(0);
+  const options = suffixLibrary[initial] ?? defaultSuffixes;
+  const pick = Math.floor(random() * options.length);
+  return options[pick];
+}
+
 export enum GoodCategory {
   RawMaterial = "RawMaterial",   // Stone, metal, wood, ores, basic minerals
   Food = "Food",                 // Crops, meat, preserved foods, synthetic meals

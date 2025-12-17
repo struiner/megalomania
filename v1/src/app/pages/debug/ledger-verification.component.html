@@ -1,0 +1,105 @@
+<section class="ledger-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Ledger verification surface</p>
+      <h1>Merkle Block Inspector</h1>
+      <p class="lede">Debug-only view for validating derived ledger data without mutating state.</p>
+    </div>
+    <div class="status-badge" [class.valid]="verificationState === 'valid'" [class.invalid]="verificationState === 'invalid'">
+      <span class="dot"></span>
+      <span>{{ verificationState === 'valid' ? 'Proof verified' : verificationState === 'invalid' ? 'Proof failed' : 'Select an entry' }}</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Block chain order</h2>
+        <small>Derived only</small>
+      </div>
+      <ul class="block-list">
+        <li *ngFor="let block of blocks" (click)="selectBlock(block)" [class.active]="block === selectedBlock">
+          <div class="label">Height {{ block.height }}</div>
+          <div class="value">#{{ block.hash }}</div>
+          <div class="meta">Merkle root: {{ block.merkleRoot | slice:0:16 }}…</div>
+          <div class="meta">Entries: {{ block.entries.length }} · Status: {{ block.status }}</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Block detail</h2>
+        <small>Read-only</small>
+      </div>
+      <div *ngIf="selectedBlock; else noBlock" class="detail">
+        <div class="stat">
+          <span class="label">Height</span>
+          <span class="value">{{ selectedBlock?.height }}</span>
+        </div>
+        <div class="stat">
+          <span class="label">Hash</span>
+          <span class="value monospace">{{ selectedBlock?.hash }}</span>
+        </div>
+        <div class="stat">
+          <span class="label">Merkle root</span>
+          <span class="value monospace">{{ selectedBlock?.merkleRoot }}</span>
+        </div>
+      </div>
+      <ng-template #noBlock>
+        <p class="placeholder">Select a block to inspect its merkle data.</p>
+      </ng-template>
+    </div>
+
+    <div class="panel entries">
+      <div class="panel-header">
+        <h2>Entries</h2>
+        <small>Click to verify</small>
+      </div>
+      <table *ngIf="selectedBlock" class="entry-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Timestamp</th>
+            <th>Leaf hash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of selectedBlock.entries" (click)="selectEntry(entry)" [class.active]="entry === selectedEntry">
+            <td class="monospace">{{ entry.id }}</td>
+            <td>{{ (entry.payload as any)?.type || 'unknown' }}</td>
+            <td>{{ entry.timestamp }}</td>
+            <td class="monospace">{{ entry.leafHash | slice:0:16 }}…</td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="!selectedBlock" class="placeholder">Choose a block to view entries.</p>
+    </div>
+
+    <div class="panel proof">
+      <div class="panel-header">
+        <h2>Merkle proof</h2>
+        <small>Deterministic verification</small>
+      </div>
+      <div *ngIf="selectedEntry; else noEntry" class="proof-steps">
+        <p class="monospace">Leaf: {{ selectedEntry?.leafHash }}</p>
+        <ol>
+          <li *ngFor="let step of proofPath; let i = index">
+            <div class="step-label">Step {{ i + 1 }}</div>
+            <div class="step-body">
+              <span *ngIf="step.siblingHash; else promoted" class="monospace">{{ step.side }} sibling: {{ step.siblingHash }}</span>
+              <ng-template #promoted><span class="muted">Promoted leaf (no sibling)</span></ng-template>
+            </div>
+          </li>
+        </ol>
+        <div class="result" [class.valid]="verificationState === 'valid'" [class.invalid]="verificationState === 'invalid'">
+          {{ verificationState === 'valid' ? 'Proof matches root' : verificationState === 'invalid' ? 'Proof mismatch' : 'Awaiting selection' }}
+        </div>
+      </div>
+      <ng-template #noEntry>
+        <p class="placeholder">Select an entry to visualize its proof.</p>
+      </ng-template>
+    </div>
+  </div>
+</section>
