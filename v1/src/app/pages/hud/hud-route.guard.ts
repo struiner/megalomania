@@ -15,7 +15,6 @@ export class HudRouteGuard implements CanActivate {
     }
 
     if (!HUD_PANEL_IDS.has(panelId)) {
-      // TODO: Decide whether to surface an inline HUD message/toast on blocked panels.
       return this.router.createUrlTree(['/game/interface']);
     }
 
@@ -31,12 +30,7 @@ export class HudRouteGuard implements CanActivate {
       return true;
     }
 
-    // TODO: Pipe block reason into HUD-level messaging instead of silent redirects.
-    return this.router.createUrlTree(['/game/interface'], {
-      queryParams: {
-        blockedPanel: panel.id,
-        reason: decision.reason,
-      },
-    });
+    this.availability.announceBlockedPanel(panel, decision);
+    return this.router.createUrlTree(['/game/interface']);
   }
 }

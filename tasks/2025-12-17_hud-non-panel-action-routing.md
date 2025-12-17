@@ -1,6 +1,6 @@
 # Task Specification — HUD Non-Panel Action Routing
 
-**STATUS: TODO — auxiliary dialog placeholders need real destinations.**
+**STATUS: COMPLETE — auxiliary actions map to dialog shells with CTA routing and block messaging.**
 
 ## Task Summary
 Define and implement routing/UX for HUD actions that lack overlay panels (e.g., settings, help), replacing the current placeholder standalone dialog with approved flows.

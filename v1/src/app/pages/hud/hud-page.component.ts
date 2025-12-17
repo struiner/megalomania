@@ -7,7 +7,11 @@ import { HudOverlayShellComponent } from './components/hud-overlay-shell.compone
 import { HudAction } from './components/hud-button-grid.component';
 import { HudInfoPaneContent } from './components/hud-info-pane.component';
 import { HUD_OVERLAY_PANELS, HudPanelDefinition } from './hud-panel-registry';
-import { HudAvailabilityService, HudPanelGateDecision } from './hud-availability.service';
+import {
+  HudAvailabilityService,
+  HudPanelBlockNotice,
+  HudPanelGateDecision,
+} from './hud-availability.service';
 import { HudStandaloneDialogComponent } from './components/hud-standalone-dialog.component';
 
 interface AuxiliaryDialogSpec {
@@ -15,7 +19,13 @@ interface AuxiliaryDialogSpec {
   subheading?: string;
   icon?: string;
   body: string;
+  ctaLabel?: string;
+  ctaRoute?: string[];
 }
+
+type AuxiliaryActionTarget =
+  | { type: 'dialog'; dialog: AuxiliaryDialogSpec }
+  | { type: 'route'; route: string[]; dialogFallback?: AuxiliaryDialogSpec };
 
 @Component({
   selector: 'app-hud-page',
@@ -38,6 +48,33 @@ export class HudPageComponent implements OnInit, OnDestroy {
 
   protected overlayPanels: HudPanelDefinition[] = HUD_OVERLAY_PANELS;
 
+  private readonly auxiliaryTargets: Record<string, AuxiliaryActionTarget> = {
+    settings: {
+      type: 'dialog',
+      dialog: {
+        heading: 'HUD settings',
+        subheading: 'Display and control stubs',
+        icon: '⚙️',
+        body:
+          'TODO: Confirm whether HUD settings should launch a global configuration route or remain dialog-scoped for rapid tweaks.',
+        ctaLabel: 'Open configuration workspace',
+        ctaRoute: ['/world/generation'],
+      },
+    },
+    help: {
+      type: 'dialog',
+      dialog: {
+        heading: 'HUD help',
+        subheading: 'Context + shortcuts',
+        icon: '❔',
+        body:
+          'Reference entry point for HUD controls, planned keyboard chords, and tutorial hooks. TODO: Align with help/documentation owner before wiring to live content.',
+        ctaLabel: 'View design doc',
+        ctaRoute: ['/game/design-doc'],
+      },
+    },
+  };
+
   protected leftPane: HudInfoPaneContent = {
     heading: 'Status',
     subtitle: 'Ship + crew health',
@@ -56,8 +93,9 @@ export class HudPageComponent implements OnInit, OnDestroy {
   protected activePanel: string | null = null;
   protected blockedPanelMessage: string | null = null;
   protected auxiliaryDialog: AuxiliaryDialogSpec | null = null;
+  protected blockNotice: HudPanelBlockNotice | null = null;
 
-  private subscription?: Subscription;
+  private subscriptions = new Subscription();
 
   constructor(
     private readonly router: Router,
@@ -66,16 +104,24 @@ export class HudPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.subscription = this.route.params
-      .pipe(map((params: Params) => params['panel'] ?? null))
-      .subscribe((panel) => {
-        this.activePanel = panel;
-        this.blockedPanelMessage = null;
-      });
+    this.subscriptions.add(
+      this.route.params
+        .pipe(map((params: Params) => params['panel'] ?? null))
+        .subscribe((panel) => {
+          this.activePanel = panel;
+          this.blockedPanelMessage = null;
+        }),
+    );
+
+    this.subscriptions.add(
+      this.availability.getBlockedPanels().subscribe((block) => {
+        this.setBlockedPanel(block);
+      }),
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   protected handleActionSelected(actionId: string): void {
@@ -89,7 +135,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
       const gate = this.availability.evaluatePanel(descriptor);
 
       if (!gate.allowed) {
-        this.handlePanelBlocked(gate);
+        this.handlePanelBlocked(gate, descriptor.id);
         return;
       }
 
@@ -102,24 +148,70 @@ export class HudPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.auxiliaryDialog = {
-      heading: this.actions.find((action) => action.id === actionId)?.label ?? 'HUD action',
-      subheading: 'Placeholder dialog until routing target is confirmed.',
-      icon: this.actions.find((action) => action.id === actionId)?.icon,
-      body: 'TODO: Confirm non-overlay HUD destinations (settings, help, etc.).',
-    };
+    this.handleAuxiliaryAction(actionId);
   }
 
   protected closeOverlay(): void {
     void this.router.navigate(['/game/interface']);
   }
 
-  protected handlePanelBlocked(decision: HudPanelGateDecision): void {
-    // TODO: Replace with HUD-native toast/breadcrumb once interaction model is approved.
-    this.blockedPanelMessage = decision.reason ?? 'Selected panel is unavailable.';
+  protected handlePanelBlocked(decision: HudPanelGateDecision, panelId?: string): void {
+    const descriptor = panelId ? this.overlayPanels.find((panel) => panel.id === panelId) : undefined;
+    const block: HudPanelBlockNotice = {
+      panelId: panelId ?? 'hud-panel',
+      panelLabel: descriptor?.label ?? 'HUD panel',
+      decision,
+    };
+
+    this.setBlockedPanel(block);
+    if (descriptor) {
+      this.availability.announceBlockedPanel(descriptor, decision);
+    }
   }
 
   protected closeAuxiliaryDialog(): void {
     this.auxiliaryDialog = null;
+  }
+
+  protected clearBlockedNotice(): void {
+    this.blockNotice = null;
+  }
+
+  protected triggerAuxiliaryCta(): void {
+    if (this.auxiliaryDialog?.ctaRoute) {
+      void this.router.navigate(this.auxiliaryDialog.ctaRoute);
+      this.closeAuxiliaryDialog();
+    }
+  }
+
+  private handleAuxiliaryAction(actionId: string): void {
+    const target = this.auxiliaryTargets[actionId];
+
+    if (!target) {
+      this.auxiliaryDialog = {
+        heading: this.actions.find((action) => action.id === actionId)?.label ?? 'HUD action',
+        subheading: 'Unmapped HUD action',
+        icon: this.actions.find((action) => action.id === actionId)?.icon,
+        body: 'TODO: Confirm non-overlay HUD destinations (settings, help, etc.).',
+      };
+      return;
+    }
+
+    if (target.type === 'route') {
+      if (target.dialogFallback) {
+        // TODO: Confirm whether fallback dialog should still show when routing succeeds.
+        this.auxiliaryDialog = target.dialogFallback;
+      }
+
+      void this.router.navigate(target.route);
+      return;
+    }
+
+    this.auxiliaryDialog = target.dialog;
+  }
+
+  private setBlockedPanel(block: HudPanelBlockNotice): void {
+    this.blockNotice = block;
+    this.blockedPanelMessage = block.decision.reason ?? 'Selected panel is unavailable.';
   }
 }

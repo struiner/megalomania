@@ -27,7 +27,7 @@ export class HudOverlayShellComponent {
   readonly panelSelected = new EventEmitter<string>();
 
   @Output()
-  readonly panelBlocked = new EventEmitter<HudPanelGateDecision>();
+  readonly panelBlocked = new EventEmitter<{ panelId: string; decision: HudPanelGateDecision }>();
 
   protected dragOffsetX = 0;
   protected dragOffsetY = 0;
@@ -69,7 +69,8 @@ export class HudOverlayShellComponent {
     const gate = this.availability.evaluatePanel(this.getPanel(panelId));
 
     if (!gate.allowed) {
-      this.panelBlocked.emit(gate);
+      this.availability.announceBlockedPanel(this.getPanel(panelId), gate);
+      this.panelBlocked.emit({ panelId, decision: gate });
       return;
     }
 
