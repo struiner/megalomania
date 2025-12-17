@@ -3,9 +3,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { map, Subscription } from 'rxjs';
 import { BottomHudComponent } from './components/bottom-hud.component';
-import { HudOverlayShellComponent, HudOverlayPanel } from './components/hud-overlay-shell.component';
+import { HudOverlayShellComponent } from './components/hud-overlay-shell.component';
 import { HudAction } from './components/hud-button-grid.component';
 import { HudInfoPaneContent } from './components/hud-info-pane.component';
+import { HUD_OVERLAY_PANELS, HudPanelDefinition } from './hud-panel-registry';
 
 @Component({
   selector: 'app-hud-page',
@@ -26,22 +27,20 @@ export class HudPageComponent implements OnInit, OnDestroy {
     { id: 'help', label: 'Help', icon: '❔' },
   ];
 
-  protected overlayPanels: HudOverlayPanel[] = [
-    { id: 'inventory', label: 'Inventory Ledger', description: 'Stub container for cargo & supplies.' },
-    { id: 'ledger', label: 'Ledger View', description: 'Placeholder for settlement and trade ledgers.' },
-    { id: 'map', label: 'World Maps', description: 'Secondary cartography overlay shell.' },
-    { id: 'crew', label: 'Crew', description: 'Manifest and morale summaries TBD.' },
-    { id: 'trade', label: 'Trade', description: 'Market interaction shell placeholder.' },
-    { id: 'quests', label: 'Quests', description: 'Tasks and contracts listing shell.' },
-  ];
+  protected overlayPanels: HudPanelDefinition[] = HUD_OVERLAY_PANELS;
 
   protected leftPane: HudInfoPaneContent = {
     heading: 'Status',
+    subtitle: 'Ship + crew health',
+    icon: '⚓',
     items: ['Calm seas', 'Stores steady', 'Ledger balanced'],
   };
 
   protected rightPane: HudInfoPaneContent = {
     heading: 'Notifications',
+    subtitle: 'Operational signals',
+    icon: '🔔',
+    badge: '0',
     items: ['No active advisories', 'Next report: TBD'],
   };
 

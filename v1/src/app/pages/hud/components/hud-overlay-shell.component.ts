@@ -1,22 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-export interface HudOverlayPanel {
-  id: string;
-  label: string;
-  description?: string;
-}
+import { HudStandaloneDialogComponent } from './hud-standalone-dialog.component';
+import { HudIconHeaderComponent } from './hud-icon-header.component';
+import { HudPanelDefinition } from '../hud-panel-registry';
 
 @Component({
   selector: 'app-hud-overlay-shell',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HudStandaloneDialogComponent, HudIconHeaderComponent],
   templateUrl: './hud-overlay-shell.component.html',
   styleUrls: ['./hud-overlay-shell.component.scss'],
 })
 export class HudOverlayShellComponent {
   @Input({ required: true })
-  panels!: HudOverlayPanel[];
+  panels!: HudPanelDefinition[];
 
   @Input({ required: true })
   activePanel!: string;
@@ -40,5 +37,7 @@ export class HudOverlayShellComponent {
     return match?.description ?? 'Placeholder panel shell';
   }
 
-  // TODO: Add dynamic route guarding once feature-flag strategy is defined.
+  protected getPanelIcon(panelId: string): string | undefined {
+    return this.panels?.find((panel) => panel.id === panelId)?.icon;
+  }
 }

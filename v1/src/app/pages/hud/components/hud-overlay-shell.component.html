@@ -12,13 +12,23 @@
         {{ panel.label }}
       </button>
     </nav>
-    <button type="button" class="close" (click)="requestClose()" aria-label="Close dialog">✕</button>
   </header>
 
-  <section class="overlay-body">
-    <p class="overlay-description">{{ getPanelDescription(activePanel) }}</p>
+  <app-hud-standalone-dialog
+    [heading]="panels.find((panel) => panel.id === activePanel)?.label || 'HUD Panel'"
+    [subheading]="getPanelDescription(activePanel)"
+    [icon]="getPanelIcon(activePanel)"
+    (closeRequested)="requestClose()"
+  >
     <p class="overlay-hint">
       Future dialog content renders here; world stays visible beneath.
     </p>
-  </section>
+
+    <app-hud-icon-header
+      *ngIf="getPanelIcon(activePanel)"
+      [title]="panels.find((panel) => panel.id === activePanel)?.label || 'HUD Panel'"
+      [subtitle]="'Inline header utility demo'"
+      [icon]="getPanelIcon(activePanel)"
+    ></app-hud-icon-header>
+  </app-hud-standalone-dialog>
 </section>

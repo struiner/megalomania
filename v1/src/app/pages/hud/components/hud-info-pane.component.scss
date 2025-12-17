@@ -8,18 +8,12 @@
   padding: 10px 12px;
   color: #eae0ff;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 6px;
 }
 
 .align-right {
   margin-left: auto;
-}
-
-.info-header {
-  margin: 0 0 6px;
-  font-size: 13px;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: #d7c9ff;
 }
 
 .info-list {
