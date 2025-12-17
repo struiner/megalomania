@@ -1,5 +1,7 @@
 # Task Specification — HUD Minimap Baseline 512×512 Conformance
 
+**STATUS: TODO — baseline sizing assumptions need validation/documentation against live map data.**
+
 ## Task Summary
 Validate and enforce that the baseline minimap display in the HUD presents information consistent with the 512×512 px allocation defined by the world-render component, preserving clarity and scale fidelity.
 
