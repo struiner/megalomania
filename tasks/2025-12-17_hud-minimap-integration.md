@@ -45,3 +45,11 @@ Introduce a pixel-aligned minimap surface within the bottom HUD scaffold, provid
     Answer: Square.
 - Should minimap accept tile size configuration for different pixel densities?
     Answer: yes, it should be generic in it's input and lenient in it's display.
+
+## Review Notes (Architecture Steward)
+- Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
+- Findings:
+  - Structural fidelity is correct per the Level of Detail & Abstraction Charter; keep minimap integration limited to slotting and input contracts.
+  - Pixel integrity, square aspect default, and peripheral placement align with the UI & Ergonomics Charter; ensure framing stays secondary to the world view.
+  - No additional recursion layers are needed; avoid nested minimap renderers beyond the defined container.
+- Required Amendments: Document mock tile usage and keep inputs generic yet bounded to prevent UI-side derivations of world state.

@@ -44,3 +44,11 @@ Wire HUD entry points (buttons, panes) to Angular routes/dialog shells without a
     Answer: Multiple completely overlapping panels, where active panels are indicated with a tab.
 - Should routes use guarded entry (e.g., feature flags) or stay open for now?
     Answer: Let routes remain open for now, adding a TODO for more generic dynamic route guarding and it's indication.
+
+## Review Notes (Architecture Steward)
+- Sign-off: Architecture Steward — L. Vermeer (2024-06-05).
+- Findings:
+  - Structural fidelity is sufficient per the Level of Detail & Abstraction Charter; routing and shell components should stay minimal and intentional.
+  - Dialog framing and unobtrusive overlays align with the UI & Ergonomics Charter; ensure central world visibility remains primary.
+  - No additional recursion layers are required; keep routing maps flat and avoid nested dialog stacks beyond the stated model.
+- Required Amendments: Keep TODOs for future guards explicit and document that placeholder dialogs carry no derived logic.
