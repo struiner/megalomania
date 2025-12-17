@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { HUD_OVERLAY_PANELS, HUD_PANEL_IDS, HudPanelDefinition } from './hud-panel-registry';
+import { HudAvailabilityService } from './hud-availability.service';
 
 @Injectable({ providedIn: 'root' })
 export class HudRouteGuard implements CanActivate {
-  constructor(private readonly router: Router) {}
+  constructor(private readonly router: Router, private readonly availability: HudAvailabilityService) {}
 
   canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean | UrlTree {
     const panelId = route.params['panel'];
@@ -24,11 +25,18 @@ export class HudRouteGuard implements CanActivate {
   }
 
   private isPanelEnabled(panel: HudPanelDefinition): boolean | UrlTree {
-    // TODO: Wire feature flag and initialization readiness predicates; currently always enabled for structural phase.
-    if (panel.featureFlag || panel.requiresInit) {
-      // Placeholder for future predicate evaluation; keeping deterministic allow-list for now.
+    const decision = this.availability.evaluatePanel(panel);
+
+    if (decision.allowed) {
+      return true;
     }
 
-    return true;
+    // TODO: Pipe block reason into HUD-level messaging instead of silent redirects.
+    return this.router.createUrlTree(['/game/interface'], {
+      queryParams: {
+        blockedPanel: panel.id,
+        reason: decision.reason,
+      },
+    });
   }
 }

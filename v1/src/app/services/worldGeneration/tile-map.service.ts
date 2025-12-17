@@ -122,4 +122,42 @@ export class TilemapService {
     if (elevation < 0.8) return 'hills';
     return 'mountains';
   }
+
+  generateTilemapPreview(seed: string, size = 64) {
+    const rng = seedrandom(seed);
+    const simplex1 = new SimplexNoise(rng);
+    const simplex2 = new SimplexNoise(rng);
+    const tilemap = new Array(size).fill(null).map(() => new Array(size).fill(0));
+
+    const generateElevation = (x: number, y: number): number => {
+      let elevation = 0;
+      let frequency = 1;
+      let amplitude = 1;
+      let maxAmplitude = 0;
+
+      for (let i = 0; i < 5; i++) {
+        elevation += amplitude * simplex1.noise2D(x * frequency, y * frequency);
+        elevation += amplitude * simplex2.noise2D((x - y) * frequency, (x + y) * frequency);
+        maxAmplitude += amplitude;
+        frequency *= 2;
+        amplitude *= 0.5;
+      }
+
+      return elevation / maxAmplitude;
+    };
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const nx = x / size - 0.5;
+        const ny = y / size - 0.5;
+        tilemap[y][x] = generateElevation(nx, ny);
+      }
+    }
+
+    const overlays = {
+      biomes: tilemap.map((row) => row.map((elevation) => this.determineBiome(elevation))),
+    };
+
+    return { tilemap, overlays };
+  }
 }

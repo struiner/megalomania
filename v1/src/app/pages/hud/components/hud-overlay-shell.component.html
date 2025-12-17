@@ -1,12 +1,15 @@
-<section class="overlay-shell">
-  <header class="overlay-header">
+<section class="overlay-shell" [style.transform]="getTransform()">
+  <header class="overlay-header" (mousedown)="startDrag($event)">
     <nav class="overlay-tabs" aria-label="HUD dialogs">
       <button
         *ngFor="let panel of panels"
         type="button"
         class="tab"
         [class.active]="panel.id === activePanel"
-        aria-current="page"
+        [attr.aria-current]="panel.id === activePanel ? 'page' : null"
+        [attr.aria-disabled]="!isPanelAvailable(panel.id)"
+        [disabled]="!isPanelAvailable(panel.id)"
+        [title]="getBlockReason(panel.id) ?? panel.label"
         (click)="requestPanel(panel.id)"
       >
         {{ panel.label }}

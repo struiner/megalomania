@@ -24,9 +24,6 @@ export class BottomHudComponent {
   @Output()
   readonly actionSelected = new EventEmitter<string>();
 
-  protected readonly hudHeight = 160; // 10 * 16px, grounded per charter guidance.
-  protected readonly gutter = 8;
-
   protected handleAction(actionId: string): void {
     this.actionSelected.emit(actionId);
   }

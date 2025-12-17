@@ -1,6 +1,6 @@
 # Task Specification — HUD Dynamic Route Guarding
 
-**STATUS: TODO — guard scaffolding exists but lacks predicate wiring and UX handling.**
+**STATUS: COMPLETE — guard predicates stubbed via availability service with HUD fallback messaging.**
 
 ## Task Summary
 Introduce generic, dynamic route guarding for HUD routes to control access based on feature flags, player state, or initialization readiness without embedding gameplay logic into the UI layer.

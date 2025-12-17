@@ -1,6 +1,6 @@
 # Task Specification — Bottom HUD Fixed Anchoring
 
-**STATUS: TODO — pending execution.**
+**STATUS: COMPLETE — HUD now uses fixed anchoring with layout padding reserves.**
 
 ## Task Summary
 Guarantee the bottom HUD remains fixed to the viewport floor across all scroll contexts, replacing the current sticky positioning to prevent drift during long-form interactions or nested scroll containers.【F:v1/src/app/pages/hud/components/bottom-hud.component.scss†L1-L13】

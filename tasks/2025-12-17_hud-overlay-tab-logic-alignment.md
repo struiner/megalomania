@@ -1,6 +1,6 @@
 # Task Specification — HUD Overlay Tab Logic Alignment
 
-**STATUS: TODO — pending execution.**
+**STATUS: COMPLETE — tab gating, toggle semantics, and placeholder dialogs wired.**
 
 ## Task Summary
 Collaborate with the Game Designer to define tab logic and open/closed panel semantics for the HUD overlay shell, clarifying default selections, disabled states, and behavior for actions without panels before extending implementation.【F:v1/src/app/pages/hud/components/hud-overlay-shell.component.html†L1-L33】
