@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  min-height: calc(100vh - 48px);
+  background: linear-gradient(180deg, #0f0a1f 0%, #0a0615 60%, #070510 100%);
+  color: #e7d9ff;
+}
+
+.hud-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.world-viewport {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.world-placeholder {
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 16px 24px;
+  text-align: center;
+  max-width: 720px;
+  background: rgba(15, 10, 31, 0.4);
+}
+
+.world-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.world-note {
+  margin: 0;
+  opacity: 0.72;
+  font-size: 14px;
+}

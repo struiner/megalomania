@@ -1,0 +1,23 @@
+<section class="hud-page">
+  <div class="world-viewport">
+    <div class="world-placeholder">
+      <p class="world-title">World viewport placeholder</p>
+      <p class="world-note">Keeps central focus unobstructed; HUD is grounded below.</p>
+    </div>
+  </div>
+
+  <app-bottom-hud
+    [leftPane]="leftPane"
+    [rightPane]="rightPane"
+    [actions]="actions"
+    (actionSelected)="handleActionSelected($event)"
+  ></app-bottom-hud>
+
+  <app-hud-overlay-shell
+    *ngIf="activePanel"
+    [panels]="overlayPanels"
+    [activePanel]="activePanel!"
+    (closeRequested)="closeOverlay()"
+    (panelSelected)="handleActionSelected($event)"
+  ></app-hud-overlay-shell>
+</section>

@@ -1,0 +1,55 @@
+:host {
+  --shade-0: #0f0a1f;
+  --shade-1: #1e1434;
+  --shade-2: #30214d;
+  --shade-3: #4b3470;
+}
+
+.minimap {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
+  width: 100%;
+  max-width: 208px;
+  background: #120c1f;
+  border: 2px solid #2c1e42;
+  border-radius: 8px;
+  padding: 8px 8px 6px;
+  box-sizing: border-box;
+  color: #e7dbff;
+}
+
+.minimap-frame {
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  gap: 1px;
+  background: #0d0718;
+  border: 2px solid #3c2b59;
+  border-radius: 6px;
+  padding: 4px;
+  aspect-ratio: 1 / 1;
+}
+
+.tile {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 1px;
+}
+
+.pixel {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.minimap-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  opacity: 0.78;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}

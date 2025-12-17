@@ -1,0 +1,11 @@
+<section class="minimap">
+  <div class="minimap-frame">
+    <div class="tile" *ngFor="let row of tiles; let y = index">
+      <div class="pixel" *ngFor="let value of row; let x = index" [style.background]="'var(--shade-' + value + ')'"></div>
+    </div>
+  </div>
+  <footer class="minimap-footer">
+    <span class="label">Minimap stub</span>
+    <span class="scale">{{ tileSize }}px tiles</span>
+  </footer>
+</section>
