@@ -16,6 +16,8 @@ interface HudMinimapLetterboxInsets {
   right: number;
 }
 
+type HudLetterboxFillPreference = 'auto' | 'flat' | 'texture';
+
 @Component({
   selector: 'app-hud-minimap',
   standalone: true,
@@ -51,6 +53,9 @@ export class HudMinimapComponent implements OnInit {
   @Input()
   markers: HudMinimapMarker[] = [];
 
+  @Input()
+  letterboxFillPreference: HudLetterboxFillPreference = 'auto';
+
   protected readonly scalePolicy: HudMinimapScalePolicy = {
     baselineResolution: 512,
     minScale: 0.25,
@@ -60,6 +65,8 @@ export class HudMinimapComponent implements OnInit {
 
   protected resolvedScale = this.scalePolicy.minScale;
   protected letterboxInsets: HudMinimapLetterboxInsets = { top: 0, bottom: 0, left: 0, right: 0 };
+  protected usesTexturedLetterbox = false;
+  protected letterboxFillToken = 'var(--hud-minimap-letterbox-flat-fill)';
   protected readonly framePadding = 4;
 
   constructor(private readonly data: HudMinimapDataService) {}
@@ -110,8 +117,6 @@ export class HudMinimapComponent implements OnInit {
     this.resolvedScale = this.snapToPreferredScale(clamped);
 
     this.computeLetterboxInsets();
-
-    // TODO: Decide on letterboxing fill (flat color vs. textured swatch) for constrained resolutions once theme tokens land.
   }
 
   private snapToPreferredScale(scale: number): number {
@@ -137,5 +142,19 @@ export class HudMinimapComponent implements OnInit {
     const bottom = verticalGap - top;
 
     this.letterboxInsets = { top, bottom, left, right };
+
+    this.resolveLetterboxFill(left, right, top, bottom);
+  }
+
+  private resolveLetterboxFill(left: number, right: number, top: number, bottom: number): void {
+    const maxInset = Math.max(left, right, top, bottom);
+    const prefersFlat = this.letterboxFillPreference === 'flat';
+    const prefersTexture = this.letterboxFillPreference === 'texture';
+    const allowTextureForContrast = maxInset >= this.framePadding * 2;
+
+    this.usesTexturedLetterbox = prefersTexture || (!prefersFlat && allowTextureForContrast);
+    this.letterboxFillToken = this.usesTexturedLetterbox
+      ? 'var(--hud-minimap-letterbox-texture)'
+      : 'var(--hud-minimap-letterbox-flat-fill)';
   }
 }
