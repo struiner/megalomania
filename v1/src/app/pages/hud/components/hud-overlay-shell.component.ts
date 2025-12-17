@@ -37,6 +37,10 @@ export class HudOverlayShellComponent {
     return match?.description ?? 'Placeholder panel shell';
   }
 
+  protected getPanelLabel(panelId: string): string {
+    return this.panels?.find((panel) => panel.id === panelId)?.label ?? 'HUD Panel';
+  }
+
   protected getPanelIcon(panelId: string): string | undefined {
     return this.panels?.find((panel) => panel.id === panelId)?.icon;
   }

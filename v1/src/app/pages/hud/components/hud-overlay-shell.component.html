@@ -15,7 +15,7 @@
   </header>
 
   <app-hud-standalone-dialog
-    [heading]="panels.find((panel) => panel.id === activePanel)?.label || 'HUD Panel'"
+    [heading]="getPanelLabel(activePanel)"
     [subheading]="getPanelDescription(activePanel)"
     [icon]="getPanelIcon(activePanel)"
     (closeRequested)="requestClose()"
@@ -26,7 +26,7 @@
 
     <app-hud-icon-header
       *ngIf="getPanelIcon(activePanel)"
-      [title]="panels.find((panel) => panel.id === activePanel)?.label || 'HUD Panel'"
+      [title]="getPanelLabel(activePanel)"
       [subtitle]="'Inline header utility demo'"
       [icon]="getPanelIcon(activePanel)"
     ></app-hud-icon-header>
