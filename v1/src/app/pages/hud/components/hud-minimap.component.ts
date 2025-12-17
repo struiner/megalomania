@@ -2,13 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { HudMinimapDataService, HudMinimapMarker } from '../hud-minimap-data.service';
 
-@Component({
-  selector: 'app-hud-minimap',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './hud-minimap.component.html',
-  styleUrls: ['./hud-minimap.component.scss'],
-})
 interface HudMinimapScalePolicy {
   baselineResolution: number;
   minScale: number;
@@ -16,6 +9,13 @@ interface HudMinimapScalePolicy {
   preferredSteps: number[];
 }
 
+@Component({
+  selector: 'app-hud-minimap',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './hud-minimap.component.html',
+  styleUrls: ['./hud-minimap.component.scss'],
+})
 export class HudMinimapComponent implements OnInit {
   @Input()
   tileSize = 8; // TODO: Confirm baseline pixel density for live tiles (see task 2025-12-18_hud-minimap-scaling-policy).
