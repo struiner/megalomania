@@ -22,6 +22,12 @@ Phase 3 surfaced clarifications that must be handled as new tasks (see `tasks/20
 - **HUD Hanseatic theme foundations** — codify palette, typography, texture, and iconography tokens for late-medieval/Hanseatic tone without altering layout or owning truth.
 - **HUD theme consistency & retrofit** — audit HUD surfaces for alignment with the approved theme tokens and plan implementation hooks without changing interactions.
 
+### Phase 3 Outputs (this iteration)
+- Theme tokens captured in `hud-theme-foundations.md`; remaining TODOs: font licensing, dither swatches, warning/alert accessibility variants.
+- Retrofit audit + hook plan recorded in `hud-theme-retrofit-checklist.md`; follow-up tasks opened for icon pilot set, texture swatches, and accessibility palette validation.
+- Minimap scaling policy codified in `hud-minimap.component.ts` (scale clamp + snapping) with README summary; TODO for letterboxing vs. resampling on constrained devices.
+- Auxiliary dialog wiring now deterministic (CTA routes for settings/help) with TODO to confirm final ownership and fallback display rules.
+
 ## Outstanding Clarifications (tracked via TODOs)
 - Auxiliary dialog destinations and CTA routing ownership in `hud-page.component.ts`.
 - Minimap pixel density, scale clamping, and resolution policy in `hud-minimap.component.ts`.

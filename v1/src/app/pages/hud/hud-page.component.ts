@@ -57,7 +57,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
         subheading: 'Display and control stubs',
         icon: '⚙️',
         body:
-          'TODO: Confirm whether HUD settings should launch a global configuration route or remain dialog-scoped for rapid tweaks.',
+          'HUD-level toggles (safe-area padding, overlay drag bounds) live here while full configuration sits in the world generation workspace.',
         ctaLabel: 'Open configuration workspace',
         ctaRoute: ['/world/generation'],
       },
@@ -69,7 +69,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
         subheading: 'Context + shortcuts',
         icon: '❔',
         body:
-          'Reference entry point for HUD controls, planned keyboard chords, and tutorial hooks. TODO: Align with help/documentation owner before wiring to live content.',
+          'Reference entry point for HUD controls, planned keyboard chords, and tutorial hooks; pinned to the design doc until a dedicated help surface lands.',
         ctaLabel: 'View design doc',
         ctaRoute: ['/game/design-doc'],
       },
@@ -200,7 +200,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
 
     if (target.type === 'route') {
       if (target.dialogFallback) {
-        // TODO: Confirm whether fallback dialog should still show when routing succeeds.
+        // TODO: Should fallback only appear on navigation failure/guard block rather than immediately?
         this.auxiliaryDialog = target.dialogFallback;
       }
 

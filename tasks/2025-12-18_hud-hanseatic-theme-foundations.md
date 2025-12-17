@@ -1,6 +1,6 @@
 # Task Specification — HUD Hanseatic Theme Foundations
 
-**STATUS: OPEN — requires design asset direction and tokenization.**
+**STATUS: COMPLETE — palette/typography/icon tokens defined in `v1/src/app/pages/hud/hud-theme-foundations.md`; TODOs note asset/licensing clarifications.**
 
 ## Task Summary
 Define the **visual foundations** for a Hanseatic, late-medieval inspired HUD, including palette, material cues, and typography tokens that respect the UI & Ergonomics Charter and pixel integrity rules.

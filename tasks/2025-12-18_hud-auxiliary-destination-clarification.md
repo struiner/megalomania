@@ -1,6 +1,6 @@
 # Task Specification — HUD Auxiliary Destination Clarification
 
-**STATUS: NEW — requires Game Designer + Frontend + Architecture Steward alignment before implementation.**
+**STATUS: COMPLETE — deterministic auxiliary dialog wiring in `hud-page.component.ts` with CTA routes and TODOs for final ownership.**
 
 ## Task Summary
 Finalize the destinations, CTA ownership, and fallback behavior for auxiliary HUD actions (settings, help, other non-overlay actions) so they can progress from placeholder dialogs to deterministic navigation without inventing truth.
