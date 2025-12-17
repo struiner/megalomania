@@ -4,7 +4,7 @@ import { GoodsOverviewComponent } from '../pages/config/econ/goods-overview.comp
 import { WorldGenerationComponent } from '../pages/config/gen/world-generation.component';
 import { DesignDocumentComponent } from '../pages/design/design-document.component';
 import { KirbyComponent } from '../pages/kirby/kirby.component';
-import { KitchenSinkComponent } from '../pages/kitchen-sink/kitchen-sink.component';
+import { HudComponent } from '../pages/hud/hud.component';
 import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
 import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
 import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
@@ -20,7 +20,7 @@ export const MENU: MenuItem[] = [
             title:'User Interface',
             type: 'route',
             route:'game/interface',
-            component: KitchenSinkComponent,
+            component: HudComponent,
         },
         {
             title: 'Design Doc',
