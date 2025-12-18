@@ -1,6 +1,6 @@
 # Task Specification — Tech Enum Case Alignment & Normalization Rules
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: COMPLETE (Structural fidelity; shared normalization map live in services)**
 
 ## Task Summary
 Audit and align enum identifier casing between authoritative sources (e.g., `GoodsType` PascalCase values) and tech-tree import/export normalization (snake_case) so round-trips do not generate fallback warnings, merge noise, or TypeScript type mismatches.
@@ -32,9 +32,9 @@ Audit and align enum identifier casing between authoritative sources (e.g., `Goo
 - Migration/compatibility note if enum values change.
 
 ## Review Gate
-- [ ] Authoritative enum values and normalized identifiers have a one-to-one, reversible mapping.
-- [ ] Import/export and pickers use the same mapping and stop emitting spurious fallback warnings.
-- [ ] No TypeScript type drift introduced by the normalization strategy.
+- [x] Authoritative enum values and normalized identifiers have a one-to-one, reversible mapping.
+- [x] Import/export and pickers use the same mapping and stop emitting spurious fallback warnings.
+- [x] No TypeScript type drift introduced by the normalization strategy.
 - **Approvers:** Architecture Steward + Backend Engineer (Game Designer consults on naming).
 
 ## Dependencies & Sequencing

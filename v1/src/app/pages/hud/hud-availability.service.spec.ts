@@ -1,5 +1,6 @@
 import { HUD_OVERLAY_PANELS } from './hud-panel-registry';
 import { HudAvailabilityService } from './hud-availability.service';
+import { HudCapabilityProvider } from './hud-capability.provider';
 import { HudCapabilityService } from './hud-capability.service';
 
 describe('HudAvailabilityService capability gating', () => {
@@ -7,7 +8,8 @@ describe('HudAvailabilityService capability gating', () => {
   let service: HudAvailabilityService;
 
   beforeEach(() => {
-    capabilityService = new HudCapabilityService();
+    const provider = new HudCapabilityProvider();
+    capabilityService = new HudCapabilityService(provider);
     service = new HudAvailabilityService(capabilityService);
   });
 

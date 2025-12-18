@@ -14,6 +14,7 @@ import { StructureAction } from '../enums/StructureActions';
 import { StructureEffect } from '../enums/StructureEffect';
 import { StructureType } from '../enums/StructureType';
 import { GoodCategory, Rarity } from '../models/goods.model';
+import { buildEnumNormalizationMap, mapValuesToCanonical } from './tech-identifier-normalizer';
 
 export interface TechEnumOption {
   value: string;
@@ -90,8 +91,10 @@ export class TechEnumAdapterService {
     fallbackValues: string[] = [],
     source: TechEnumOption['source'] = 'enum'
   ): TechEnumOption[] {
+    const normalizationMap = buildEnumNormalizationMap(enumType);
     const enumValues = this.extractEnumValues(enumType);
-    const missingValues = this.extractMissingValues(enumValues, fallbackValues);
+    const normalizedFallbacks = mapValuesToCanonical(fallbackValues, normalizationMap);
+    const missingValues = this.extractMissingValues(enumValues, normalizedFallbacks);
 
     const options: TechEnumOption[] = [
       ...enumValues.map((value) => this.toOption(value, source)),
