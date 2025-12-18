@@ -46,5 +46,8 @@ Implement the generic icon functionality that was referenced in multiple HUD com
 
 ## Open Questions / Clarifications
 - Original: "Preferred default icon size (e.g., 16×16 vs 24×24) given pixel heritage?"
+    answer: 16x16 px and 32x32px, to be toggleable.
 - Additional: Should icon treatment vary between primary actions (buttons) and secondary information (headers)?
+    answer: yes, but appearance must remain recognizeable
 - New: Confirm asset pack/sprite source to replace placeholder glyphs in `HudIconComponent` while keeping licensing clear.
+    answer: initially create compatibility with default icon/emoji pack like font awesome (free version). Potential area for sdk component allowing for the creation of custom icons.

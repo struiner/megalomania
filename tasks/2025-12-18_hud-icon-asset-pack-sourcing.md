@@ -43,4 +43,6 @@ Select and authorize a canonical pixel icon asset pack (or sprite sheet commissi
 
 ## Open Questions / Clarifications
 - Should primary action icons receive a heavier bevel or color accent compared to informational headers?
+    answer: yes
 - Is a custom commission preferred over an existing pack to guarantee exclusivity?
+    answer: not really, aesthetics and recognizeability are paramount.

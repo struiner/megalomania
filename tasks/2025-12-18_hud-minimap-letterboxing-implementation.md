@@ -44,6 +44,8 @@ Implement letterboxing functionality for the HUD minimap to handle aspect ratio 
 - Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
-- Original TODO: "README summarizes policy with TODOs for letterboxing"
+- Original TODO: "README summarizes policy with TODOs for letterboxing"    
 - Clarification: Should letterbox bars use solid colors or subtle textures to match the overall HUD aesthetic?
+    answer: subtle textures
 - New: Confirm whether letterbox fill should adapt to device DPI (e.g., darker fill on OLED-safe areas) or remain static.
+    answer: yes, but include task for making this a generic or global aspect of the game, not specific to minimap

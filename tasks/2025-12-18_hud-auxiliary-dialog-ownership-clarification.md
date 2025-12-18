@@ -45,5 +45,8 @@ Resolve the open question about auxiliary dialog ownership and determine the def
 
 ## Open Questions / Clarifications
 - Original: "Should settings/help open as standalone draggable dialogs or navigate to dedicated routes?"
+    answer: THe current solution of a separate dialog is good.
 - Additional: Should auxiliary dialogs share the same ownership model as main HUD overlay system?
+    answer: no.
 - Platform considerations: How do decisions affect mobile/embedded contexts?
+    answer: CUrrently the platform we aim for is desktop browser, mobile/embedded are important considerations for a later phase.

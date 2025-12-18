@@ -45,5 +45,8 @@ Resolve the open question about the canonical pixel font family for the Hanseati
 
 ## Open Questions / Clarifications
 - Original question: "Preferred canonical pixel font family (e.g., BM Germar vs. custom bitmap) for medieval/Hanseatic tone?"
+    Answer: preferably use Nokia Cellphone FC or similar font family for system text, preferably use Pixtura12 for world description, story and conversation.
 - Additional: Should font choice vary between HUD elements (buttons vs. info panes vs. dialogs)?
+    answer: yes, differing between game system context and world descriptive context use akin to Nokia Cellphone FC and Pixtura12
 - Platform considerations: Web-safe fallbacks vs. embedded font files?
+    answer: yes, web-safe fallbacks are prudent.

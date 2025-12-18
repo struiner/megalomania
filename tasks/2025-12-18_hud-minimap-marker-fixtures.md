@@ -43,4 +43,6 @@ Define the default set of minimap markers used by the HUD preview (biome centers
 
 ## Open Questions / Clarifications
 - Which landmarks best represent the pre-simulated world for a static preview (ports, guild halls, biome cores)?
+    answer: v1/src/app/enums contains these files: MapStructureType.ts, NaturalFeatureType and SettlementType, which contain all landmark types.
 - Should markers adapt based on faction allegiance or remain neutral in the HUD preview state?
+    answer: markers should remain neutral.
