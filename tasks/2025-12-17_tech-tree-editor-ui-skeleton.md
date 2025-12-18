@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Editor UI Skeleton
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETE (Structural fidelity; routed shell aligned to canonical models and enum pickers)**
 
 ## Task Summary
 Build a structural Angular UI skeleton for the technology tree editor with panels for tree overview, node detail and prerequisite connections, wired to placeholder data and import/export hooks while respecting HUD ergonomics.
@@ -31,6 +31,8 @@ Build a structural Angular UI skeleton for the technology tree editor with panel
 - Hook points for import/export service and shared enum/type integration.
 - Interaction notes documenting intended flows and future extension points.
 
+**Evidence:** `TechTreeEditorComponent` and `TechTreeEditorService` (v1/src/app/pages/tech-tree-editor/*) now consume `TechTreeIoService`, render culture-tag pickers, enum-bound effect selectors, prerequisite diagrams, and surface validation/export results while staying structural.
+
 ## Review Gate
 - [x] Layout respects attention hierarchy and UI charter constraints (limited primary actions, stable placement).
 - [x] Components consume data via injected services/contracts (no hardcoded truth in UI).
@@ -51,4 +53,3 @@ Build a structural Angular UI skeleton for the technology tree editor with panel
     SDK/tech-tree
 - What is the minimal set of node fields required for the detail panel during structural fidelity?
     answer: 3
-

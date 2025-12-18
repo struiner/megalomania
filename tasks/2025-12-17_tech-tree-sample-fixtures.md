@@ -1,5 +1,7 @@
 # Tech Tree Sample Fixtures & Culture Tag Vocabulary
 
+**STATUS: COMPLETE (Sample vocabulary and deterministic fixtures available for validation/import testing)**
+
 **Purpose:** Provide deterministic, enum-aligned examples that downstream import/export and validation tasks can reuse without inventing identifiers. The fixtures below stay within authoritative enum sets in `v1/src/app/enums` and keep node identifiers snake_cased as per the data model guidance.
 
 ## Canonical Culture Tag Vocabulary (enum sourced)
@@ -100,3 +102,5 @@ const northern_trade_tree_v1 = {
 - **Determinism:** node and prerequisite ordering are declared explicitly to assist import/export stability.
 - **Prerequisites:** single-parent chain used for simplicity; import/export tasks can extend the same shape to validate acyclic graphs.
 - **Culture coverage:** every node carries at least one culture tag; tree-level defaults mirror taiga + trading-post roots and propagate downstream unless overridden.
+
+**Evidence:** JSON fixtures reside in `v1/src/app/data/tech-trees`, and the editor fixture (`v1/src/app/pages/tech-tree-editor/tech-tree-editor.fixtures.ts`) mirrors the canonical sample for UI wiring.
