@@ -5,10 +5,10 @@ The tech tree editor is a routed SDK surface that hosts three structural panels:
 ## Layout and flows
 
 - **Route**: `/sdk/tech-tree` (also discoverable via the SDK menu). The route uses the `SdkToolPageComponent` shell so the editor can be swapped or embedded without changing navigation.
-- **Panels**: overview (tier-banded chips), node detail (title/summary/tier/category, culture tag picker, enum-bound effect selectors), prerequisite diagram (minimal columnar tree). Panels do not own truth; they read from `TechTreeEditorService` signals.
+- **Panels**: overview (grid of tier rows × deterministic display-order columns with inline tier controls), node detail (title/summary/tier/category, culture tag picker, enum-bound effect selectors), prerequisite diagram (minimal columnar tree). Panels do not own truth; they read from `TechTreeEditorService` signals.
 - **Overlay layer**: `TechTreeConnectionOverlayComponent` renders Manhattan connectors (4px rounding, crisp edges) behind the prerequisite grid to keep dependency lines readable without occluding node content.
 - **Icon picker**: node detail now includes a registry-backed icon selector (`TechIconRegistryService` + `TechIconPickerComponent`) using shared taxonomy IDs (e.g., `structure_lumberyard`) with culture-overlay hints.
-- **Action dock**: bottom-weighted section with two primary actions (import fixtures, export snapshot) to respect the UI charter’s limits on visible actions. Validation issues are surfaced under the export log to highlight schema problems early.
+- **Action dock**: bottom-weighted section with two primary actions (import fixtures, export snapshot) to respect the UI charter’s limits on visible actions. Tier controls stay scoped to the overview grid so the action dock remains stable. Validation issues are surfaced under the export log to highlight schema problems early.
 - **Selection flow**: selecting a chip or node highlights dependencies and updates the detail form. Form edits update the injected service so fixtures can be replaced later.
 
 ## Extension points

@@ -28,6 +28,7 @@ export class TechTreeEditorService {
 
   private documentState = signal<EditorTechTree>(TECH_TREE_FIXTURE_DOCUMENT);
   private selectedId = signal<string>(TECH_TREE_FIXTURE_DOCUMENT.nodes[0]?.id ?? '');
+  private tierBandLimit = signal<number>(this.deriveMaxTier(TECH_TREE_FIXTURE_DOCUMENT.nodes));
 
   document = computed(() => this.documentState());
   nodes = computed(() => this.documentState().nodes);
@@ -162,18 +163,31 @@ export class TechTreeEditorService {
   }
 
   moveNodeToTier(nodeId: string, tier: number): void {
-    const nextTier = this.clampTier(tier);
-    const nextNodes = this.documentState().nodes.map((node) =>
-      node.id === nodeId
-        ? {
-            ...node,
-            tier: nextTier,
-          }
-        : node,
-    );
+    const targetTier = this.clampTier(tier);
+    const tierOccupancy = this.documentState().nodes.filter((node) => (node.tier || 1) === targetTier).length;
+    this.moveNodeToPosition(nodeId, targetTier, tierOccupancy + 1);
+  }
+
+  moveNodeToPosition(nodeId: string, tier: number, displayOrder: number): void {
+    const targetTier = this.clampTier(tier);
+    const targetOrder = this.clampDisplayOrder(displayOrder);
+    const movingNode = this.documentState().nodes.find((node) => node.id === nodeId);
+
+    if (!movingNode) return;
+
+    const withoutNode = this.documentState().nodes.filter((node) => node.id !== nodeId);
+    const normalizedNodes = this.normalizeDisplayOrders([
+      ...withoutNode,
+      {
+        ...movingNode,
+        tier: targetTier,
+        display_order: targetOrder,
+      },
+    ]);
+
     this.commitTree({
       ...this.documentState(),
-      nodes: nextNodes,
+      nodes: normalizedNodes,
     });
     this.selectNode(nodeId);
   }
@@ -187,6 +201,7 @@ export class TechTreeEditorService {
       };
 
       this.commitTree(treeWithSource);
+      this.tierBandLimit.set(this.deriveMaxTier(treeWithSource.nodes));
       this.lastImport.set(importResult);
       this.selectedId.set(importResult.tree.nodes[0]?.id ?? '');
     } catch (error) {
@@ -209,11 +224,29 @@ export class TechTreeEditorService {
   }
 
   getTierBands(): number[] {
-    const maxTier = Math.min(
-      256,
-      this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier || 1), 1),
-    );
+    const maxTier = Math.min(256, Math.max(this.tierBandLimit(), this.deriveMaxTier(this.documentState().nodes)));
     return Array.from({ length: maxTier }, (_, index) => index + 1);
+  }
+
+  getGridColumnCount(): number {
+    const maxColumn = this.documentState().nodes.reduce(
+      (max, node) => Math.max(max, (node.display_order || 0) + 1),
+      1,
+    );
+    return Math.min(24, Math.max(4, maxColumn));
+  }
+
+  addTierBand(): void {
+    const nextTier = Math.min(32, Math.max(this.getTierBands().length + 1, this.tierBandLimit() + 1));
+    this.tierBandLimit.set(nextTier);
+  }
+
+  trimTierBands(): void {
+    this.tierBandLimit.set(this.deriveMaxTier(this.documentState().nodes));
+  }
+
+  canTrimTierBands(): boolean {
+    return this.tierBandLimit() > this.deriveMaxTier(this.documentState().nodes);
   }
 
   toggleCultureTag(tagId: CultureTagId): void {
@@ -278,10 +311,16 @@ export class TechTreeEditorService {
   }
 
   private commitTree(tree: EditorTechTree): void {
-    const exportResult = this.io.exportTechTree(tree);
+    const normalizedTree: EditorTechTree = {
+      ...tree,
+      nodes: this.normalizeDisplayOrders(tree.nodes),
+    };
+
+    const exportResult = this.io.exportTechTree(normalizedTree);
     this.documentState.set(exportResult.orderedTree);
     this.validationIssues.set(exportResult.issues);
     this.lastExport.set(exportResult);
+    this.tierBandLimit.set(this.deriveMaxTier(exportResult.orderedTree.nodes));
   }
 
   private collectFallbackEffectValues(key: keyof EditorTechNodeEffects): string[] {
@@ -304,5 +343,50 @@ export class TechTreeEditorService {
 
   private clampTier(value: number): number {
     return Math.min(256, Math.max(1, Math.floor(value || 1)));
+  }
+
+  private clampDisplayOrder(value: number): number {
+    return Math.min(512, Math.max(1, Math.floor(value || 1)));
+  }
+
+  private deriveMaxTier(nodes: EditorTechNode[]): number {
+    return Math.max(1, ...nodes.map((node) => this.clampTier(node.tier || 1)));
+  }
+
+  private normalizeDisplayOrders(nodes: EditorTechNode[]): EditorTechNode[] {
+    const buckets = new Map<number, EditorTechNode[]>();
+
+    nodes.forEach((node) => {
+      const tier = this.clampTier(node.tier || 1);
+      const bucket = buckets.get(tier) ?? [];
+      bucket.push({ ...node, tier });
+      buckets.set(tier, bucket);
+    });
+
+    const normalized: EditorTechNode[] = [];
+
+    buckets.forEach((bucket, tier) => {
+      const ordered = bucket
+        .sort(
+          (left, right) =>
+            (left.display_order ?? Number.MAX_SAFE_INTEGER)
+              - (right.display_order ?? Number.MAX_SAFE_INTEGER)
+            || left.id.localeCompare(right.id),
+        )
+        .map((node, index) => ({
+          ...node,
+          display_order: index + 1,
+          tier,
+        }));
+
+      normalized.push(...ordered);
+    });
+
+    return normalized.sort(
+      (left, right) =>
+        left.tier - right.tier
+        || (left.display_order || 0) - (right.display_order || 0)
+        || left.id.localeCompare(right.id),
+    );
   }
 }
