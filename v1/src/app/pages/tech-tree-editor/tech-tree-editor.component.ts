@@ -242,7 +242,7 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       <section class="export-log" *ngIf="lastExport()">
         <p class="eyebrow">Last export (deterministic)</p>
         <div class="log-body">
-          <p class="timestamp">Issues: {{ lastExport()?.issues.length }}</p>
+          <p class="timestamp">Issues: {{ lastExport()?.issues?.length }}</p>
           <pre>{{ lastExport()?.json }}</pre>
         </div>
       </section>

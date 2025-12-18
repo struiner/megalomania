@@ -63,10 +63,6 @@ export class TechTreeIoService {
     return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
   }
 
-  getCultureTagOptions(): CultureTagBinding[] {
-    return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
-  }
-
   importTechTree(json: unknown): TechTreeImportResult {
     const parsed = this.parseJson(json);
     const normalized = this.normalizeTree(parsed);
