@@ -24,13 +24,17 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 > TODO: Provide pixel dither swatches (2–3 patterns) sized for 2× integer scaling; requires art direction confirmation.
 
 ## Typography Tokens
-- **Primary Heading**: Pixel serif (e.g., *IM Fell English SC* bitmap variant) at 14px/16px line height; uppercase allowed for headers.
-- **Secondary Heading**: Pixel sans (e.g., *Press Start 2P* or *Silkscreen*) at 12px/14px line height for labels and badges.
-- **Body Text**: 11px/13px line height using pixel-friendly sans fallback (system `ui-monospace` if bitmap unavailable).
-- **Shadow/Outline Rules**: Optional 1px drop shadow using `Cool Shadow` only when text sits on busy dither; otherwise none.
-- **Spacing**: Letter spacing +0.3px for uppercase headings; maintain integer padding (4px/8px) per charter.
+- **Primary HUD/system text:** *Pixelify Sans* at 13px/15px (weight 500) for buttons, labels, and overlay chrome. Anti-aliasing disabled (`-webkit-font-smoothing: none`) to preserve pixel edges.
+- **Secondary/caps:** *Pixelify Sans* at 12px/14px (weight 600) with uppercase and +0.3px tracking for badges and chip labels.
+- **Narrative/world accent:** *IM Fell English SC* at 14px/16px (weight 400) reserved for lore/world descriptors and section headers; keep antialiasing enabled for readability.
+- **Body copy:** 12px/14px using the HUD stack; minimum contrast ratio 7:1 against the hosting plate using `Typography Ink (Dark/Light)` tokens.
+- **Fallback stacks:** `Pixelify Sans`, `Press Start 2P`, `Silkscreen`, `VT323`, `ui-monospace`, `SFMono-Regular`, `Menlo`, `monospace` for HUD/system text. `IM Fell English SC`, `EB Garamond`, `Georgia`, `serif` for narrative accent.
+- **Shadow/Outline Rules:** Optional 1px drop shadow using `Cool Shadow` only when text sits on busy dither; otherwise none. Avoid fractional text transforms to protect the pixel grid.
 
-> TODO: Finalize canonical font files and licensing; confirm whether bitmap exports are needed for offline packaging.
+### Font Import & Packaging
+- Self-host WOFF2 assets in `/assets/fonts/hud/` with deterministic filenames. Declare via `@font-face` in `hud-theme.tokens.scss`, set `font-display: swap`, and pin unicode ranges to keep payloads small.
+- HUD/system text should include `-webkit-font-smoothing: none` and `text-rendering: optimizeSpeed` to keep stems aligned to integer pixels; narrative accent text may keep antialiasing for legibility.
+- Do not rely on CDN imports at runtime; bundling the font files preserves determinism and offline readiness. Document hashes in release notes for integrity checks.
 
 ## Iconography Treatment
 - **Stroke Weight**: 1px–2px strokes snapped to pixel grid; favor beveled corners over curves.
@@ -44,3 +48,4 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - Bottom HUD uses Secondary Background with brass edge; minimap frame can use copper corners plus inner shadow.
 - Info panes and dialogs should default to Parchment with brass header bars and minimal cord/rope accent on top edge only.
 - Peripheral badges (alerts, counts) should invert colors (dark plate, light ink) but avoid blinking/animation per charter.
+- Minimap letterbox gutters share `--hud-letterbox-flat-fill` (`#0f0a1f`) and a higher-contrast stroke (`rgba(248, 245, 230, 0.38)`) to keep inset edges visible against dark map tiles while meeting AA contrast for overlay text.

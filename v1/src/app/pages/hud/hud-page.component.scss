@@ -1,11 +1,15 @@
+@use './theme/hud-theme.tokens' as hudTheme;
+
 :host {
+  @include hudTheme.host-tokens;
+  @include hudTheme.pixel-font;
   display: block;
   min-height: calc(100vh - 48px);
   --hud-safe-area-inset: max(env(safe-area-inset-bottom, 0px), 0px);
   --bottom-hud-height: 160px;
   padding-bottom: calc(var(--bottom-hud-height) + var(--hud-safe-area-inset) + 8px);
   background: linear-gradient(180deg, #0f0a1f 0%, #0a0615 60%, #070510 100%);
-  color: #e7d9ff;
+  color: var(--hud-ink-contrast);
 }
 
 .hud-page {
@@ -104,6 +108,7 @@ app-hud-standalone-dialog {
 
 .world-title {
   margin: 0 0 4px;
+  @include hudTheme.narrative-font;
   font-size: 18px;
 }
 
