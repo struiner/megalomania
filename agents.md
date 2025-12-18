@@ -1,266 +1,106 @@
-# Global Agents Framework
+# Global Agents & Project Charter Summary
 
-## Megalomania (Codename: Anna)
+## 1 Project context
 
-This document defines the **global AI agents framework** for the Megalomania project. It serves as a **coordination, responsibility, and boundary contract** for human and AI contributors alike.
+Megalomania (codename **Anna**) is a decentralized grand‑strategy and economic simulation.  
+Players explore a procedurally generated world divided into 512×512‑cell chunks grouped into 4×4 enclave zones and each player has an append‑only ledger recording all events:contentReference[oaicite:0]{index=0}.  The game features a pre‑simulated historical world with NPC settlements and economies and uses an **Angular/TypeScript** stack:contentReference[oaicite:1]{index=1}.
 
-The intent is not to simulate personalities, but to **partition responsibility, truth ownership, and decision authority** so the project can scale in complexity without losing coherence.
+## 2 Core architectural principles (binding)
 
-This framework explicitly incorporates:
+- **Ledger‑first world model** – all game‑relevant events (economic, political, military, narrative) are recorded in an immutable ledger; state is a derived view and must be rebuildable:contentReference[oaicite:2]{index=2}.  
+- **Determinism above convenience** – given the same seed and inputs, simulations must converge; any nondeterminism must be isolated and documented:contentReference[oaicite:3]{index=3}.  
+- **Domain ownership** – each agent owns one kind of truth; cross‑domain communication happens via events, views or APIs—not direct mutation:contentReference[oaicite:4]{index=4}.  
+- **Horizontal scalability** – systems grow by adding domains rather than deepening inheritance; each domain comprises events → views → policies → actuators:contentReference[oaicite:5]{index=5}.
 
-* Event‑sourced, Merkle‑based ledger architecture
-* Procedural, deterministic world generation
-* A mercantilist, simulation‑driven economy
-* Angular/TypeScript as the primary implementation stack
+## 3 Roles & domain ownership
 
----
+| Agent                | Domain ownership        | Core responsibility (summary)                                                                 |
+|----------------------|-------------------------|------------------------------------------------------------------------------------------------|
+| **Project Manager**  | Coordination            | Intake user requests, decompose into tasks, assign agents, track roadmap, enforce time‑zone use:contentReference[oaicite:6]{index=6} |
+| **Game Designer**    | Vision & lore           | Maintain design doc and tone; define mechanics conceptually; validate that systems support gameplay:contentReference[oaicite:7]{index=7} |
+| **Ledger Engineer**  | Ledger & integrity      | Define ledger schemas, implement serialization and Merkle hashing, enforce append‑only behavior:contentReference[oaicite:8]{index=8} |
+| **World Generator**  | World truth             | Generate terrain and settlements, simulate NPC history, emit events into the ledger:contentReference[oaicite:9]{index=9} |
+| **Economy Engineer** | Markets & goods         | Define goods catalogue, model supply/demand, simulate NPC economies:contentReference[oaicite:10]{index=10} |
+| **Frontend Developer** | UI surface            | Build Angular UI components, visualize maps and ledgers, implement menus without inventing state:contentReference[oaicite:11]{index=11} |
+| **SDK & Modding Engineer** | Extensibility      | Build SDKs and modding APIs; ensure mods emit valid events and respect determinism:contentReference[oaicite:12]{index=12} |
+| **QA & Test Engineer** | Verification & trust  | Write unit/integration tests, validate determinism, profile performance:contentReference[oaicite:13]{index=13} |
 
-## 1. Project Context
+## 4 Level‑of‑Detail & abstraction (fidelity stages)
 
-**Megalomania (Anna)** is a decentralized grand‑strategy and economic simulation prototype. It combines:
+The *Level of Detail & Abstraction Charter* emphasizes that **correct shape beats complete implementation**:contentReference[oaicite:14]{index=14}.  Work should target one of the following stages:
 
-* A **procedurally generated infinite world**, divided into **512×512‑cell chunks**, grouped into **4×4 enclave zones**
-* **Per‑player append‑only ledgers** (weekly or tick‑window blockchains) recording *all game events*
-* A **distributed trading economy** where money is a resource and value emerges from supply/demand
-* A **pre‑simulated historical world** (20–40 years) populated by NPC settlements, tribes, trade networks, and conflicts
-* An **Angular‑driven UI** exposing maps, ledgers, settlements, markets, and controls
+1. **Conceptual (shape‑finding)** – explore structure and boundaries; interfaces and pseudocode are acceptable:contentReference[oaicite:15]{index=15}.  
+2. **Structural (skeleton)** – establish relationships and data flow; minimal working implementations with explicit extension points:contentReference[oaicite:16]{index=16}.  
+3. **Functional (playable/usable)** – implement correct behavior for primary paths and end‑to‑end flows; secondary features may be incomplete:contentReference[oaicite:17]{index=17}.  
+4. **Refinement (hardening)** – improve robustness and clarity; handle errors and performance considerations:contentReference[oaicite:18]{index=18}.  
 
-Players enter the world as stranded survivors, help found settlements, and may grow into merchant powers whose influence is economic, political, and historical.
+Codex should default to the **lowest viable fidelity stage** and stop early if details are omitted:contentReference[oaicite:19]{index=19}.
 
----
+## 5 UI & ergonomics
 
-## 2. Core Architectural Principles (Binding)
+The *UI & Ergonomics Charter* governs all HUD work:
 
-All agents MUST adhere to the following principles.
+- **The HUD is an instrument** – it orients the player, provides access to management and information, and stays out of the world’s way:contentReference[oaicite:20]{index=20}.  The center of the screen must remain uncluttered:contentReference[oaicite:21]{index=21}.
+- **Attention hierarchy** – primary attention (orientation/movement) must never be obstructed by UI chrome:contentReference[oaicite:22]{index=22}; secondary attention groups actions and indicators in stable positions:contentReference[oaicite:23]{index=23}; peripheral information (stats, counts) should be readable at a glance and never demand focus:contentReference[oaicite:24]{index=24}.  
+- **Density & restraint** – empty space is a feature; no more than eight primary actions should be visible in the HUD at once:contentReference[oaicite:25]{index=25}.  Icons come before text; numbers last:contentReference[oaicite:26]{index=26}.  
+- **Interaction rules** – one action per button, no hidden gestures, shallow modal depth (max stack depth 2) and explicit time control:contentReference[oaicite:27]{index=27}.
+- **Truth ownership** – the UI displays derived views only; it never owns truth or caches history:contentReference[oaicite:28]{index=28}.  
+- **Visual tone** – visuals follow a 16‑bit pixel heritage; elements must align to integer pixel grids and serve function over ornamentation:contentReference[oaicite:29]{index=29}:contentReference[oaicite:30]{index=30}.  
 
-### 2.1 Ledger‑First World Model
+## 6 Task specification guidelines
 
-* **All game‑relevant events** are recorded as immutable ledger entries
+### 6.1 Reusable Task Spec Template
 
-  * Economic, political, military, narrative, institutional
-* No subsystem may store authoritative mutable history outside the ledger
-* All state is a **derived view** and must be rebuildable
+Every task specification (`tasks/YYYY-MM-DD_<short-description>.md`) should include:
 
-### 2.2 Determinism Above Convenience
+- **Task summary & purpose** – succinct description of the problem and why it exists:contentReference[oaicite:31]{index=31}.  
+- **Explicit non‑goals** – clarify what is **not** to be done to prevent scope creep:contentReference[oaicite:32]{index=32}.  
+- **Fidelity & constraints** – specify the target fidelity stage and reference relevant charters (e.g., UI & Ergonomics, Level‑of‑Detail):contentReference[oaicite:33]{index=33}.  
+- **Agent assignments** – identify the primary executor and collaborators:contentReference[oaicite:34]{index=34}.  
+- **Deliverables & review gate** – list required outputs (interfaces, code, documentation) and criteria for acceptance:contentReference[oaicite:35]{index=35}.  
+- **Dependencies & sequencing** – note prerequisite tasks and ordering requirements:contentReference[oaicite:36]{index=36}.  
+- **Open questions / clarifications** – document unknowns and answers to keep design intent explicit:contentReference[oaicite:37]{index=37}.  
 
-* Given the same seed and inputs, simulations MUST converge
-* Ordering rules, hashing, and serialization must be explicit and stable
-* Any nondeterminism must be isolated, documented, and optional
+### 6.2 Meta‑task for generating tasks
 
-### 2.3 Domain Ownership
+A meta‑task scans the repository for TODOs, stubs and placeholders and converts them into task specs.  It is initiated by the Project Manager and must:
 
-* Each agent owns **one kind of truth**
-* Cross‑domain communication happens via events, views, or APIs — never direct mutation
+- Group related signals, determine domain ownership using this agents charter, and decide task scope (UI, ledger, world generation, cleanup, etc.):contentReference[oaicite:38]{index=38}.  
+- Generate tasks using the same template, including summary, non‑goals, agent assignments and review gate:contentReference[oaicite:39]{index=39}.  
+- Flag ambiguous ownership for human review and avoid inventing new mechanics:contentReference[oaicite:40]{index=40}.  
+- Produce a summary report listing detected signals and proposed task titles:contentReference[oaicite:41]{index=41}.
 
-### 2.4 Horizontal Scalability
+### 6.3 Core task patterns
 
-* Systems grow by **adding domains**, not deepening inheritance trees
-* Each domain is composed of: Events → Views → Policies → Actuators
+- **Low fidelity by default** – tasks should aim for conceptual or structural work unless explicitly promoted:contentReference[oaicite:42]{index=42}.  
+- **Small, independent scope** – each task should target a single UI surface or concern and may generate sub‑tasks but must not exceed one additional recursion layer without approval:contentReference[oaicite:43]{index=43}.  
+- **Non‑goals** – clearly state what is out of scope to prevent accidental cross‑domain changes, such as forbidding ledger schema updates in UI tasks or backend logic in design tasks:contentReference[oaicite:44]{index=44}.  
 
----
+## 7 Collaboration workflow
 
-## 3. Agent Roles Overview
+The canonical workflow applies to every epic and task:contentReference[oaicite:45]{index=45}:
 
-| Agent                  | Domain Ownership   | Core Responsibility                              |
-| ---------------------- | ------------------ | ------------------------------------------------ |
-| Project Manager        | Coordination       | Task orchestration, roadmap, conflict resolution |
-| Game Designer          | Vision & Lore      | Design document, tone, world coherence           |
-| Ledger Engineer        | Ledger & Integrity | Event schemas, blocks, Merkle rules, validation  |
-| World Generator        | World Truth        | Terrain, settlements, tribes, pre‑history        |
-| Economy Engineer       | Markets & Goods    | Goods, pricing, trade flows, NPC economies       |
-| Frontend Developer     | UI Surface         | Angular UI, visualization, UX consistency        |
-| SDK & Modding Engineer | Extensibility      | Tools, mod APIs, sandboxing                      |
-| QA & Test Engineer     | Verification       | Determinism, correctness, performance            |
+1. **Task intake** – Project Manager scopes and assigns tasks.  
+2. **Planning** – agents propose domain‑local plans and confirm fidelity stages.  
+3. **Execution** – agents implement within their ownership boundaries.  
+4. **Testing** – QA validates determinism, integrity and layout.  
+5. **Integration** – Project Manager merges work and updates roadmap.  
+6. **Documentation** – design and API docs are updated as needed.  
 
----
+Tasks must pass review gates where agents verify compliance with charters and this document before merging.
 
-## 4. Agent Definitions and Contracts
+## 8 Operating rules
 
-### 4.1 Project Manager
+All contributors (human and AI) must adhere to these non‑negotiable rules:contentReference[oaicite:46]{index=46}:
 
-**Owns:** Coordination truth
+- **No hidden mutable truth** – authoritative state lives only in the ledger and its derived views.  
+- **Prefer small, composable systems** – avoid monolithic features.  
+- **Emit events deliberately** – unnecessary noise becomes technical debt.  
+- **Rebuildability** – any subsystem that cannot be rebuilt from the ledger is invalid.  
+- **Document assumptions** – ambiguity must be spelled out in tasks or documentation.
 
-Responsibilities:
+## 9 Governance & status
 
-* Intake user requests and decompose them into domain‑scoped tasks
-* Assign tasks to agents based on ownership and dependencies
-* Track roadmap progress and surface blockers
-* Ensure explicit communication of dates and time zone (Europe/Amsterdam)
-* Maintain a high‑level changelog
-
-Constraints:
-
-* Does not define mechanics or schemas
-* Does not implement features directly
-
----
-
-### 4.2 Game Designer
-
-**Owns:** Vision, lore, and player‑facing meaning
-
-Responsibilities:
-
-* Maintain and evolve the design document
-* Preserve the Hanseatic‑fantasy tone and mercantilist logic
-* Define new mechanics at the *conceptual* level
-* Validate that systems reinforce intended gameplay loops
-
-Collaborations:
-
-* With Ledger Engineer on schema implications
-* With World Generator on archetypes, tribes, settlement logic
-* With Economy Engineer on goods categories and incentives
-* With Frontend Developer on UX intent
-
-Constraints:
-
-* Does not decide hashing, serialization, or low‑level APIs
-
----
-
-### 4.3 Ledger Engineer
-
-**Owns:** Historical truth and cryptographic integrity
-
-Responsibilities:
-
-* Define and maintain ledger entry and block schemas
-* Implement canonical serialization and Merkle hashing rules
-* Enforce append‑only, deterministic behavior
-* Implement ledger APIs and proof verification
-* Support cross‑player validation and optional checkpoint anchors
-
-Constraints:
-
-* Ledger records *facts*, not interpretations
-* No derived state stored as truth
-
----
-
-### 4.4 World Generator
-
-**Owns:** The physical and historical world
-
-Responsibilities:
-
-* Generate terrain, biomes, and noise fields
-* Seed enclave zones and place settlements via scoring
-* Define and simulate tribal archetypes and behavior
-* Run multi‑decade NPC history simulations
-* Emit world‑history events into the ledger
-
-Collaborations:
-
-* With Economy Engineer to align resources and production
-* With Ledger Engineer to ensure determinism
-
-Constraints:
-
-* World state must be reproducible from seed + ledger
-
----
-
-### 4.5 Economy Engineer
-
-**Owns:** Markets, goods, and economic causality
-
-Responsibilities:
-
-* Define goods catalogue (categories A–G)
-* Model supply, demand, pricing, and scarcity
-* Implement trade routes, fleets, and convoys
-* Simulate NPC economies during pre‑player history
-* Emit economic events (production, trade, taxation)
-
-Constraints:
-
-* Money is a `ResourceId`, not a privileged value
-* Prices are derived, never stored as truth
-
----
-
-### 4.6 Frontend Developer
-
-**Owns:** Player interaction surface
-
-Responsibilities:
-
-* Build Angular UI components and routing
-* Visualize maps, ledgers, settlements, and markets
-* Implement menus, dialogs, and controls consistently
-* Surface ledger proofs and historical inspection tools
-
-Collaborations:
-
-* With Game Designer on UX clarity
-* With SDK Engineer on editor/tool integration
-
-Constraints:
-
-* UI never invents state; it visualizes derived views
-
----
-
-### 4.7 SDK & Modding Engineer
-
-**Owns:** Extensibility and tooling
-
-Responsibilities:
-
-* Build SDKs for goods, settlements, structures, tribes
-* Define sandboxed modding APIs
-* Enable safe scripting and data import/export
-* Ensure mods integrate cleanly with ledger and world systems
-
-Constraints:
-
-* Mods must emit valid events
-* Mods cannot bypass determinism or ledger rules
-
----
-
-### 4.8 QA & Test Engineer
-
-**Owns:** Verification and trustworthiness
-
-Responsibilities:
-
-* Write unit, integration, and end‑to‑end tests
-* Validate determinism across seeds and runs
-* Test ledger proofs and rebuilds
-* Profile performance and memory usage
-* Perform regression and bug triage
-
-Constraints:
-
-* Tests assert *rebuildability* and *consistency*, not just correctness
-
----
-
-## 5. Collaboration Workflow (Canonical)
-
-1. **Task Intake** — Project Manager scopes and assigns
-2. **Planning** — Agents propose domain‑local plans
-3. **Execution** — Agents implement within their ownership boundaries
-4. **Testing** — QA validates determinism and integrity
-5. **Integration** — Project Manager merges and updates roadmap
-6. **Documentation** — Design and API docs updated as needed
-
----
-
-## 6. Operating Rules for All Agents
-
-* Never introduce hidden mutable truth
-* Prefer small, composable systems
-* Emit events deliberately; noise is technical debt
-* If a subsystem cannot be rebuilt from the ledger, it is invalid
-* When in doubt, document assumptions explicitly
-
----
-
-## 7. Status of This Document
-
-This document is **authoritative** for agent coordination.
-
-Changes to agent responsibilities, ownership boundaries, or workflow MUST be reflected here before implementation proceeds.
+- **Primary owners** – the Project Manager owns coordination; the Architecture Steward enforces structural integrity; the Game Designer owns UI ergonomics and lore:contentReference[oaicite:47]{index=47}.  
+- **Change control** – changes to agent responsibilities, ownership boundaries or workflow must be reflected in this document before implementation:contentReference[oaicite:48]{index=48}.  
+- **Living document** – this charter is authoritative and stable; it evolves only in response to repeated friction or failure modes:contentReference[oaicite:49]{index=49}.:contentReference[oaicite:50]{index=50}
