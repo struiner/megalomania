@@ -1,0 +1,52 @@
+{
+  "tech_tree_id": "mixed_case_research",
+  "version": 2,
+  "default_culture_tags": ["biome_taiga", "settlement_trading_post"],
+  "metadata": { "source_label": "fixtures/tech-tree-normalization" },
+  "nodes": [
+    {
+      "id": "foundation_schema",
+      "title": "Foundation Schema",
+      "summary": "Baseline drafting for shared icon frame.",
+      "tier": 1,
+      "display_order": 1,
+      "culture_tags": ["biome_taiga"],
+      "prerequisites": [],
+      "effects": {
+        "unlock_structures": ["lumberYard"],
+        "unlock_goods": ["Wood"]
+      },
+      "metadata": { "icon_id": "structure_lumberyard" }
+    },
+    {
+      "id": "mead_luxuries",
+      "title": "Mead Luxuries",
+      "summary": "Refinement of mixed-case inputs.",
+      "tier": 2,
+      "display_order": 2,
+      "culture_tags": ["guild_merchants"],
+      "prerequisites": [{ "node": "foundation_schema", "relation": "requires" }],
+      "effects": {
+        "unlock_structures": ["TownHall"],
+        "unlock_goods": ["Mead", "metalGoods"],
+        "grants_settlement_specialization": "Trade"
+      },
+      "metadata": { "icon_id": "goods_mead" }
+    },
+    {
+      "id": "guild_patents",
+      "title": "Guild Patents",
+      "summary": "Edge case with max tier depth.",
+      "tier": 256,
+      "display_order": 99,
+      "culture_tags": ["guild_scholars", "settlement_trading_post"],
+      "prerequisites": [{ "node": "mead_luxuries", "relation": "requires" }],
+      "effects": {
+        "unlock_settlements": ["trading_post"],
+        "unlock_guilds": ["Scholars"],
+        "guild_reputation": [{ "guild": "scholars", "delta": 5 }]
+      },
+      "metadata": { "icon_id": "guild_scholars" }
+    }
+  ]
+}

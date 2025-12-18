@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Depth Capacity (up to 256 Tiers)
 
-**STATUS: NOT STARTED (Structural fidelity); Phase 2 alignment with tech_epic.md**
+**STATUS: COMPLETE (Structural fidelity; tier bounds enforced with fixtures)**
 
 ## Task Summary
 Guarantee the technology tree data model, import/export schema, and validation rules explicitly support up to **256 sequential tiers** without loss of determinism, ensuring tier metadata is preserved across JSON round-trips and consumable by editor/UI scaffolds.

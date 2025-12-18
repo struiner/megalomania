@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Connection Overlay Lines (Hierarchical Chips)
 
-**STATUS: NOT STARTED (Structural fidelity); Phase 2 alignment with tech_epic.md**
+**STATUS: COMPLETE (Structural fidelity; overlay lines implemented in editor)**
 
 ## Task Summary
 Define and prototype a structural overlay layer that renders hierarchical connections between technology chips/nodes as smooth, readable lines without violating pixel-grid integrity or UI attention hierarchy.

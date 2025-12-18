@@ -21,7 +21,7 @@ export type TechPrerequisiteLink = TechNodePrerequisite;
 export type TechEffects = TechNodeEffects;
 export type TechGuildReputationEffect = NonNullable<TechNodeEffects['guild_reputation']>[number];
 
-export {
+export type {
   CultureTagBinding,
   CultureTagId,
   CultureTagNamespace,
@@ -33,6 +33,6 @@ export {
   TechTreeValidationIssue,
 };
 
-export interface TechNode extends CanonicalTechNode {}
+export type TechNode = CanonicalTechNode;
 
-export interface TechTree extends CanonicalTechTree {}
+export type TechTree = CanonicalTechTree;

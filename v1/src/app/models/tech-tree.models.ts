@@ -77,6 +77,8 @@ export interface TechNodeMetadata {
     position?: 'subscript' | 'superscript';
     note?: string;
   }>;
+  icon_id?: string;
+  icon_overlays?: CultureTagId[];
   custom?: Record<string, unknown>;
 }
 
@@ -85,6 +87,7 @@ export interface TechNode {
   title: string;
   summary: string;
   tier?: number;
+  display_order?: number;
   category?: string;
   culture_tags: CultureTagId[];
   prerequisites: TechNodePrerequisite[];

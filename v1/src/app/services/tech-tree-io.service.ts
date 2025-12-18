@@ -8,20 +8,27 @@ import { SettlementType } from '../enums/SettlementType';
 import { StructureEffect } from '../enums/StructureEffect';
 import { StructureType } from '../enums/StructureType';
 import {
+  buildEnumNormalizationMap,
+  EnumNormalizationMap,
+  mapValuesToCanonical,
+  normalizeEnumValue,
+  normalizeIdentifier,
+} from './tech-identifier-normalizer';
+import {
   CultureTagBinding,
   CultureTagId,
   CultureTagNamespace,
   TechNode,
-  TechEffects,
-  TechPrerequisiteLink,
-  TechPrerequisiteRelation,
+  TechNodeEffects,
+  TechNodeMetadata,
+  TechNodePrerequisite,
+  TECH_PREREQUISITE_RELATION,
   TechTree,
   TechTreeExportResult,
   TechTreeImportResult,
   TechTreeOrdering,
   TechTreeValidationIssue,
-} from '../models/tech-tree.model';
-import { TECH_PREREQUISITE_RELATION, TechNodeEffects, TechNodePrerequisite } from '../models/tech-tree.models';
+} from '../models/tech-tree.models';
 
 interface CultureTagDefinition extends CultureTagBinding {}
 
@@ -36,6 +43,25 @@ interface NormalizedTreeResult {
 export class TechTreeIoService {
   private readonly cultureTagVocabulary = this.buildCultureTagVocabulary();
   private readonly migrations: Record<number, (tree: TechTree) => TechTree> = {};
+  private readonly enumNormalizationMaps: {
+    structures: EnumNormalizationMap;
+    structureEffects: EnumNormalizationMap;
+    goods: EnumNormalizationMap;
+    settlements: EnumNormalizationMap;
+    guilds: EnumNormalizationMap;
+    floraUses: EnumNormalizationMap;
+  } = {
+    structures: buildEnumNormalizationMap(StructureType),
+    structureEffects: buildEnumNormalizationMap(StructureEffect),
+    goods: buildEnumNormalizationMap(GoodsType),
+    settlements: buildEnumNormalizationMap(SettlementType),
+    guilds: buildEnumNormalizationMap(GuildType),
+    floraUses: buildEnumNormalizationMap(FloraUseType as unknown as Record<string, string>),
+  };
+
+  getCultureTagOptions(): CultureTagBinding[] {
+    return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
+  }
 
   getCultureTagOptions(): CultureTagBinding[] {
     return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
@@ -92,57 +118,59 @@ export class TechTreeIoService {
 
   private normalizeTree(raw: Record<string, unknown>): NormalizedTreeResult {
     const issues: TechTreeValidationIssue[] = [];
+    const rawTree = raw as Partial<TechTree> & Record<string, unknown>;
 
-    const techTreeId = this.normalizeIdentifier(
-      (raw['tech_tree_id'] as string) ?? (raw as Record<string, string>)['techTreeId'] ?? ''
+    const techTreeId = normalizeIdentifier(
+      (rawTree.tech_tree_id as string) ?? (rawTree as Record<string, string>)['techTreeId'] ?? ''
     );
 
-    const nodes = Array.isArray(raw['nodes'])
-      ? (raw['nodes'] as unknown[]).map((node, index) => this.normalizeNode(node, `nodes[${index}]`, issues))
+    const nodes = Array.isArray(rawTree.nodes)
+      ? (rawTree.nodes as unknown[]).map((node, index) => this.normalizeNode(node, `nodes[${index}]`, issues))
       : [];
 
     const normalizedTree: TechTree = {
       tech_tree_id: techTreeId,
-      version: this.toInteger(raw['version'], 'version', issues),
+      version: this.toInteger(rawTree.version, 'version', issues),
       default_culture_tags: this.normalizeCultureTagArray(
-        (raw['default_culture_tags'] as string[] | undefined)
-          || (raw as Record<string, string[]>)['defaultCultureTags']
+        (rawTree.default_culture_tags as string[] | undefined)
+          || (rawTree as Record<string, string[]>)['defaultCultureTags']
           || [],
         'default_culture_tags',
         issues,
       ),
       nodes,
-      ordering: raw['ordering'] ? this.normalizeOrdering(raw['ordering'] as TechTreeOrdering) : undefined,
-      metadata: (raw['metadata'] as TechTree['metadata']) || undefined,
+      ordering: rawTree.ordering ? this.normalizeOrdering(rawTree.ordering as TechTreeOrdering) : undefined,
+      metadata: (rawTree.metadata as TechTree['metadata']) || undefined,
     };
 
     return { tree: normalizedTree, issues };
   }
 
   private normalizeNode(raw: unknown, path: string, issues: TechTreeValidationIssue[]): TechNode {
-    const nodeObject = (raw || {}) as Record<string, unknown>;
-    const nodeId = this.normalizeIdentifier((nodeObject['id'] as string) || '');
+    const nodeObject = (raw || {}) as Partial<TechNode> & Record<string, unknown>;
+    const nodeId = normalizeIdentifier((nodeObject.id as string) || '');
 
     const cultureTags = this.normalizeCultureTagArray(
-      (nodeObject['culture_tags'] as string[]) || (nodeObject as Record<string, string[]>)['cultureTags'] || [],
+      (nodeObject.culture_tags as string[]) || (nodeObject as Record<string, string[]>)['cultureTags'] || [],
       `${path}.culture_tags`,
       issues,
     );
 
     const node: TechNode = {
       id: nodeId,
-      title: ((nodeObject['title'] as string) || '').trim(),
-      summary: ((nodeObject['summary'] as string) || '').trim(),
-      tier: this.toInteger(nodeObject['tier'], `${path}.tier`, issues, 1),
-      category: ((nodeObject['category'] as string) || '').trim() || undefined,
+      title: ((nodeObject.title as string) || '').trim(),
+      summary: ((nodeObject.summary as string) || '').trim(),
+      tier: this.normalizeTier(nodeObject.tier, `${path}.tier`, issues),
+      display_order: this.normalizeDisplayOrder(nodeObject.display_order, `${path}.display_order`, issues),
+      category: ((nodeObject.category as string) || '').trim() || undefined,
       culture_tags: cultureTags,
       prerequisites: this.normalizePrerequisites(
         (nodeObject['prerequisites'] as TechNodePrerequisite[]) || [],
         `${path}.prerequisites`,
         issues,
       ),
-      effects: this.normalizeEffects((nodeObject['effects'] as Partial<TechNodeEffects>) || {}, `${path}.effects`, issues),
-      metadata: (nodeObject['metadata'] as Record<string, unknown>) || undefined,
+      effects: this.normalizeEffects((nodeObject.effects as Partial<TechNodeEffects>) || {}, `${path}.effects`, issues),
+      metadata: this.normalizeMetadata((nodeObject.metadata as Record<string, unknown>) || {}, `${path}.metadata`, issues),
     };
 
     return node;
@@ -159,7 +187,7 @@ export class TechTreeIoService {
 
     return rawPrerequisites
       .map((prerequisite, index) => {
-        const node = this.normalizeIdentifier(((prerequisite as TechNodePrerequisite).node as string) || '');
+        const node = normalizeIdentifier(((prerequisite as TechNodePrerequisite).node as string) || '');
         const relation = (prerequisite as TechNodePrerequisite).relation || TECH_PREREQUISITE_RELATION.Requires;
 
         if (relation !== TECH_PREREQUISITE_RELATION.Requires) {
@@ -185,42 +213,40 @@ export class TechTreeIoService {
     path: string,
     issues: TechTreeValidationIssue[],
   ): TechNodeEffects {
-    const normalizeEnumArray = (
+    const normalizeEnumArray = <T extends string>(
       values: unknown,
-      enumObject: Record<string, string>,
+      map: EnumNormalizationMap,
       key: string,
-    ): string[] => {
+    ): T[] => {
       if (!Array.isArray(values)) return [];
 
-      const allowed = new Set(Object.values(enumObject));
-      return this.uniqueAndSort(
-        (values as unknown[])
-          .map((value) => this.normalizeIdentifier(String(value || '')))
-          .filter((value) => {
-            if (!value) return false;
-            if (!allowed.has(value)) {
-              issues.push({
-                path: `${path}.${key}`,
-                message: `Value "${value}" is not present in authoritative enum; kept as fallback.`,
-                severity: 'warning',
-              });
-            }
-            return true;
-          }),
-      );
+      const normalized = mapValuesToCanonical(values as string[], map);
+      const allowedValues = new Set(Object.values(map));
+
+      normalized.forEach((value) => {
+        if (!allowedValues.has(value)) {
+          issues.push({
+            path: `${path}.${key}`,
+            message: `Value "${value}" is not present in authoritative enum; kept as fallback.`,
+            severity: 'warning',
+          });
+        }
+      });
+
+      return normalized as T[];
     };
 
     const normalized: TechNodeEffects = {
-      unlock_structures: normalizeEnumArray(effects.unlock_structures, StructureType, 'unlock_structures'),
+      unlock_structures: normalizeEnumArray<StructureType>(effects.unlock_structures, this.enumNormalizationMaps.structures, 'unlock_structures'),
       unlock_structure_effects: normalizeEnumArray(
         effects.unlock_structure_effects,
-        StructureEffect,
+        this.enumNormalizationMaps.structureEffects,
         'unlock_structure_effects',
       ),
-      unlock_goods: normalizeEnumArray(effects.unlock_goods, GoodsType, 'unlock_goods'),
-      unlock_settlements: normalizeEnumArray(effects.unlock_settlements, SettlementType, 'unlock_settlements'),
-      unlock_guilds: normalizeEnumArray(effects.unlock_guilds, GuildType, 'unlock_guilds'),
-      flora_unlocks: normalizeEnumArray(effects.flora_unlocks, FloraUseType as unknown as Record<string, string>, 'flora_unlocks'),
+      unlock_goods: normalizeEnumArray<GoodsType>(effects.unlock_goods, this.enumNormalizationMaps.goods, 'unlock_goods'),
+      unlock_settlements: normalizeEnumArray<SettlementType>(effects.unlock_settlements, this.enumNormalizationMaps.settlements, 'unlock_settlements'),
+      unlock_guilds: normalizeEnumArray<GuildType>(effects.unlock_guilds, this.enumNormalizationMaps.guilds, 'unlock_guilds'),
+      flora_unlocks: normalizeEnumArray<FloraUseType>(effects.flora_unlocks, this.enumNormalizationMaps.floraUses, 'flora_unlocks'),
       grants_settlement_specialization: effects.grants_settlement_specialization,
       research_rate_modifier:
         effects.research_rate_modifier !== undefined
@@ -228,32 +254,90 @@ export class TechTreeIoService {
           : undefined,
       metadata: effects.metadata,
       guild_reputation: Array.isArray(effects.guild_reputation)
-        ? effects.guild_reputation.map((entry: { guild?: GuildType; delta?: number; }, index: any) => {
-            const guild = (entry as { guild: GuildType }).guild;
-            const delta = Number((entry as { delta: number }).delta);
+        ? effects.guild_reputation
+            .map((entry: { guild: GuildType; delta: number }, index: number) => {
+              const mappedGuild = normalizeEnumValue(
+                (entry as { guild: GuildType }).guild,
+                this.enumNormalizationMaps.guilds,
+              );
+              const delta = Number((entry as { delta: number }).delta);
 
-            if (guild && !Object.values(GuildType).includes(guild)) {
-              issues.push({
-                path: `${path}.guild_reputation[${index}].guild`,
-                message: `Guild "${guild}" is not present in authoritative enum; kept as fallback.`,
-                severity: 'warning',
-              });
-            }
+              if (!mappedGuild.isKnown) {
+                issues.push({
+                  path: `${path}.guild_reputation[${index}].guild`,
+                  message: `Guild "${mappedGuild.normalized}" is not present in authoritative enum; kept as fallback.`,
+                  severity: 'warning',
+                });
+              }
 
-            if (!Number.isFinite(delta)) {
-              issues.push({
-                path: `${path}.guild_reputation[${index}].delta`,
-                message: 'guild_reputation.delta must be a finite number.',
-                severity: 'error',
-              });
-            }
+              if (!Number.isFinite(delta)) {
+                issues.push({
+                  path: `${path}.guild_reputation[${index}].delta`,
+                  message: 'guild_reputation.delta must be a finite number.',
+                  severity: 'error',
+                });
+              }
 
-            return { guild, delta } as { guild: GuildType; delta: number };
-          })
+              const guild = (mappedGuild.canonical ?? mappedGuild.normalized) as GuildType;
+              return { guild, delta: Number.isFinite(delta) ? delta : 0 };
+            })
+            .filter((value: { guild: GuildType; delta: number }) => Boolean(value.guild))
         : undefined,
     };
 
     return normalized;
+  }
+
+  private normalizeMetadata(
+    metadata: Partial<TechNodeMetadata>,
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): TechNodeMetadata | undefined {
+    if (!metadata || typeof metadata !== 'object' || !Object.keys(metadata).length) {
+      return undefined;
+    }
+
+    const normalized: TechNodeMetadata = {};
+
+    if (Array.isArray(metadata.culture_overlays)) {
+      normalized.culture_overlays = metadata.culture_overlays
+        .map((overlay: NonNullable<TechNodeMetadata['culture_overlays']>[number], index: number) => {
+          const tag = normalizeIdentifier(String(overlay.tag || ''));
+          if (!tag) return undefined;
+
+          if (!this.cultureTagVocabulary[tag]) {
+            issues.push({
+              path: `${path}.culture_overlays[${index}].tag`,
+              message: `Culture overlay tag "${tag}" is not part of the authoritative vocabulary; kept as fallback.`,
+              severity: 'warning',
+            });
+          }
+
+          return {
+            ...overlay,
+            tag,
+          };
+        })
+        .filter((value): value is NonNullable<TechNodeMetadata['culture_overlays']>[number] => Boolean(value));
+    }
+
+    if (metadata.icon_id) {
+      normalized.icon_id = normalizeIdentifier(String(metadata.icon_id));
+    }
+
+    if (Array.isArray(metadata.icon_overlays)) {
+      normalized.icon_overlays = this.normalizeCultureTagArray(
+        metadata.icon_overlays as string[],
+        `${path}.icon_overlays`,
+        issues,
+      );
+    }
+
+    if (metadata.custom) {
+      normalized.custom = metadata.custom;
+    }
+
+    return Object.keys(normalized).length ? normalized : undefined;
   }
 
   private normalizeOrdering(ordering: TechTreeOrdering): TechTreeOrdering {
@@ -262,7 +346,7 @@ export class TechTreeIoService {
     const normalizedPrereqs: Record<string, string[]> = {};
 
     Object.keys(prerequisites).forEach((key) => {
-      const normalizedKey = this.normalizeIdentifier(key);
+      const normalizedKey = normalizeIdentifier(key);
       normalizedPrereqs[normalizedKey] = this.normalizeStringArray(prerequisites[key]);
     });
 
@@ -276,14 +360,23 @@ export class TechTreeIoService {
     const nodes = [...tree.nodes]
       .map((node) => ({
         ...node,
+        tier: this.clampTier(node.tier),
         culture_tags: this.uniqueAndSort(node.culture_tags),
         prerequisites: this.sortPrerequisites(node.prerequisites),
         effects: node.effects ? this.orderEffects(node.effects) : undefined,
       }))
       .sort((left, right) => {
-        if (left.tier !== right.tier) {
-          return (left.tier ?? 0) - (right.tier ?? 0);
+        const tierDelta = this.clampTier(left.tier) - this.clampTier(right.tier);
+        if (tierDelta !== 0) {
+          return tierDelta;
         }
+
+        const displayOrderDelta = (left.display_order ?? Number.MAX_SAFE_INTEGER)
+          - (right.display_order ?? Number.MAX_SAFE_INTEGER);
+        if (displayOrderDelta !== 0) {
+          return displayOrderDelta;
+        }
+
         return left.id.localeCompare(right.id);
       });
 
@@ -338,8 +431,8 @@ export class TechTreeIoService {
       grants_settlement_specialization: effects.grants_settlement_specialization,
       guild_reputation: effects.guild_reputation
         ? effects.guild_reputation
-            .map((entry: { guild: any; delta: any; }) => ({ guild: entry.guild, delta: entry.delta }))
-            .sort((left: { guild: string; }, right: { guild: any; }) => left.guild.localeCompare(right.guild))
+            .map((entry: { guild: GuildType; delta: number }) => ({ guild: entry.guild, delta: entry.delta }))
+            .sort((left: { guild: GuildType }, right: { guild: GuildType }) => left.guild.localeCompare(right.guild))
         : undefined,
       research_rate_modifier: effects.research_rate_modifier,
       metadata: effects.metadata,
@@ -445,7 +538,7 @@ export class TechTreeIoService {
     }
 
     if (effects.guild_reputation) {
-      effects.guild_reputation.forEach((entry: { guild: GuildType; delta: unknown; }, index: any) => {
+      effects.guild_reputation.forEach((entry: { guild: GuildType; delta: number }, index: number) => {
         if (!Object.values(GuildType).includes(entry.guild)) {
           issues.push({
             path: `${context}.guild_reputation[${index}].guild`,
@@ -562,15 +655,6 @@ export class TechTreeIoService {
     });
   }
 
-  private normalizeIdentifier(value: string): string {
-    return value
-      .trim()
-      .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
-      .replace(/[^a-zA-Z0-9]+/g, '_')
-      .replace(/_{2,}/g, '_')
-      .toLowerCase();
-  }
-
   private normalizeCultureTagArray(
     tags: string[],
     path: string,
@@ -580,7 +664,7 @@ export class TechTreeIoService {
 
     return this.uniqueAndSort(
       tags
-        .map((tag) => this.normalizeIdentifier(tag))
+        .map((tag) => normalizeIdentifier(tag))
         .filter((tag) => {
           if (!tag) return false;
           if (!this.cultureTagVocabulary[tag]) {
@@ -593,6 +677,43 @@ export class TechTreeIoService {
           return true;
         }) as CultureTagId[],
     );
+  }
+
+  private normalizeTier(value: unknown, path: string, issues: TechTreeValidationIssue[]): number {
+    const parsed = this.toInteger(value, path, issues, 1);
+    if (parsed < 1 || parsed > 256) {
+      issues.push({
+        path,
+        message: 'Tier must be between 1 and 256 (inclusive) to remain deterministic.',
+        severity: 'error',
+      });
+    }
+    return this.clampTier(parsed);
+  }
+
+  private normalizeDisplayOrder(
+    value: unknown,
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): number | undefined {
+    if (value === undefined || value === null || value === '') {
+      return undefined;
+    }
+    const parsed = this.toInteger(value, path, issues, 0);
+    if (parsed < 0) {
+      issues.push({
+        path,
+        message: 'display_order must be zero or positive; clamped to 0.',
+        severity: 'warning',
+      });
+      return 0;
+    }
+    return parsed;
+  }
+
+  private clampTier(value?: number): number {
+    if (!Number.isFinite(value)) return 1;
+    return Math.min(256, Math.max(1, value || 1));
   }
 
   private normalizeStringArray(values?: string[]): string[] {
@@ -620,7 +741,7 @@ export class TechTreeIoService {
 
     const register = <T extends string>(enumObject: Record<string, T>, source: CultureTagNamespace) => {
       Object.values(enumObject).forEach((value) => {
-        const normalized = `${source}_${this.normalizeIdentifier(String(value))}` as CultureTagId;
+        const normalized = `${source}_${normalizeIdentifier(String(value))}` as CultureTagId;
         vocabulary[normalized] = {
           id: normalized,
           source,

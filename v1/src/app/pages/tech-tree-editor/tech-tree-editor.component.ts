@@ -1,14 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CultureTagId } from '../../models/tech-tree.models';
+import { TechIconPickerComponent } from './tech-icon-picker.component';
+import { TechTreeConnectionOverlayComponent } from './tech-tree-connection-overlay.component';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
-import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types';
+import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, PrerequisiteOverlayNode } from './tech-tree-editor.types';
 
 @Component({
   selector: 'app-tech-tree-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TechIconPickerComponent, TechTreeConnectionOverlayComponent],
   providers: [TechTreeEditorService],
   template: `
     <section class="tech-tree-editor">
@@ -104,6 +107,15 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
                 (ngModelChange)="updateNode({ category: $event || '' })"
               />
             </label>
+            <div class="field field-span icon-field">
+              <span class="field-label">Tech icon</span>
+              <app-tech-icon-picker
+                [icons]="iconOptions()"
+                [value]="selectedNode()?.metadata?.icon_id || null"
+                (valueChange)="updateIcon($event)"
+              ></app-tech-icon-picker>
+              <p class="hint">Shared frame with culture overlays; deterministic ordering.</p>
+            </div>
             <div class="field field-span tag-picker">
               <span class="field-label">Culture tags</span>
               <div class="tag-grid">
@@ -183,6 +195,13 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
             <p class="hint">Pixel-grid aligned columns; connectors show upstream unlocks.</p>
           </header>
           <div class="prereq-diagram" [style.gridTemplateColumns]="diagramColumns()">
+            <app-tech-tree-connection-overlay
+              class="connection-overlay"
+              [nodes]="overlayGraph().nodes"
+              [edges]="overlayGraph().edges"
+              [columns]="overlayGraph().columns"
+              [selectedId]="selectedNode()?.id || null"
+            ></app-tech-tree-connection-overlay>
             <div class="prereq-column" *ngFor="let column of prerequisiteColumns(); let columnIndex = index">
                 <div class="prereq-node"
                    *ngFor="let node of column"
@@ -483,6 +502,8 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
       border-radius: 6px;
       padding: 10px;
       border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
     }
 
     .prereq-column {
@@ -499,6 +520,8 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
       cursor: pointer;
       display: grid;
       gap: 2px;
+      position: relative;
+      z-index: 1;
     }
 
     .prereq-node.active {
@@ -545,6 +568,14 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
       margin: 8px 0 0;
       opacity: 0.8;
       font-size: 12px;
+    }
+
+    .connection-overlay {
+      z-index: 0;
+    }
+
+    .icon-field .hint {
+      margin-top: 4px;
     }
 
     .action-dock {
@@ -680,6 +711,7 @@ export class TechTreeEditorComponent {
   document = this.service.document;
   cultureTagOptions = this.service.cultureTagOptions;
   effectOptions = this.service.effectOptions;
+  iconOptions = this.service.iconOptions;
   tierBands = computed(() => this.service.getTierBands());
 
   selectedNode = this.service.selectedNode;
@@ -734,6 +766,49 @@ export class TechTreeEditorComponent {
   });
 
   diagramColumns = computed(() => `repeat(${this.prerequisiteColumns().length}, minmax(160px, 1fr))`);
+  overlayGraph = computed(() => {
+    const columns = this.prerequisiteColumns();
+    const positions = new Map<string, { column: number; row: number; tier: number }>();
+
+    columns.forEach((column, columnIndex) => {
+      column.forEach((node, rowIndex) => {
+        positions.set(node.id, {
+          column: columnIndex,
+          row: rowIndex,
+          tier: node.tier || 1,
+        });
+      });
+    });
+
+    const nodes: PrerequisiteOverlayNode[] = Array.from(positions.entries()).map(([id, position]) => ({
+      id,
+      ...position,
+    }));
+
+    const edges: PrerequisiteOverlayEdge[] = [];
+    columns.forEach((column) =>
+      column.forEach((node) =>
+        node.prerequisites.forEach((prerequisite) => {
+          const from = positions.get(prerequisite.node);
+          const to = positions.get(node.id);
+
+          if (from && to) {
+            edges.push({
+              from: { id: prerequisite.node, ...from },
+              to: { id: node.id, ...to },
+              relation: prerequisite.relation,
+            });
+          }
+        }),
+      ),
+    );
+
+    edges.sort(
+      (left, right) => left.from.id.localeCompare(right.from.id) || left.to.id.localeCompare(right.to.id),
+    );
+
+    return { nodes, edges, columns: columns.length };
+  });
 
   selectNode(id: string): void {
     this.service.selectNode(id);
@@ -799,12 +874,16 @@ export class TechTreeEditorComponent {
     this.service.requestExport();
   }
 
-  toggleCultureTag(tagId: string): void {
+  toggleCultureTag(tagId: CultureTagId): void {
     this.service.toggleCultureTag(tagId);
   }
 
   updateEffectsList(key: keyof EditorTechNodeEffects, values: string[]): void {
     this.service.updateEffectsList(key, values);
+  }
+
+  updateIcon(iconId: string | null): void {
+    this.service.updateIconSelection(iconId);
   }
 
   describeTags(tags: string[] = []): string {

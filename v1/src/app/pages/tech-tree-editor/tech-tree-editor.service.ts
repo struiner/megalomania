@@ -5,6 +5,7 @@ import {
   TechNodePrerequisite,
 } from '../../models/tech-tree.models';
 import { TechEnumAdapterService } from '../../services/tech-enum-adapter.service';
+import { TechIconOption, TechIconRegistryService } from '../../services/tech-icon-registry.service';
 import { TechTreeIoService } from '../../services/tech-tree-io.service';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import {
@@ -23,6 +24,7 @@ import {
 export class TechTreeEditorService {
   private readonly io = inject(TechTreeIoService);
   private readonly enumAdapter = inject(TechEnumAdapterService);
+  private readonly iconRegistry = inject(TechIconRegistryService);
 
   private documentState = signal<EditorTechTree>(TECH_TREE_FIXTURE_DOCUMENT);
   private selectedId = signal<string>(TECH_TREE_FIXTURE_DOCUMENT.nodes[0]?.id ?? '');
@@ -51,6 +53,7 @@ export class TechTreeEditorService {
     ),
     guilds: this.enumAdapter.getGuildTypeOptions(this.collectFallbackEffectValues('unlock_guilds')),
   }));
+  iconOptions = computed<TechIconOption[]>(() => this.iconRegistry.getPickerOptions());
 
   constructor() {
     this.commitTree(this.documentState());
@@ -66,7 +69,9 @@ export class TechTreeEditorService {
     const current = this.selectedNode();
     if (!current) return;
 
-    const sanitizedTier = partial.tier ? Math.max(1, Math.floor(partial.tier)) : current.tier;
+    const sanitizedTier = partial.tier
+      ? this.clampTier(partial.tier)
+      : this.clampTier(current.tier || 1);
     const updated: EditorTechNode = {
       ...current,
       ...partial,
@@ -102,6 +107,7 @@ export class TechTreeEditorService {
       title: 'New Technology',
       summary: 'Describe what this unlocks and who it belongs to.',
       tier: 1,
+      display_order: this.documentState().nodes.length + 1,
       category: 'Unsorted',
       culture_tags: [...(this.documentState().default_culture_tags || [])],
       prerequisites: [],
@@ -127,6 +133,7 @@ export class TechTreeEditorService {
       ...current,
       id: duplicateId,
       title: `${current.title} (Copy)`,
+      display_order: (this.documentState().nodes.length || 0) + 1,
     };
 
     this.commitTree({
@@ -155,7 +162,7 @@ export class TechTreeEditorService {
   }
 
   moveNodeToTier(nodeId: string, tier: number): void {
-    const nextTier = Math.max(1, tier);
+    const nextTier = this.clampTier(tier);
     const nextNodes = this.documentState().nodes.map((node) =>
       node.id === nodeId
         ? {
@@ -202,7 +209,10 @@ export class TechTreeEditorService {
   }
 
   getTierBands(): number[] {
-    const maxTier = this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier || 1), 1);
+    const maxTier = Math.min(
+      256,
+      this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier || 1), 1),
+    );
     return Array.from({ length: maxTier }, (_, index) => index + 1);
   }
 
@@ -278,5 +288,21 @@ export class TechTreeEditorService {
     return this.documentState()
       .nodes.flatMap((node) => ((node.effects || {})[key] as string[] | undefined) || [])
       .filter(Boolean);
+  }
+
+  updateIconSelection(iconId: string | null): void {
+    const current = this.selectedNode();
+    if (!current) return;
+
+    const nextMetadata = {
+      ...(current.metadata || {}),
+      icon_id: iconId || undefined,
+    };
+
+    this.updateNode({ metadata: nextMetadata });
+  }
+
+  private clampTier(value: number): number {
+    return Math.min(256, Math.max(1, Math.floor(value || 1)));
   }
 }
