@@ -1,6 +1,6 @@
 # Task Specification — Aesthetic Tech Tree Preview Dialog
 
-**STATUS: NOT STARTED (Structural fidelity; Phase 2 follow-up)**
+**STATUS: COMPLETE (Structural fidelity; read-only dialog wired to service data + overlay lines)**
 
 ## Task Summary
 Add a button to the tech tree editor that opens an aesthetically refined preview of the current tree inside a dialog, using deterministic data from the editor service while respecting the UI charter’s shallow modal rules.
@@ -30,6 +30,8 @@ Add a button to the tech tree editor that opens an aesthetically refined preview
 - Read-only preview component leveraging `TechTreeEditorService` data and `TechIconRegistryService` icons, with culture tag overlays.
 - Documentation/notes on how the preview aligns with export ordering and how to extend styling later.
 - Basic accessibility checks (focus trap, escape handling) consistent with existing dialog shells.
+
+**Evidence:** Action dock opens a read-only preview dialog rendering tier-banded cards, culture tag legend, and prerequisite overlays with escape/close handling and documented alignment with export ordering.【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.component.ts†L266-L326】【F:v1/src/app/pages/tech-tree-editor/tech-tree-preview-dialog.component.ts†L1-L207】【F:v1/src/app/pages/tech-tree-editor/README.md†L18-L22】
 
 ## Review Gate
 - [ ] Dialog is read-only, respects modal depth rules, and uses deterministic data ordering.

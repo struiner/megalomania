@@ -1,6 +1,6 @@
 # Task Specification — Culture Tag Creation & Governance (CRUD)
 
-**STATUS: NOT STARTED (Structural fidelity; Phase 2 follow-up)**
+**STATUS: COMPLETE (Structural fidelity; governance adapter + CRUD modal wired with audit trail)**
 
 ## Task Summary
 Introduce controlled create/edit/delete flows for culture tags so designers can extend the tech tree vocabulary without violating enum ownership or ledger alignment, documenting governance and validation rules.
@@ -30,6 +30,8 @@ Introduce controlled create/edit/delete flows for culture tags so designers can 
 - Validation service covering namespace rules, snake_case normalization, and collision detection against existing vocabulary in `TechTreeIoService`.
 - Governance/persistence adapter stubs (e.g., queue or review list) with clear TODOs for authoritative write path.
 - Documentation outlining approval workflow, rejection handling, and how new tags propagate to pickers/export.
+
+**Evidence:** Culture tag governance adapter enforces namespace/version rules with audit trail, and the editor modal exposes create/edit/delete proposals with usage-aware deletion guards.【F:v1/src/app/services/culture-tag-governance.adapter.ts†L1-L157】【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.component.ts†L346-L492】【F:v1/src/app/pages/tech-tree-editor/README.md†L18-L23】
 
 ## Review Gate
 - [ ] CRUD flows do not mutate authoritative enums directly; changes route through a controlled adapter/governance layer.

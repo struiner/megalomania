@@ -24,6 +24,7 @@ import {
   TechTreeImportPayload,
 } from './tech-tree-editor.types';
 import { CultureTagGovernanceAdapterService } from '../../services/culture-tag-governance.adapter';
+import { TechTreeImportError } from '../../services/tech-tree-io.service';
 
 @Injectable()
 export class TechTreeEditorService {
@@ -44,6 +45,7 @@ export class TechTreeEditorService {
   validationIssues = signal<EditorTechValidationIssue[]>([]);
   lastImport = signal<EditorTechTreeImport | null>(null);
   lastExport = signal<EditorTechTreeExport | null>(null);
+  importErrorMessage = signal<string | null>(null);
   governanceIssues = computed<EditorTechValidationIssue[]>(() => this.tagGovernance.issues());
   cultureTagAuditTrail = computed(() => this.tagGovernance.auditTrail());
   cultureTagUsage = computed(() => this.collectCultureTagUsage());
@@ -216,15 +218,12 @@ export class TechTreeEditorService {
       this.tierBandLimit.set(this.deriveMaxTier(treeWithSource.nodes));
       this.lastImport.set(importResult);
       this.selectedId.set(importResult.tree.nodes[0]?.id ?? '');
+      this.importErrorMessage.set(null);
     } catch (error) {
-      this.validationIssues.set([
-        {
-          path: 'import',
-          message: error instanceof Error ? error.message : 'Unknown import error.',
-          severity: 'error',
-        },
-      ]);
-      // TODO: route structured import errors to a user-visible surface instead of swallowing them here.
+      const issues = this.toImportIssues(error);
+      this.validationIssues.set(issues);
+      this.lastImport.set(null);
+      this.importErrorMessage.set(this.describeImportError(error));
     }
   }
 
@@ -313,6 +312,36 @@ export class TechTreeEditorService {
       [key]: values,
     } as EditorTechNodeEffects;
     this.updateEffects(nextEffects);
+  }
+
+  private toImportIssues(error: unknown): EditorTechValidationIssue[] {
+    if (error instanceof TechTreeImportError && error.issues?.length) {
+      return error.issues;
+    }
+
+    const fallback: EditorTechValidationIssue = {
+      path: 'import',
+      message: error instanceof Error ? error.message : 'Unknown import error.',
+      severity: 'error',
+    };
+
+    return [fallback];
+  }
+
+  private describeImportError(error: unknown): string {
+    if (error instanceof TechTreeImportError) {
+      if (error.kind === 'parse') {
+        return 'Import failed: the provided payload was not readable as a tech tree JSON document.';
+      }
+
+      if (error.kind === 'validation') {
+        return 'Import blocked: validation errors detected. Review the validation list for details.';
+      }
+
+      return error.message;
+    }
+
+    return error instanceof Error ? error.message : 'Unknown import error.';
   }
 
   private generateId(seed: string): string {
