@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Dynamic Tier Grid (Gridster evaluation)
 
-**STATUS: NOT STARTED (Structural fidelity; Phase 2 follow-up)**
+**STATUS: COMPLETE (Structural fidelity; tier grid with add/trim controls + deterministic mapping live)**
 
 ## Task Summary
 Evaluate and implement a gridster-style layout option for the tech tree editor so designers can dynamically create, resize, and rearrange tier bands while keeping node placement deterministic and ergonomically aligned with the UI charter.
@@ -30,6 +30,8 @@ Evaluate and implement a gridster-style layout option for the tech tree editor s
 - Mapping logic from grid coordinates to `tier`/`display_order` fields preserved across import/export via `TechTreeIoService`.
 - Updated tech tree editor shell wiring and README notes describing grid behavior and fallbacks.
 - Validation notes/tests covering deterministic ordering after tier mutations.
+
+**Evidence:** Lightweight grid layout maps tier rows to display_order columns with drag/drop, add/trim tier controls, and clamped mapping inside the editor service; README documents the behavior.【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.component.ts†L53-L168】【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.service.ts†L71-L158】【F:v1/src/app/pages/tech-tree-editor/README.md†L10-L16】
 
 ## Review Gate
 - [ ] Grid interactions keep exports deterministic and reversible through `TechTreeIoService`.

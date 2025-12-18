@@ -1,5 +1,7 @@
 # Tech Tree Import Error User Surface Routing
 
+**STATUS: COMPLETE (Functional; structured import errors surface in UI banner and validation list)**
+
 ## Task Summary & Purpose
 The `TechTreeEditorService` currently swallows structured import errors in the catch block without providing user feedback. This task implements proper error routing to make import failures visible to users through the existing validation system.
 
@@ -21,11 +23,13 @@ The `TechTreeEditorService` currently swallows structured import errors in the c
 - **Collaborators:** SDK & Modding Engineer (for error message consistency)
 
 ## Deliverables & Review Gate
-- [ ] Extract error details from caught exceptions and format for user consumption
-- [ ] Route structured import errors to existing `validationIssues` signal
-- [ ] Implement user-friendly error messages with actionable guidance
-- [ ] Add specific error types for common import failures (syntax, schema, duplicates)
-- [ ] Update UI to display import errors prominently in the editor interface
+- [x] Extract error details from caught exceptions and format for user consumption
+- [x] Route structured import errors to existing `validationIssues` signal
+- [x] Implement user-friendly error messages with actionable guidance
+- [x] Add specific error types for common import failures (syntax, schema, duplicates)
+- [x] Update UI to display import errors prominently in the editor interface
+
+**Evidence:** Import/parse/validation failures now raise typed `TechTreeImportError` instances with structured issues that populate validation lists and a dedicated banner in the editor UI.【F:v1/src/app/services/tech-tree-io.service.ts†L18-L33】【F:v1/src/app/services/tech-tree-io.service.ts†L73-L119】【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.service.ts†L83-L134】【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.component.ts†L32-L76】
 
 **Review Gate:** Frontend Developer validates that import errors are clearly communicated and users can take corrective action.
 

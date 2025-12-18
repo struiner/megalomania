@@ -38,6 +38,16 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
         </div>
       </header>
 
+      <section class="callout error" *ngIf="importErrorMessage() || importIssues().length">
+        <div>
+          <p class="eyebrow">Import notice</p>
+          <p class="hint">{{ importErrorMessage() || 'Import produced validation issues.' }}</p>
+        </div>
+        <ul *ngIf="importIssues().length" class="callout-list">
+          <li *ngFor="let issue of importIssues()">{{ issue.message }}</li>
+        </ul>
+      </section>
+
       <div class="workspace">
         <section class="panel overview">
           <header class="panel-header">
@@ -148,7 +158,7 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
                 (selectionChange)="replaceCultureTags($event)"
               ></app-culture-tag-combobox>
               <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }}</p>
-              <div class="tag-grid">
+              <div class="tag-grid" *ngIf="showLegacyTagGrid()">
                 <label class="tag-option" *ngFor="let tag of cultureTagOptions()">
                   <input type="checkbox" [checked]="selectedCultureTagSet().has(tag.id)" (change)="toggleCultureTag(tag.id)" />
                   <div class="tag-label">
@@ -159,8 +169,13 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
                 </label>
               </div>
               <div class="tag-actions">
+                <div class="tag-toggle">
+                  <button type="button" class="ghost" (click)="toggleLegacyTagGrid()">
+                    {{ showLegacyTagGrid() ? 'Hide checkbox fallback' : 'Show checkbox fallback' }}
+                  </button>
+                  <p class="hint">Combobox is the primary picker; checkbox grid is available for audits.</p>
+                </div>
                 <button type="button" class="ghost" (click)="openTagDialog('create')">Govern culture tags</button>
-                <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }} · Governance emits notices without owning truth.</p>
               </div>
             </div>
             <div class="field field-span effect-grid">
@@ -514,6 +529,30 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       min-height: 420px;
     }
 
+    .callout {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .callout.error {
+      border-color: rgba(255, 91, 91, 0.4);
+      background: rgba(255, 91, 91, 0.08);
+      box-shadow: 0 2px 0 rgba(255, 91, 91, 0.2);
+    }
+
+    .callout-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+    }
+
     .panel {
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
@@ -722,6 +761,11 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       justify-content: space-between;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    .tag-toggle {
+      display: grid;
+      gap: 4px;
     }
 
     .effect-grid {
@@ -1084,6 +1128,7 @@ export class TechTreeEditorComponent {
   draggingNodeId = signal<string | null>(null);
   dragOverSlot = signal<{ tier: number; column: number } | null>(null);
   validationIssues = this.service.validationIssues;
+  importErrorMessage = this.service.importErrorMessage;
   lastExport = this.service.lastExport;
   resolvedCultureTags = computed(() => {
     const explicitTags = this.selectedNode()?.culture_tags || [];
@@ -1105,6 +1150,7 @@ export class TechTreeEditorComponent {
   tagVersion = signal(1);
   tagTarget = signal<CultureTagId | null>(null);
   isPreviewOpen = signal(false);
+  showLegacyTagGrid = signal(false);
 
   selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
     ? this.selectedNode()?.culture_tags
@@ -1190,6 +1236,8 @@ export class TechTreeEditorComponent {
     const usage = this.cultureTagUsage();
     return target ? usage[target] || [] : [];
   });
+
+  importIssues = computed(() => this.validationIssues().filter((issue) => issue.path.startsWith('import')));
 
   selectNode(id: string): void {
     this.service.selectNode(id);
@@ -1397,5 +1445,9 @@ export class TechTreeEditorComponent {
 
   closePreview(): void {
     this.isPreviewOpen.set(false);
+  }
+
+  toggleLegacyTagGrid(): void {
+    this.showLegacyTagGrid.set(!this.showLegacyTagGrid());
   }
 }

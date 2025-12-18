@@ -1,6 +1,6 @@
 # Task Specification — Culture Tag Multi-Select Combobox
 
-**STATUS: NOT STARTED (Structural fidelity; Phase 2 follow-up)**
+**STATUS: COMPLETE (Structural fidelity; combobox live with keyboard search + legacy grid fallback toggle)**
 
 ## Task Summary
 Replace the checkbox grid for culture tags in the tech tree editor with an accessible multi-select dropdown/combobox that supports search, deterministic ordering, and keyboard navigation while staying within the UI charter’s restraint rules.
@@ -30,6 +30,8 @@ Replace the checkbox grid for culture tags in the tech tree editor with an acces
 - Search/filter logic sourcing options from `TechTreeIoService.getCultureTagOptions` without duplicating vocabularies.
 - Fallback/feature-flag toggle between combobox and current checkbox grid.
 - Accessibility notes (keyboard focus order, aria-labels) and README updates.
+
+**Evidence:** Culture tag combobox renders as the primary picker with search/keyboard navigation, legacy grid is toggleable for audits, and README records the pattern.【F:v1/src/app/pages/tech-tree-editor/culture-tag-combobox.component.ts†L1-L227】【F:v1/src/app/pages/tech-tree-editor/tech-tree-editor.component.ts†L82-L178】【F:v1/src/app/pages/tech-tree-editor/README.md†L14-L23】
 
 ## Review Gate
 - [ ] Multi-select combobox preserves deterministic ordering and round-trips through export/import.

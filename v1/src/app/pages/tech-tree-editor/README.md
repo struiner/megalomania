@@ -5,11 +5,13 @@ The tech tree editor is a routed SDK surface that hosts three structural panels:
 ## Layout and flows
 
 - **Route**: `/sdk/tech-tree` (also discoverable via the SDK menu). The route uses the `SdkToolPageComponent` shell so the editor can be swapped or embedded without changing navigation.
-- **Panels**: overview (grid of tier rows × deterministic display-order columns with inline tier controls), node detail (title/summary/tier/category, culture tag picker, enum-bound effect selectors), prerequisite diagram (minimal columnar tree). Panels do not own truth; they read from `TechTreeEditorService` signals.
+- **Panels**: overview (grid of tier rows × deterministic display-order columns with inline tier controls and add/trim affordances), node detail (title/summary/tier/category, culture tag picker, enum-bound effect selectors), prerequisite diagram (minimal columnar tree). Panels do not own truth; they read from `TechTreeEditorService` signals.
 - **Overlay layer**: `TechTreeConnectionOverlayComponent` renders Manhattan connectors (4px rounding, crisp edges) behind the prerequisite grid to keep dependency lines readable without occluding node content.
 - **Icon picker**: node detail now includes a registry-backed icon selector (`TechIconRegistryService` + `TechIconPickerComponent`) using shared taxonomy IDs (e.g., `structure_lumberyard`) with culture-overlay hints.
+- **Culture tags**: the checkbox grid has been replaced by an accessible multi-select combobox with search/filter; a legacy grid can be toggled for quick audits. Governance CRUD lives in a modal shell that routes create/edit/delete proposals through `CultureTagGovernanceAdapterService` with audit trails and versioned statuses.
+- **Preview dialog**: a read-only preview dialog renders tier-banded cards plus connection overlays, culture tag legend, and effect summaries. It is triggered from the action dock and respects the shallow modal rule.
 - **Action dock**: bottom-weighted section with two primary actions (import fixtures, export snapshot) to respect the UI charter’s limits on visible actions. Tier controls stay scoped to the overview grid so the action dock remains stable. Validation issues are surfaced under the export log to highlight schema problems early.
-- **Selection flow**: selecting a chip or node highlights dependencies and updates the detail form. Form edits update the injected service so fixtures can be replaced later.
+- **Selection flow**: selecting a chip or node highlights dependencies and updates the detail form. Form edits update the injected service so fixtures can be replaced later. Import failures are surfaced via validation issues and a banner fed by structured `TechTreeImportError` instances.
 
 ## Extension points
 
