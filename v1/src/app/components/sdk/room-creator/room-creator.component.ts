@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-
 import { HazardType } from '../../../enums/HazardType';
+import { RoomBlueprint } from '../../../models/room-blueprint.model';
+
 import { HazardTypeAdapterService, HazardOption } from '../../../services/hazard-type-adapter.service';
 
 interface RoomBlueprint {
@@ -24,6 +25,7 @@ interface RoomBlueprint {
 export class RoomCreatorComponent {
   private readonly formBuilder = new FormBuilder();
 
+  readonly hazards: HazardType[] = Object.values(HazardType);
   private readonly hazardAdapter = inject(HazardTypeAdapterService);
 
   readonly hazardOptions: HazardOption[] = this.hazardAdapter.getHazardOptions();
