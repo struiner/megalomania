@@ -45,5 +45,8 @@ Define ledger events for room blueprint creation/modification/removal/export so 
 
 ## Open Questions / Clarifications
 - Should exports include blueprint hash for verification?
+    answer: yes
 - Required timestamp precision and actor metadata?
-- Are separate events needed for hazard list updates vs. other edits?
+    answer: yes
+- Are separate events needed for hazard list updates vs. other edits?   
+    answer: potentially, so yes.

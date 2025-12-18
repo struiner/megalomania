@@ -44,5 +44,8 @@ Define a `ManagedGood` data model that composes existing goods, flora and catego
 
 ## Open Questions / Clarifications
 - Should tags be constrained to a controlled vocabulary or freeform strings?
+    answer: they should be freeform strings.
 - How to represent goods with multiple flora sources?
+    answer: by miniature sub- or superscript icons over the respective good.
 - Do we need culture-specific overrides at this stage?
+    answer: yes, although this needs to be generic, and cannot yet be tied to specific cultures, rather cultural archetypes (examples of cultures include: cavemen tribe, termite collective, roman colony, viking enclave, hanseatic trading enclave, nuclear holocaust survivors, foxfolk, centaur nomads, free city, necropolis, genetically altered rat colony, note that it is up to the game designer to identify sufficiently generic cultural archetypes encompassing these cultures.)

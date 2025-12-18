@@ -43,6 +43,9 @@ Ensure managed goods carry deterministic provenance links to world truths (flora
 
 ## Open Questions / Clarifications
 - Should goods support multiple provenance entries (e.g., multi-biome flora) at structural stage?
+    answer: yes
 - How to represent synthetic goods with no natural provenance?
+    answer: as potential alternatives with distinct modifiers, specifically identifyable.
 - Do we need hash/checksum of provenance for ledger audit later?
+    answer: yes.
 

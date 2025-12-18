@@ -43,6 +43,8 @@ Deliver a shared, unobtrusive validation/notification pattern for SDK tools (goo
 
 ## Open Questions / Clarifications
 - Should summaries be collapsible or always visible at structural stage?
+    answer: collapsible, preferrable collapsible rows.
 - Do we need per-row badges in lists, or only detail-level indicators?
+    answer: yes, preferrable collapsible rows.
 - Minimum accessibility needs (ARIA roles, color contrast) for warnings/errors?
-
+    answer: ARIA is minimal requirement for warnings and errors considering accesibility.

@@ -44,6 +44,9 @@ Build a structural Angular UI skeleton for the technology tree editor with panel
 
 ## Open Questions / Clarifications
 - Should prerequisite visualization use simple lists or minimal tree diagram at structural stage?
+    answer: minimal tree diagram, where encountered constraints are translated into a task for creating a generic component.
 - Which SDK surface or route hosts the editor initially?
+    SDK/tech-tree
 - What is the minimal set of node fields required for the detail panel during structural fidelity?
+    answer: 3
 

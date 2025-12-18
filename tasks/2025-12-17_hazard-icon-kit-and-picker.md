@@ -42,6 +42,8 @@ Create a consistent hazard icon set and picker wiring for room/structure tools, 
 
 ## Open Questions / Clarifications
 - Should hazards have severity overlays or color-coded badges at structural stage?
+    answer: color-coded badges and severity overlays.
 - Are biome/culture-specific hazard variants required later?
+    answer: yes
 - Do validation warnings block exports when icons are missing?
-
+    answer: no, use a placeholder

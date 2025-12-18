@@ -43,6 +43,9 @@ Add world-context validation for room blueprints to ensure hazards, purposes, an
 
 ## Open Questions / Clarifications
 - Should hazard plausibility be strict blocking or warnings at structural stage?
+    Answer: no
 - Are certain purposes biome-locked (e.g., underwater labs) and how are exceptions modeled?
+    answer: yes, exceptions will give warnings, but will be modeled. If possible, suggest biome-appropriate alternatives.
 - Do we need culture-specific overrides for hazard/purpose plausibility now or later?
+    answer: yes
 

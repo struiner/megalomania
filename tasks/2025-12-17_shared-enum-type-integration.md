@@ -44,5 +44,8 @@ Integrate the technology editor with existing shared enums/types (e.g., building
 
 ## Open Questions / Clarifications
 - Which enum namespaces are mandatory for v1 (effects, buildings, goods, civics)?
+    answer: located in v1/src/app/enums are: DiplomaticRelation, EstateType, EventType, FloraUseType, GoodsType, GuildType, MarketCondition, StructureAction, StructureEffect and StructureType
 - Should culture tags be sourced from existing data or defined alongside tech metadata?
+    answer: defined alongside tech metadata for now
 - How to handle missing enum values in imported tech trees (fallback vs. validation error)?
+    answer: fallback

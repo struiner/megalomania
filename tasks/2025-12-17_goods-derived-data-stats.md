@@ -44,5 +44,8 @@ Compute derived stats for the goods catalogue (e.g., tier totals, rarity-to-tier
 
 ## Open Questions / Clarifications
 - Should rarity-tier mapping be configurable or fixed at this stage?
+    Answer: It should preferably configurable, in an ergonomic, generic way.
 - How should conflicting rarity/tier data be surfaced (warnings vs. hard errors)?
+    Answer: warnings will be sufficient for now.
 - Do we need per-culture aggregates now or defer to later tasks?
+    answer: Please consider per-culter aggregates, creating tasks to implement functionality later in addition to the current aggregates.

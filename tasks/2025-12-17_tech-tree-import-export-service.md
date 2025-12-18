@@ -44,5 +44,8 @@ Create a deterministic JSON import/export service for technology trees that vali
 
 ## Open Questions / Clarifications
 - Preferred JSON schema dialect (hand-rolled vs. lightweight schema library)?
+    answer: leightweight.
 - Should the service normalize identifiers (case/whitespace) or fail fast?
+    answer: normalize identifiers by case.
 - How to represent optional culture-specific metadata without breaking determinism?
+    answer: by sub- or superscript icons over the element.

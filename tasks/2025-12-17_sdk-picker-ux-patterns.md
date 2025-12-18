@@ -42,6 +42,8 @@ Create reusable picker components/patterns for enums and icon registries (goods,
 
 ## Open Questions / Clarifications
 - Should multi-select use chips or checklist by default at structural stage?
+    answer: chips
 - Minimum accessibility targets (focus ring, tab order) for current prototypes?
+    answer: specify potential generic functionality like focus ring, tab order and generic actions in the form of TODO's, to be picked up later.
 - Do pickers need inline validation messaging or defer to parent forms?
-
+    answer: inline validation if practical, otherwise deferring to parent forms is sufficient.

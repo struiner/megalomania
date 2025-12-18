@@ -44,6 +44,9 @@ Define and stub ledger events for goods catalogue changes (add/update/remove/exp
 - Precedes: Future functional SDK operations or audits.
 
 ## Open Questions / Clarifications
-- Which actions must be ledgered now (create/update/delete/export)? 
+- Which actions must be ledgered now (create/update/delete/export)?
+    Answer: preferably all relevant tech events, referencing megalomania\v1\src\app\models\ledger.models.ts for an example.
 - Required timestamp precision and actor metadata?
+    answer: timestamp precision is preferred for integrity purpouses, actor metadata should be minimal.
 - Should export events include catalogue hash for verification?
+    answer: yes.

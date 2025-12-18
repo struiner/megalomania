@@ -43,6 +43,9 @@ Create an authoritative `HazardType` enum under `v1/src/app/enums` and refactor 
 
 ## Open Questions / Clarifications
 - Should hazards include severity categories or remain simple identifiers at structural stage?
+    answer: simple identifiers will suffice for now, provided a TODO is included.
 - Do hazards need culture/biome tags now or later?
+    answer: yes.
 - How to align with any existing hazard scoring fields in design data?
+    answer: treat existing hazard scoring as placeholder data, to be scrutinized by the world builder and game designer agents for realism.
 

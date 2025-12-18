@@ -44,5 +44,8 @@ Provide a validation service for room blueprints that enforces dimension bounds,
 
 ## Open Questions / Clarifications
 - What are minimum/maximum dimension thresholds for structural validity?
+    answer: min:16x16, max: 512x512
 - Are there hazardous combinations that must be blocked or warned?
+    answer: no
 - Should validation auto-correct minor issues (e.g., trim strings) or only report?
+    answer: it should suggest autocorrect to the user.

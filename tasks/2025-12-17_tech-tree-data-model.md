@@ -44,5 +44,8 @@ Define deterministic, culture-aware TypeScript interfaces for `TechNode` and `Te
 
 ## Open Questions / Clarifications
 - Which shared enums must be supported in v1 (buildings, goods, civics)? 
+    answer: located in v1/src/app/enums are: DiplomaticRelation, EstateType, EventType, FloraUseType, GoodsType, GuildType, MarketCondition, StructureAction, StructureEffect and StructureType
 - Should nodes support multiple culture tags or a single primary tag?
+    answer: multiple tags 
 - How strict should identifier normalization be (e.g., kebab-case, snake_case)?
+    answer: snake_case

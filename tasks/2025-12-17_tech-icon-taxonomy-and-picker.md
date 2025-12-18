@@ -42,6 +42,9 @@ Define a reusable icon taxonomy for technology nodes and deliver an SDK picker/r
 
 ## Open Questions / Clarifications
 - Should icons be per-culture or shared with overlays? If overlays, how to layer deterministically?
+    answer: shared with overlays, through a shared exchanged asset
 - Do nodes without domain hooks (pure research) get a generic icon family?
+    answer: yes.
 - How to handle future DLC/expansion icon sets without breaking determinism?
+    answer: by using a default frame or border for the icons, which can be varied for emphasis
 

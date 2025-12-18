@@ -44,5 +44,8 @@ Implement deterministic JSON import/export for the goods catalogue, validating `
 
 ## Open Questions / Clarifications
 - Should price/complexity be clamped or strictly validated?
+    Answer: price or value are calculated properties and should be strictly validated, possibly through some visual mechanism that lets a user edit the underlying formula. Complexity is a property that can be clamped.
 - Preferred error format for SDK consumers (array vs. structured object)?
+    Answer: prefer a structured object, which can contain an array of structured objects when necessary.
 - Do we need locale-aware formatting for exported numbers/strings?
+    Answer: localization is preferred.

@@ -42,6 +42,9 @@ Design a DRY, deterministic icon mapping and validation flow for goods, using `G
 
 ## Open Questions / Clarifications
 - Preferred asset resolution(s) and naming suffixes (e.g., `@64-32`).
+    answer: 64-32 is perfect, but names of 128 can occur.
 - Should icons support per-era variants (using `Era` from `goods.model`) at structural stage?
+    answer: yes, icon implementation can vary per era
 - Are placeholders acceptable for export, or must gaps block export?
+    answer: placeholders are acceptable if accompanied with a TODO specifying the task that needs to be completed to mitigate the placeholder for actual functionality.
 

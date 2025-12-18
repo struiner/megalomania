@@ -45,5 +45,8 @@ Define and wire ledger event types for research start and completion so tech res
 
 ## Open Questions / Clarifications
 - Required granularity for timestamps (minute-level per epic; any tighter?).
+    answer consistently tight at about minute level
 - How to represent culture or player ownership in the event payload?
+    answer: as a reference or property within the player's property or character sheet.
 - Should cancellation/abandon events be defined now or later?
+    answer: now.

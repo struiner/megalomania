@@ -43,6 +43,9 @@ Define an authoritative culture tag canon and world-aligned traits for tech tree
 
 ## Open Questions / Clarifications
 - Should culture tags be hierarchical (culture → subculture) or flat at structural stage?
+    answer: potentially hierarchical.
 - How to represent multi-biome cultures without breaking determinism?
+    answer: Possibly by distinguishing preferred array with possible array
 - Do we need reserved tags for procedurally generated cultures, and how are they namespaced?
+    answer: no, namespace prefers readabiliy for procedurally generated cultures, but can vary per culture.
 

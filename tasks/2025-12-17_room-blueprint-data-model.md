@@ -43,5 +43,8 @@ Define a `RoomBlueprint` data model that captures dimensions, purpose, hazards, 
 
 ## Open Questions / Clarifications
 - Do we already have a `HazardType` enum, or must it be defined in coordination with world generation?
+    answer: No, it will need to be created, and will replace the SettlementDisasterType.ts located in v1/src/app/enums, which is to be referenced for inspiration for the new enum.
 - Should purposes be freeform or constrained to a controlled list?
+    answer: freeform for now
 - How should feature lists be ordered for deterministic exports?
+    answer: by order of appearance in view.

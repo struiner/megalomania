@@ -42,6 +42,9 @@ Define a minimal, reusable SDK UI shell and component patterns (panels, toolbars
 
 ## Open Questions / Clarifications
 - Do SDK tools need tabbed shells or single-pane defaults at structural stage?
+    answer: tabbed shells please
 - Should action bars live bottom-only or be mirrored on the side for large screens?
+    answer: bottom only for now
 - Minimal breakpoint support required for current prototypes?
+    answer: no
 

@@ -44,5 +44,8 @@ Implement deterministic JSON import/export for room blueprints, validating dimen
 
 ## Open Questions / Clarifications
 - Minimum/maximum dimension rules for structural validation?
+    answer: min:16x16, max: 512x512
 - Should hazards be normalized (deduplicated) on import?
+    answer: the user should be presented with the option to normalize
 - Preferred error surface for SDK consumers (structured object vs. array)?
+    answer: structured object.

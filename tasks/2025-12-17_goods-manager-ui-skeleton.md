@@ -43,5 +43,8 @@ Create a structural Angular UI skeleton for the Goods Manager SDK tool that list
 
 ## Open Questions / Clarifications
 - Minimum filter set for structural stage (category, tier, rarity?).
+    answer: category, tier rarity and complexity.
 - Should tier breakdown be table, chips or simple counts?
+    answer: chips.
 - Which SDK route hosts this tool initially?
+    answer: this tool should be hosted under 'SDK/tech', which is to be created if non-existent.

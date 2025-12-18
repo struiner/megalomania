@@ -44,5 +44,8 @@ Build a structural Angular UI skeleton for the Room Blueprint Creator with panel
 
 ## Open Questions / Clarifications
 - Should hazards be multi-select chips, checkboxes or list with severity?
+    answer: multi-select chips
 - Minimal feature list UI at structural stage (text inputs vs. structured items)?
+    answer: structured items, to be interpreted by a generic recursive JSON reader, which can be stacked.    
 - Which SDK route hosts the editor initially?
+    answer: SDK/rooms, to be included in the toolbar under SDK
