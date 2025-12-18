@@ -6,6 +6,9 @@ import { RoomBlueprint } from '../../../models/room-blueprint.model';
 
 import { HazardTypeAdapterService, HazardOption } from '../../../services/hazard-type-adapter.service';
 
+import { HazardEnumAdapterService, HazardOption } from '../../../services/sdk/hazard-enum-adapter.service';
+import { HazardType } from '../../../enums/HazardType';
+
 interface RoomBlueprint {
   name: string;
   width: number;
@@ -25,17 +28,19 @@ interface RoomBlueprint {
 export class RoomCreatorComponent {
   private readonly formBuilder = new FormBuilder();
 
-  readonly hazards: HazardType[] = Object.values(HazardType);
-  private readonly hazardAdapter = inject(HazardTypeAdapterService);
+  constructor(private readonly hazardEnumAdapter: HazardEnumAdapterService) {}
 
-  readonly hazardOptions: HazardOption[] = this.hazardAdapter.getHazardOptions();
+  readonly hazardOptions: HazardOption[] = this.hazardEnumAdapter.getHazardOptions();
+  readonly hazards: HazardType[] = Object.values(HazardType);
 
   readonly form = this.formBuilder.group({
     name: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
     width: this.formBuilder.nonNullable.control(8, [Validators.required, Validators.min(2)]),
     height: this.formBuilder.nonNullable.control(6, [Validators.required, Validators.min(2)]),
     purpose: this.formBuilder.nonNullable.control('Crew quarters', Validators.required),
-    hazards: this.formBuilder.nonNullable.control<HazardType[]>([HazardType.Intrusion]),
+    hazards: this.formBuilder.nonNullable.control<HazardType[]>(
+      this.hazardEnumAdapter.sortSelection(this.hazardEnumAdapter.normalizeSelection([HazardType.Intrusion]))
+    ),
     features: this.formBuilder.nonNullable.control('Sleeping pods, lockers, emergency mask cache'),
   });
 
@@ -52,9 +57,12 @@ export class RoomCreatorComponent {
     }
 
     const value = this.form.getRawValue();
+    const hazards = this.hazardEnumAdapter.sortSelection(
+      this.hazardEnumAdapter.normalizeSelection(value.hazards)
+    );
     const room: RoomBlueprint = {
       ...value,
-      hazards: [...value.hazards],
+      hazards,
     };
 
     this.rooms.update(list => [...list, room]);
@@ -64,14 +72,26 @@ export class RoomCreatorComponent {
     this.rooms.update(list => list.filter((_, i) => i !== index));
   }
 
-  toggleHazard(hazard: HazardType, checked: boolean): void {
+  isHazardChecked(option: HazardOption): boolean {
+    const candidate = option.canonical ?? (option.value as HazardType);
+    return this.form.controls.hazards.value.includes(candidate);
+  }
+
+  toggleHazard(hazard: HazardOption['value'], checked: boolean): void {
+    const canonical = this.hazardEnumAdapter.normalizeSelection([hazard])[0];
+    if (!canonical) {
+      return;
+    }
+
     const hazards = this.form.controls.hazards.value;
     const next = checked
-      ? hazards.includes(hazard)
+      ? hazards.includes(canonical)
         ? hazards
-        : [...hazards, hazard]
-      : hazards.filter(existing => existing !== hazard);
-    this.form.controls.hazards.setValue(next);
+        : [...hazards, canonical]
+      : hazards.filter(existing => existing !== canonical);
+
+    const normalized = this.hazardEnumAdapter.normalizeSelection(next);
+    this.form.controls.hazards.setValue(this.hazardEnumAdapter.sortSelection(normalized));
   }
 
   hazardLabel(hazard: HazardType): string {

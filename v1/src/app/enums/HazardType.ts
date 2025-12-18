@@ -1,4 +1,5 @@
 export enum HazardType {
+// TODO: Promote severity/biome tags once hazard simulation is modeled.
   // Environmental and structural
   Fire = 'fire',
   Flood = 'flood',
