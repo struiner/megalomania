@@ -1,17 +1,9 @@
-export enum SettlementDisasterType {
-  Fire = 'fire',
-  Famine = 'famine',
-  Plague = 'plague',
-  Epidemic = 'epidemic',
-  Flood = 'flood',
-  HarshWinter = 'harsh_winter',
-  Storm = 'storm',
-  War = 'war',
-  Raid = 'raid',
-  LivestockDisease = 'livestock_disease',
-  CropFailure = 'crop_failure',
-  Earthquake = 'earthquake',
-  BuildingCollapse = 'building_collapse',
-  SocialUnrest = 'social_unrest',
-  WitchHunt = 'witch_hunt'
-}
+import { HazardType } from './HazardType';
+
+/**
+ * @deprecated Use HazardType instead. This alias remains for compatibility with
+ * earlier settlement disaster references while the canonical hazard vocabulary
+ * moves to HazardType to support room blueprint imports/exports and ledger
+ * events.
+ */
+export { HazardType as SettlementDisasterType };
