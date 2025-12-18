@@ -32,7 +32,14 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
             <p class="hint">Tier-banded list with quick selection.</p>
           </header>
           <div class="tier-bands">
-            <div class="tier" *ngFor="let tier of tierBands()">
+            <div
+              class="tier"
+              *ngFor="let tier of tierBands()"
+              [class.drop-target]="dragOverTier() === tier"
+              (dragover)="allowDrop($event)"
+              (dragenter)="markTierHover(tier)"
+              (drop)="dropOnTier(tier, $event)"
+            >
               <p class="tier-label">Tier {{ tier }}</p>
               <div class="node-list">
                 <button
@@ -40,7 +47,11 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
                   type="button"
                   *ngFor="let node of tieredNodes().get(tier) || []"
                   [class.active]="node.id === selectedNode()?.id"
+                  [class.dragging]="draggingNodeId() === node.id"
                   (click)="selectNode(node.id)"
+                  draggable="true"
+                  (dragstart)="startDrag(node.id, $event)"
+                  (dragend)="endDrag()"
                 >
                   <span class="name">{{ node.name }}</span>
                   <span class="meta">{{ node.category }}</span>
@@ -127,7 +138,12 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       <footer class="action-dock">
         <div>
           <p class="eyebrow">Actions</p>
-          <p class="hint">Import/export hooks are stubbed for SDK integration.</p>
+          <p class="hint">Create, duplicate, delete, and import/export hooks stay structural for SDK integration.</p>
+        </div>
+        <div class="buttons">
+          <button type="button" (click)="createNode()">Create node</button>
+          <button type="button" (click)="duplicateNode()" [disabled]="!selectedNode()">Duplicate</button>
+          <button type="button" class="danger" (click)="deleteNode()" [disabled]="!selectedNode()">Delete</button>
         </div>
         <div class="buttons">
           <button type="button" (click)="triggerImport()">Import sample</button>
@@ -242,6 +258,12 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       border: 1px dashed rgba(255, 255, 255, 0.12);
       padding: 8px;
       border-radius: 6px;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+
+    .tier.drop-target {
+      border-color: #9de5ff;
+      background: rgba(157, 229, 255, 0.06);
     }
 
     .tier-label {
@@ -282,6 +304,11 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       border-color: #9de5ff;
       background: rgba(157, 229, 255, 0.12);
       box-shadow: 0 0 0 1px rgba(157, 229, 255, 0.25);
+    }
+
+    .node-chip.dragging {
+      opacity: 0.7;
+      border-style: dashed;
     }
 
     .detail .form-grid {
@@ -399,6 +426,7 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
     .buttons {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .buttons button {
@@ -417,6 +445,12 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       color: #2d1b05;
       border-color: #ffaf3a;
       box-shadow: 0 2px 0 #e19b28;
+    }
+
+    .buttons button.danger {
+      background: rgba(255, 91, 91, 0.12);
+      border-color: rgba(255, 91, 91, 0.4);
+      color: #ffdede;
     }
 
     .export-log {
@@ -470,6 +504,8 @@ export class TechTreeEditorComponent {
 
   selectedNode = this.service.selectedNode;
   nodes = this.service.nodes;
+  draggingNodeId = signal<string | null>(null);
+  dragOverTier = signal<number | null>(null);
 
   lastExport = signal<TechTreeExportPayload | null>(null);
 
@@ -518,8 +554,48 @@ export class TechTreeEditorComponent {
     this.service.selectNode(id);
   }
 
+  createNode(): void {
+    this.service.createNode();
+  }
+
+  duplicateNode(): void {
+    this.service.duplicateSelected();
+  }
+
+  deleteNode(): void {
+    this.service.deleteSelected();
+  }
+
   updateNode(partial: Partial<TechTreeNode>): void {
     this.service.updateNode(partial);
+  }
+
+  startDrag(nodeId: string, event: DragEvent): void {
+    this.draggingNodeId.set(nodeId);
+    event.dataTransfer?.setData('text/plain', nodeId);
+  }
+
+  endDrag(): void {
+    this.draggingNodeId.set(null);
+    this.dragOverTier.set(null);
+  }
+
+  allowDrop(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  markTierHover(tier: number): void {
+    this.dragOverTier.set(tier);
+  }
+
+  dropOnTier(tier: number, event: DragEvent): void {
+    event.preventDefault();
+    const nodeId = event.dataTransfer?.getData('text/plain') || this.draggingNodeId();
+    if (nodeId) {
+      this.service.moveNodeToTier(nodeId, tier);
+      this.selectNode(nodeId);
+    }
+    this.endDrag();
   }
 
   isUpstream(nodeId: string): boolean {

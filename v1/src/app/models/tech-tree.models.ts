@@ -42,14 +42,13 @@ export interface CultureTagBinding {
   note?: string;
 }
 
+export const TECH_PREREQUISITE_RELATIONS = ['requires'] as const;
+export type TechPrerequisiteRelation = (typeof TECH_PREREQUISITE_RELATIONS)[number];
+
 export interface TechNodePrerequisite {
   node: TechNodeId;
-  relation: 'requires' | 'blocks' | 'excludes';
-}
-
-export interface TechPrerequisite {
-  node: TechNodeId;
-  relation: 'requires';
+  relation: TechPrerequisiteRelation;
+  note?: string;
 }
 
 export interface TechNodeEffects {
@@ -65,15 +64,29 @@ export interface TechNodeEffects {
     guild: GuildType;
     delta: number;
   }>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TechNodeMetadata {
+  culture_overlays?: Array<{
+    tag: CultureTagId;
+    glyph?: string;
+    position?: 'subscript' | 'superscript';
+    note?: string;
+  }>;
+  custom?: Record<string, unknown>;
 }
 
 export interface TechNode {
   id: TechNodeId;
   title: string;
   summary: string;
-  culture_tags: CultureTag[];
-  prerequisites: TechPrerequisite[];
+  tier?: number;
+  category?: string;
+  culture_tags: CultureTagId[];
+  prerequisites: TechNodePrerequisite[];
   effects?: TechNodeEffects;
+  metadata?: TechNodeMetadata;
 }
 
 export interface TechTreeOrdering {
@@ -81,10 +94,44 @@ export interface TechTreeOrdering {
   prerequisites: Record<TechNodeId, TechNodeId[]>;
 }
 
+export interface TechTreeMetadata {
+  last_migration_applied?: number;
+  source_label?: string;
+  custom?: Record<string, unknown>;
+}
+
 export interface TechTree {
   tech_tree_id: TechTreeId;
   version: number;
-  default_culture_tags: CultureTag[];
+  default_culture_tags: CultureTagId[];
   nodes: TechNode[];
-  ordering: TechTreeOrdering;
+  ordering?: TechTreeOrdering;
+  metadata?: TechTreeMetadata;
+}
+
+export interface TechResearchPointer {
+  techTreeId: TechTreeId;
+  techTreeVersion: number;
+  nodeId: TechNodeId;
+  cultureTags?: CultureTagId[];
+}
+
+export type IssueSeverity = 'warning' | 'error';
+
+export interface TechTreeValidationIssue {
+  path: string;
+  message: string;
+  severity: IssueSeverity;
+}
+
+export interface TechTreeImportResult {
+  tree: TechTree;
+  issues: TechTreeValidationIssue[];
+  normalizedFrom?: unknown;
+}
+
+export interface TechTreeExportResult {
+  json: string;
+  issues: TechTreeValidationIssue[];
+  orderedTree: TechTree;
 }
