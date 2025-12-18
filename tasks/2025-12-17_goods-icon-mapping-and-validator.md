@@ -1,6 +1,6 @@
 # Task Specification — Goods Icon Mapping & Validator (SDK)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Design a DRY, deterministic icon mapping and validation flow for goods, using `GoodsType` as the single source of truth and enabling SDK tooling to surface missing or incorrect icon assignments in a designer-friendly way.
@@ -31,14 +31,16 @@ Design a DRY, deterministic icon mapping and validation flow for goods, using `G
 - Documentation on art style constraints (retro/Hanseatic) and naming conventions for assets.
 
 ## Review Gate
-- [ ] Registry references `GoodsType` without duplication.
-- [ ] Validation deterministically reports missing/duplicate icons.
-- [ ] SDK review UI respects UI charter (≤8 primary actions, stable layout).
+- [x] Registry references `GoodsType` without duplication.
+- [x] Validation deterministically reports missing/duplicate icons.
+- [x] SDK review UI respects UI charter (≤8 primary actions, stable layout).
 - **Approvers:** Game Designer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Existing `GoodsType` enum and `goods.model` rarity/category info (for filtering).
 - Precedes: Any art intake tasks that supply actual icon assets.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Preferred asset resolution(s) and naming suffixes (e.g., `@64-32`).

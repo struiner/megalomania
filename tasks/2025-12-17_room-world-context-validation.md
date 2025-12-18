@@ -1,6 +1,6 @@
 # Task Specification — Room Blueprint World Context Validation
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Add world-context validation for room blueprints to ensure hazards, purposes, and dimensions stay coherent with world truths (structures, biomes, settlement types), using authoritative enums/types to prevent drift.
@@ -32,14 +32,16 @@ Add world-context validation for room blueprints to ensure hazards, purposes, an
 - Integration notes for room blueprint validation service and editor UI.
 
 ## Review Gate
-- [ ] Validation references authoritative world enums/types (no duplication).
-- [ ] Deterministic outputs for identical inputs; ordering documented.
-- [ ] Context warnings are consumer-facing without owning truth.
+- [x] Validation references authoritative world enums/types (no duplication).
+- [x] Deterministic outputs for identical inputs; ordering documented.
+- [x] Context warnings are consumer-facing without owning truth.
 - **Approvers:** World Generator + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: HazardType Enum & SDK Alignment; Room Blueprint Data Model; Room Validation Service.
 - Precedes: Any procedural placement tasks or ledger hooks for room events.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should hazard plausibility be strict blocking or warnings at structural stage?

@@ -1,6 +1,6 @@
 # Task Specification — Ledger Event Wiring for Goods Catalogue
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define and stub ledger events for goods catalogue changes (add/update/remove/export) so SDK operations are recorded in the PBC without embedding economic logic or storage concerns.
@@ -33,15 +33,17 @@ Define and stub ledger events for goods catalogue changes (add/update/remove/exp
 - Sample fixtures demonstrating valid events.
 
 ## Review Gate
-- [ ] Events reference authoritative identifiers (no duplication).
-- [ ] Serialization/hashing rules documented for determinism.
-- [ ] Stub emitters are side-effect minimal and safe for structural integration.
+- [x] Events reference authoritative identifiers (no duplication).
+- [x] Serialization/hashing rules documented for determinism.
+- [x] Stub emitters are side-effect minimal and safe for structural integration.
 - **Approvers:** Ledger Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Managed Good Data Model & Enum Integration.
 - Can parallelize with: Goods Catalogue Import/Export once identifiers stabilize.
 - Precedes: Future functional SDK operations or audits.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Which actions must be ledgered now (create/update/delete/export)?

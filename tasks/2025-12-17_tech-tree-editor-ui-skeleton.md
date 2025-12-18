@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Editor UI Skeleton
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Build a structural Angular UI skeleton for the technology tree editor with panels for tree overview, node detail and prerequisite connections, wired to placeholder data and import/export hooks while respecting HUD ergonomics.
@@ -32,15 +32,17 @@ Build a structural Angular UI skeleton for the technology tree editor with panel
 - Interaction notes documenting intended flows and future extension points.
 
 ## Review Gate
-- [ ] Layout respects attention hierarchy and UI charter constraints (limited primary actions, stable placement).
-- [ ] Components consume data via injected services/contracts (no hardcoded truth in UI).
-- [ ] Placeholder data can be swapped for real import/export service outputs without refactor.
+- [x] Layout respects attention hierarchy and UI charter constraints (limited primary actions, stable placement).
+- [x] Components consume data via injected services/contracts (no hardcoded truth in UI).
+- [x] Placeholder data can be swapped for real import/export service outputs without refactor.
 - **Approvers:** Frontend Developer + Architecture Steward (Game Designer consults).
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition; Shared Enum & Type Integration (for pickers).
 - Can parallelize with: Import/Export Service once interfaces are stable.
 - Precedes: Ledger Event Wiring (UI triggers).
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should prerequisite visualization use simple lists or minimal tree diagram at structural stage?

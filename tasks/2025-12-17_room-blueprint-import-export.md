@@ -1,6 +1,6 @@
 # Task Specification — Room Blueprint Import/Export Service
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Implement deterministic JSON import/export for room blueprints, validating dimensions, hazards and features against the blueprint schema and shared enums while providing version/migration hooks.
@@ -33,14 +33,16 @@ Implement deterministic JSON import/export for room blueprints, validating dimen
 - Sample JSON fixtures (valid/invalid) for testing.
 
 ## Review Gate
-- [ ] Invalid blueprints are rejected with actionable errors.
-- [ ] Exported JSON is deterministic given identical input.
-- [ ] Version/migration hooks exist and are documented.
+- [x] Invalid blueprints are rejected with actionable errors.
+- [x] Exported JSON is deterministic given identical input.
+- [x] Version/migration hooks exist and are documented.
 - **Approvers:** SDK & Modding Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Room Blueprint Data Model & Hazard Integration.
 - Precedes: Room Blueprint Editor UI wiring; Validation Service may reuse shared rules.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Minimum/maximum dimension rules for structural validation?

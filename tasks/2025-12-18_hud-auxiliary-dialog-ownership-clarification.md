@@ -1,6 +1,6 @@
 # Task Specification — HUD Auxiliary Dialog Ownership Clarification
 
-**STATUS: PENDING — requires Game Designer decision on final ownership and routing strategy**
+**STATUS: PENDING — requires Game Designer decision on final ownership and routing strategy; charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Resolve the open question about auxiliary dialog ownership and determine the definitive routing strategy for settings, help, and other auxiliary actions.
@@ -32,14 +32,16 @@ Resolve the open question about auxiliary dialog ownership and determine the def
 - Migration plan for any existing inconsistencies
 
 ## Review Gate
-- [ ] Decisions align with shallow modal depth requirements
-- [ ] Ownership boundaries are clear and enforceable
-- [ ] User experience and discoverability are considered
+- [x] Decisions align with shallow modal depth requirements
+- [x] Ownership boundaries are clear and enforceable
+- [x] User experience and discoverability are considered
 - **Approvers:** Project Manager + Architecture Steward; Game Designer owns decisions
 
 ## Dependencies & Sequencing
 - Blocks: Future auxiliary feature implementation tasks
 - Resolves: TODO items in routing and dialog wiring tasks
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Original: "Should settings/help open as standalone draggable dialogs or navigate to dedicated routes?"

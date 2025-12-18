@@ -1,6 +1,6 @@
 # Task Specification — SDK UI Consistency Framework (Frontend)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define a minimal, reusable SDK UI shell and component patterns (panels, toolbars, action rows) so goods/tech/room tools share consistent ergonomics that honor the UI charter without duplicating layout logic.
@@ -31,14 +31,16 @@ Define a minimal, reusable SDK UI shell and component patterns (panels, toolbars
 - Checklist for charter compliance (attention hierarchy, pixel alignment).
 
 ## Review Gate
-- [ ] Shared primitives reduce duplication across SDK tools.
-- [ ] Layout obeys charter constraints (stable bottom, ≤8 primary actions, uncluttered center).
-- [ ] Pixel alignment and spacing tokens documented.
+- [x] Shared primitives reduce duplication across SDK tools.
+- [x] Layout obeys charter constraints (stable bottom, ≤8 primary actions, uncluttered center).
+- [x] Pixel alignment and spacing tokens documented.
 - **Approvers:** Frontend Developer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Can run in parallel with existing SDK tool tasks; integrate before UI skeletons exit structural stage.
 - Informed by existing SDK pages/components under `v1/src/app/components/sdk`.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Do SDK tools need tabbed shells or single-pane defaults at structural stage?

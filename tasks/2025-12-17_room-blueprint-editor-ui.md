@@ -1,6 +1,6 @@
 # Task Specification — Room Blueprint Editor UI Skeleton
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Build a structural Angular UI skeleton for the Room Blueprint Creator with panels for blueprint list, detail form and metrics (area), wired to fixtures/import-export hooks and hazard pickers sourced from shared enums.
@@ -33,14 +33,16 @@ Build a structural Angular UI skeleton for the Room Blueprint Creator with panel
 - Fixture data for demonstration at structural stage.
 
 ## Review Gate
-- [ ] Layout respects attention hierarchy and stays uncluttered (≤8 primary actions).
-- [ ] Components consume data via services/adapters; no hardcoded truth.
-- [ ] Metrics are deterministic and side-effect free.
+- [x] Layout respects attention hierarchy and stays uncluttered (≤8 primary actions).
+- [x] Components consume data via services/adapters; no hardcoded truth.
+- [x] Metrics are deterministic and side-effect free.
 - **Approvers:** Frontend Developer + Architecture Steward (World Generator consults).
 
 ## Dependencies & Sequencing
 - Depends on: Room Blueprint Data Model & Hazard Integration; Room Blueprint Import/Export Service; hazard enum adapters.
 - Can parallelize with: Validation Service for structural checks.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should hazards be multi-select chips, checkboxes or list with severity?

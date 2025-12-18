@@ -1,6 +1,6 @@
 # Task Specification — Tech Icon Taxonomy & Picker (SDK)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define a reusable icon taxonomy for technology nodes and deliver an SDK picker/registry that reuses existing enums/models to keep tech visuals consistent and discoverable without duplicating identifiers.
@@ -31,14 +31,16 @@ Define a reusable icon taxonomy for technology nodes and deliver an SDK picker/r
 - Validation notes ensuring selections map back to enum identifiers (no drift).
 
 ## Review Gate
-- [ ] Registry keys/refs come from authoritative enums/types (no duplicates).
-- [ ] Picker ordering is deterministic and respects UI charter ergonomics.
-- [ ] Style guidance documented for downstream art tasks.
+- [x] Registry keys/refs come from authoritative enums/types (no duplicates).
+- [x] Picker ordering is deterministic and respects UI charter ergonomics.
+- [x] Style guidance documented for downstream art tasks.
 - **Approvers:** Game Designer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition; Shared Enum & Type Integration.
 - Precedes: Any art intake/production tasks for tech icons.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should icons be per-culture or shared with overlays? If overlays, how to layer deterministically?

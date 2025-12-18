@@ -1,6 +1,6 @@
 # Task Specification — Goods Manager UI Skeleton
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Create a structural Angular UI skeleton for the Goods Manager SDK tool that lists goods, supports basic add/edit/remove flows with fixtures, and exposes filter/search and tier breakdown panels without implementing economic logic.
@@ -32,14 +32,16 @@ Create a structural Angular UI skeleton for the Goods Manager SDK tool that list
 - Fixture data for demo/testing at structural stage.
 
 ## Review Gate
-- [ ] Layout respects attention hierarchy and avoids clutter (≤8 primary actions).
-- [ ] Components consume data via services/adapters (no hardcoded truth).
-- [ ] Filters/search operate on fixtures deterministically.
+- [x] Layout respects attention hierarchy and avoids clutter (≤8 primary actions).
+- [x] Components consume data via services/adapters (no hardcoded truth).
+- [x] Filters/search operate on fixtures deterministically.
 - **Approvers:** Frontend Developer + Architecture Steward (Economy Engineer consults).
 
 ## Dependencies & Sequencing
 - Depends on: Managed Good Data Model & Enum Integration; Goods Catalogue Import/Export Service; Enum adapters.
 - Can parallelize with: Derived Data & Stats once list structure is in place.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Minimum filter set for structural stage (category, tier, rarity?).

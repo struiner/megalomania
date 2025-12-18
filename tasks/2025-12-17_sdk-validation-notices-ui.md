@@ -1,6 +1,6 @@
 # Task Specification — SDK Validation Notices UI (Frontend)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Deliver a shared, unobtrusive validation/notification pattern for SDK tools (goods, tech, rooms) so deterministic validation results are surfaced consistently without cluttering the HUD center.
@@ -32,14 +32,16 @@ Deliver a shared, unobtrusive validation/notification pattern for SDK tools (goo
 - Guidelines for placement to respect attention hierarchy.
 
 ## Review Gate
-- [ ] Notices render deterministically and consume external validation results.
-- [ ] Styling/placement complies with UI charter (no center obstruction, stable layout).
-- [ ] Severity/iconography documented for consistent usage.
+- [x] Notices render deterministically and consume external validation results.
+- [x] Styling/placement complies with UI charter (no center obstruction, stable layout).
+- [x] Severity/iconography documented for consistent usage.
 - **Approvers:** Frontend Developer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Validation outputs from goods/tech/room services (structural fixtures acceptable).
 - Precedes: UI skeleton tasks wanting consistent validation display.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should summaries be collapsible or always visible at structural stage?

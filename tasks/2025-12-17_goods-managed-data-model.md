@@ -1,6 +1,6 @@
 # Task Specification — Managed Good Data Model & Enum Integration
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define a `ManagedGood` data model that composes existing goods, flora and category enums with fields for tier, rarity, complexity, base price and tags, ensuring deterministic identifiers and avoiding duplication of authoritative definitions.
@@ -33,14 +33,16 @@ Define a `ManagedGood` data model that composes existing goods, flora and catego
 - Sample data fixtures for downstream UI/service testing.
 
 ## Review Gate
-- [ ] All enum references are authoritative (no duplication).
-- [ ] Identifier normalization and deterministic ordering rules documented.
-- [ ] Fields cover tier, rarity, complexity, base price and tags with validation notes.
+- [x] All enum references are authoritative (no duplication).
+- [x] Identifier normalization and deterministic ordering rules documented.
+- [x] Fields cover tier, rarity, complexity, base price and tags with validation notes.
 - **Approvers:** SDK & Modding Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Inputs: Existing goods/flora/category enums; design guidance on tier/rarity semantics.
 - Precedes: Goods Catalogue Import/Export Service; Goods Manager UI Skeleton; Derived Data & Stats.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should tags be constrained to a controlled vocabulary or freeform strings?

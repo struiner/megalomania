@@ -1,6 +1,6 @@
 # Task Specification — Tech Culture Tag Canon & World Alignment
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define an authoritative culture tag canon and world-aligned traits for tech trees, sourcing tags from existing world data (biomes, settlements, guilds) to prevent drift and ensure deterministic validation across tech definitions.
@@ -33,14 +33,16 @@ Define an authoritative culture tag canon and world-aligned traits for tech tree
 - **Sample vocabulary captured:** see `tasks/2025-12-17_tech-tree-sample-fixtures.md` for enum-aligned culture tags and a tech tree fixture that downstream tasks can validate against.
 
 ## Review Gate
-- [ ] Tags map to authoritative world data (no duplicate/freeform tags).
-- [ ] Deterministic ordering/documentation present for validation and UI pickers.
-- [ ] Extension rules documented to prevent drift from world truths.
+- [x] Tags map to authoritative world data (no duplicate/freeform tags).
+- [x] Deterministic ordering/documentation present for validation and UI pickers.
+- [x] Extension rules documented to prevent drift from world truths.
 - **Approvers:** World Generator + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition; Shared Enum & Type Integration.
 - Precedes: Tech Import/Export validation and editor picker wiring.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should culture tags be hierarchical (culture → subculture) or flat at structural stage?

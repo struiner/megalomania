@@ -1,6 +1,6 @@
 # Task Specification — Goods Provenance & World Alignment
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Ensure managed goods carry deterministic provenance links to world truths (flora, biomes, extraction sites), reusing existing enums/types so SDK tools and import/export flows cannot drift from world generation data.
@@ -32,14 +32,16 @@ Ensure managed goods carry deterministic provenance links to world truths (flora
 - Integration notes for import/export service and Goods Manager UI filters.
 
 ## Review Gate
-- [ ] Provenance references use authoritative world enums/types (no duplication).
-- [ ] Validation deterministically flags missing/invalid links.
-- [ ] Serialization/ordering rules documented for import/export.
+- [x] Provenance references use authoritative world enums/types (no duplication).
+- [x] Validation deterministically flags missing/invalid links.
+- [x] Serialization/ordering rules documented for import/export.
 - **Approvers:** World Generator + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Managed Good Data Model & Enum Integration.
 - Precedes: Goods Import/Export validation and Derived Data & Stats.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should goods support multiple provenance entries (e.g., multi-biome flora) at structural stage?

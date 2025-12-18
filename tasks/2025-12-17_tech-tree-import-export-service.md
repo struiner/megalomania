@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Import/Export Service
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Create a deterministic JSON import/export service for technology trees that validates data against the tech tree schema, preserves ordering and surfaces migration/version hooks without owning gameplay logic.
@@ -33,14 +33,16 @@ Create a deterministic JSON import/export service for technology trees that vali
 - Sample JSON fixtures (valid/invalid) for QA.
 
 ## Review Gate
-- [ ] Import rejects invalid or cyclic tech definitions with clear errors.
-- [ ] Export output is deterministic across runs given identical input.
-- [ ] Version/migration hooks exist and are documented.
+- [x] Import rejects invalid or cyclic tech definitions with clear errors.
+- [x] Export output is deterministic across runs given identical input.
+- [x] Version/migration hooks exist and are documented.
 - **Approvers:** Backend Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition.
 - Precedes: Tech Tree Editor UI Skeleton wiring and any ledger integration that consumes tech definitions.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Preferred JSON schema dialect (hand-rolled vs. lightweight schema library)?

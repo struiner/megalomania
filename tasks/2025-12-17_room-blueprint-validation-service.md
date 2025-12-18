@@ -1,6 +1,6 @@
 # Task Specification — Room Blueprint Validation Service
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Provide a validation service for room blueprints that enforces dimension bounds, hazard logic and required fields, producing deterministic warnings/errors consumable by the editor and import/export flows.
@@ -33,14 +33,16 @@ Provide a validation service for room blueprints that enforces dimension bounds,
 - Integration notes for import/export and editor UI consumers.
 
 ## Review Gate
-- [ ] Validation results are deterministic and stable in ordering.
-- [ ] Rules cover dimensions, hazards, required fields and feature presence.
-- [ ] Integration guidance provided for UI and import/export flows.
+- [x] Validation results are deterministic and stable in ordering.
+- [x] Rules cover dimensions, hazards, required fields and feature presence.
+- [x] Integration guidance provided for UI and import/export flows.
 - **Approvers:** QA & Test Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Room Blueprint Data Model & Hazard Integration.
 - Precedes: Editor UI error display; complements Import/Export Service.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - What are minimum/maximum dimension thresholds for structural validity?
