@@ -1,0 +1,71 @@
+{
+  "tech_tree_id": "northern_trade_v1",
+  "version": 1,
+  "default_culture_tags": ["biome_taiga", "settlement_trading_post"],
+  "nodes": [
+    {
+      "id": "logging_outposts",
+      "title": "Logging Outposts",
+      "summary": "Formalize timber camps to feed nascent trade routes.",
+      "culture_tags": ["biome_taiga", "settlement_hamlet"],
+      "prerequisites": [],
+      "effects": {
+        "unlock_structures": ["lumberyard"],
+        "unlock_goods": ["wood"]
+      }
+    },
+    {
+      "id": "charcoal_kilns",
+      "title": "Charcoal Kilns",
+      "summary": "Stabilize fuel output for cold climates and caravans.",
+      "culture_tags": ["biome_taiga", "guild_merchants"],
+      "prerequisites": [
+        {
+          "node": "logging_outposts",
+          "relation": "requires"
+        }
+      ],
+      "effects": {
+        "unlock_structures": ["brickworks"],
+        "unlock_goods": ["coal"]
+      }
+    },
+    {
+      "id": "river_trading_rites",
+      "title": "River Trading Rites",
+      "summary": "Codify tolls and mooring privileges at frontier docks.",
+      "culture_tags": ["biome_beach", "guild_merchants"],
+      "prerequisites": [
+        {
+          "node": "charcoal_kilns",
+          "relation": "requires"
+        }
+      ],
+      "effects": {
+        "unlock_structures": ["docks", "harbor"],
+        "unlock_goods": ["Mead"],
+        "grants_settlement_specialization": "Trade"
+      }
+    },
+    {
+      "id": "scholar_exchange",
+      "title": "Scholar Exchange",
+      "summary": "Invite itinerant scholars to document guild practices.",
+      "culture_tags": ["guild_scholars", "settlement_trading_post"],
+      "prerequisites": [
+        {
+          "node": "river_trading_rites",
+          "relation": "requires"
+        }
+      ],
+      "effects": {
+        "unlock_structures": ["town_hall"],
+        "guild_reputation": {
+          "guild": "scholars",
+          "delta": 10
+        },
+        "research_rate_modifier": 0.1
+      }
+    }
+  ]
+}
