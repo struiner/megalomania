@@ -11,11 +11,9 @@ This document fulfills the planning deliverables for `tasks/2025-12-18_hud-theme
 - **Auxiliary dialogs** — parchment base with minimal ornamentation; no additional drop shadows beyond 1px Cool Shadow.
 
 ## SCSS Hook Plan
-- Add theme token variables (palette, border thickness, padding steps) to a HUD SCSS partial for reuse across components.
+- Theme token variables now live in `v1/src/app/pages/hud/theme/hud-theme.tokens.scss` (palette, typography stacks, letterbox contrast). Import the partial into HUD components to keep fonts and color tokens consistent.
 - Expose mixins for **brass frame**, **parchment backplate**, and **rope header** treatments; keep mixins limited to visual styling.
 - Snap all decorative dimensions to 4px increments; avoid fractional values per pixel-integrity rule.
-
-> TODO: Confirm where to host the HUD SCSS partial (e.g., `v1/src/app/pages/hud/theme/_hud-theme.scss`) to avoid cross-domain leakage.
 
 ## Retrofit Sequence
 0. Lock **Kenney “Game Icons” (CC0)** as the canonical HUD pack (see `hud-icon-asset-pack-sourcing.md`); generate 16px/32px sprite atlases with brass/ink recolor and keep Game-Icons.net only as a credited supplemental source.

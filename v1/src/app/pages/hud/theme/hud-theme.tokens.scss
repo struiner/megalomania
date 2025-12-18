@@ -1,0 +1,82 @@
+/*
+ * HUD Hanseatic theme token surface for fonts and contrast primitives.
+ * Fonts are self-hosted to preserve determinism; drop WOFF2 assets under
+ * `/assets/fonts/hud/` before promotion to runtime. Paths below assume that
+ * location and may be updated when font files are added.
+ */
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('/assets/fonts/hud/PixelifySans[wght].woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IM Fell English SC';
+  src: url('/assets/fonts/hud/IMFellEnglishSC-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+$hud-font-sans-stack: 'Pixelify Sans', 'Press Start 2P', 'Silkscreen', 'VT323', 'ui-monospace',
+  'SFMono-Regular', 'Menlo', monospace;
+$hud-font-serif-stack: 'IM Fell English SC', 'EB Garamond', 'Georgia', serif;
+
+@mixin host-tokens {
+  --hud-font-sans: #{$hud-font-sans-stack};
+  --hud-font-serif: #{$hud-font-serif-stack};
+  --hud-ink: #0f0a1f;
+  --hud-ink-contrast: #f8f5e6;
+  --hud-parchment: #f0e4c2;
+  --hud-wood: #2b1b0f;
+  --hud-brass: #c08a3b;
+  --hud-copper: #d79a59;
+  --hud-shadow: #1b2433;
+  --hud-success: #6ba84f;
+  --hud-warning: #d27d2c;
+  --hud-alert: #9e2f2f;
+  --hud-letterbox-flat-fill: var(--hud-ink);
+  --hud-letterbox-texture: repeating-linear-gradient(
+      135deg,
+      rgba(192, 138, 59, 0.22) 0px,
+      rgba(192, 138, 59, 0.22) 8px,
+      rgba(27, 36, 51, 0.52) 8px,
+      rgba(27, 36, 51, 0.52) 16px
+    ),
+    var(--hud-letterbox-flat-fill);
+  --hud-letterbox-contrast-stroke: rgba(248, 245, 230, 0.38);
+  --hud-font-heading-size: 14px;
+  --hud-font-body-size: 12px;
+  --hud-font-caption-size: 11px;
+}
+
+@mixin pixel-font {
+  font-family: var(--hud-font-sans);
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+}
+
+@mixin narrative-font {
+  font-family: var(--hud-font-serif);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@mixin hud-letterbox-vars {
+  --hud-minimap-letterbox-flat-fill: var(--hud-letterbox-flat-fill, #0f0a1f);
+  --hud-minimap-letterbox-texture: var(
+    --hud-letterbox-texture,
+    repeating-linear-gradient(
+        135deg,
+        rgba(192, 138, 59, 0.22) 0px,
+        rgba(192, 138, 59, 0.22) 8px,
+        rgba(27, 36, 51, 0.52) 8px,
+        rgba(27, 36, 51, 0.52) 16px
+      ),
+      var(--hud-letterbox-flat-fill)
+  );
+  --hud-minimap-letterbox-contrast-stroke: var(--hud-letterbox-contrast-stroke, rgba(248, 245, 230, 0.38));
+}
