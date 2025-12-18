@@ -1,0 +1,39 @@
+{
+  "tech_tree_id": "CyclicTradeTree",
+  "version": "1",
+  "default_culture_tags": ["biome_unknown"],
+  "nodes": [
+    {
+      "id": "improperNode",
+      "title": "Improper Node",
+      "summary": "Uses mixed casing and an invalid default culture tag.",
+      "culture_tags": [],
+      "prerequisites": [
+        {
+          "node": "second_node",
+          "relation": "requires"
+        }
+      ],
+      "effects": {
+        "unlock_structures": ["market"],
+        "unlock_goods": ["unknown_good"]
+      }
+    },
+    {
+      "id": "second_node",
+      "title": "Second Node",
+      "summary": "Forms a cycle and points at the first node.",
+      "culture_tags": ["guild_merchants"],
+      "prerequisites": [
+        {
+          "node": "improperNode",
+          "relation": "requires"
+        }
+      ],
+      "effects": {
+        "unlock_structures": ["bank"],
+        "unlock_goods": ["wood"]
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Task Specification — HUD Minimap Letterboxing Implementation
 
-**STATUS: COMPLETED (functional) — aesthetic fill decision pending**
+**STATUS: COMPLETED (functional) — aesthetic fill decision pending; charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Implement letterboxing functionality for the HUD minimap to handle aspect ratio differences between the minimap container and the rendered map data while maintaining pixel integrity.
@@ -32,16 +32,20 @@ Implement letterboxing functionality for the HUD minimap to handle aspect ratio 
 - Updated README notes on minimap scaling policy with implementation details
 
 ## Review Gate
-- [ ] Letterboxing preserves pixel integrity
-- [ ] Visual treatment aligns with Hanseatic theme
-- [ ] Performance impact is negligible
+- [x] Letterboxing preserves pixel integrity
+- [x] Visual treatment aligns with Hanseatic theme
+- [x] Performance impact is negligible
 - **Approvers:** Frontend Developer + Architecture Steward
 
 ## Dependencies & Sequencing
 - Depends on: Minimap scaling policy (completed)
 - Can run in parallel with other HUD improvements
 
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
+
 ## Open Questions / Clarifications
-- Original TODO: "README summarizes policy with TODOs for letterboxing"
+- Original TODO: "README summarizes policy with TODOs for letterboxing"    
 - Clarification: Should letterbox bars use solid colors or subtle textures to match the overall HUD aesthetic?
+    answer: subtle textures
 - New: Confirm whether letterbox fill should adapt to device DPI (e.g., darker fill on OLED-safe areas) or remain static.
+    answer: yes, but include task for making this a generic or global aspect of the game, not specific to minimap

@@ -1,6 +1,6 @@
 # Task Specification — HUD Icon Asset Pack Sourcing
 
-**STATUS: NEW — requires Game Designer/Art direction decision**
+**STATUS: NEW — requires Game Designer/Art direction decision; charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Select and authorize a canonical pixel icon asset pack (or sprite sheet commission) to replace placeholder glyphs used by the HUD icon component while maintaining licensing clarity.
@@ -31,11 +31,18 @@ Select and authorize a canonical pixel icon asset pack (or sprite sheet commissi
 - Recommendation for fallback glyph policy if assets are unavailable.
 
 ## Review Gate
-- [ ] Licensing cleared for commercial redistribution.
-- [ ] Icon tone validated against UI & Ergonomics Charter.
-- [ ] Mapping covers all current HUD icon usages.
+- [x] Licensing cleared for commercial redistribution.
+- [x] Icon tone validated against UI & Ergonomics Charter.
+- [x] Mapping covers all current HUD icon usages.
 - **Approvers:** Project Manager + Architecture Steward; Game Designer owns aesthetic decision.
+
+## Dependencies & Sequencing
+- Depends on: HUD Font Asset Clarification for typography alignment and licensing guardrails.
+- Precedes: HUD Icon Functionality Integration and downstream HUD pane/button icon adoption.
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should primary action icons receive a heavier bevel or color accent compared to informational headers?
+    answer: yes
 - Is a custom commission preferred over an existing pack to guarantee exclusivity?
+    answer: not really, aesthetics and recognizeability are paramount.

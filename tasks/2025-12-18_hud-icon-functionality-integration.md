@@ -1,6 +1,6 @@
 # Task Specification — HUD Icon Functionality Integration
 
-**STATUS: COMPLETED (functional integration) — asset/bevel decisions pending**
+**STATUS: COMPLETED (functional integration) — asset/bevel decisions pending; charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Implement the generic icon functionality that was referenced in multiple HUD component tasks as a prerequisite for header areas, button icons, and pane decorations.
@@ -32,9 +32,9 @@ Implement the generic icon functionality that was referenced in multiple HUD com
 - Example implementations showing icon integration across different HUD contexts
 
 ## Review Gate
-- [ ] Icons integrate cleanly with existing HUD components
-- [ ] Pixel integrity maintained at all supported scales
-- [ ] Consistent treatment across different HUD surfaces
+- [x] Icons integrate cleanly with existing HUD components
+- [x] Pixel integrity maintained at all supported scales
+- [x] Consistent treatment across different HUD surfaces
 - **Approvers:** Frontend Developer + Architecture Steward; Game Designer optional for aesthetic review
 
 ## Dependencies & Sequencing
@@ -42,7 +42,12 @@ Implement the generic icon functionality that was referenced in multiple HUD com
 - Precedes: HUD theme consistency retrofit work
 - Referenced by: Info pane framework, button grid component, routing dialogs
 
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
+
 ## Open Questions / Clarifications
 - Original: "Preferred default icon size (e.g., 16×16 vs 24×24) given pixel heritage?"
+    answer: 16x16 px and 32x32px, to be toggleable.
 - Additional: Should icon treatment vary between primary actions (buttons) and secondary information (headers)?
+    answer: yes, but appearance must remain recognizeable
 - New: Confirm asset pack/sprite source to replace placeholder glyphs in `HudIconComponent` while keeping licensing clear.
+    answer: initially create compatibility with default icon/emoji pack like font awesome (free version). Potential area for sdk component allowing for the creation of custom icons.
