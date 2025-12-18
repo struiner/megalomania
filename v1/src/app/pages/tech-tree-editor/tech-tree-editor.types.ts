@@ -31,3 +31,16 @@ export interface EffectOptionSet {
   settlements: TechEnumOption[];
   guilds: TechEnumOption[];
 }
+
+export interface PrerequisiteOverlayNode {
+  id: string;
+  column: number;
+  row: number;
+  tier: number;
+}
+
+export interface PrerequisiteOverlayEdge {
+  from: PrerequisiteOverlayNode;
+  to: PrerequisiteOverlayNode;
+  relation: string;
+}

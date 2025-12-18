@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Normalization Harness & Case Drift Tests
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: COMPLETE (Structural fidelity; mixed-case harness and fixtures added)**
 
 ## Task Summary
 Build a deterministic test/fixture harness to exercise tech-tree import/export with mixed-case identifiers, ensuring the current normalization pipeline does not emit false positives or mutate values unexpectedly during merges.
@@ -31,9 +31,9 @@ Build a deterministic test/fixture harness to exercise tech-tree import/export w
 - Documentation of observed discrepancies to inform enum mapping fixes.
 
 ## Review Gate
-- [ ] Tests reproduce the current casing drift warnings seen during merges.
-- [ ] Round-trip assertions are deterministic (ordering, casing, metadata).
-- [ ] Remaining gaps are documented with pointers to responsible enums/fields.
+- [x] Tests reproduce the current casing drift warnings seen during merges.
+- [x] Round-trip assertions are deterministic (ordering, casing, metadata).
+- [x] Remaining gaps are documented with pointers to responsible enums/fields.
 
 ## Dependencies & Sequencing
 - Depends on: `TechTreeIoService` current implementation.

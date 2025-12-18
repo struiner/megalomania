@@ -1,6 +1,6 @@
 # Task Specification — Tech Icon Taxonomy & Picker (SDK)
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETE (Structural fidelity; registry + picker implemented)**
 
 ## Task Summary
 Define a reusable icon taxonomy for technology nodes and deliver an SDK picker/registry that reuses existing enums/models to keep tech visuals consistent and discoverable without duplicating identifiers.
@@ -49,4 +49,3 @@ Define a reusable icon taxonomy for technology nodes and deliver an SDK picker/r
     answer: yes.
 - How to handle future DLC/expansion icon sets without breaking determinism?
     answer: by using a default frame or border for the icons, which can be varied for emphasis
-

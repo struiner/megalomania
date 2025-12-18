@@ -7,6 +7,8 @@
       "id": "logging_outposts",
       "title": "Logging Outposts",
       "summary": "Formalize timber camps to feed nascent trade routes.",
+      "tier": 1,
+      "display_order": 1,
       "culture_tags": ["biome_taiga", "settlement_hamlet"],
       "prerequisites": [],
       "effects": {
@@ -18,6 +20,8 @@
       "id": "charcoal_kilns",
       "title": "Charcoal Kilns",
       "summary": "Stabilize fuel output for cold climates and caravans.",
+      "tier": 2,
+      "display_order": 2,
       "culture_tags": ["biome_taiga", "guild_merchants"],
       "prerequisites": [
         {
@@ -34,6 +38,8 @@
       "id": "river_trading_rites",
       "title": "River Trading Rites",
       "summary": "Codify tolls and mooring privileges at frontier docks.",
+      "tier": 3,
+      "display_order": 3,
       "culture_tags": ["biome_beach", "guild_merchants"],
       "prerequisites": [
         {
@@ -51,6 +57,8 @@
       "id": "scholar_exchange",
       "title": "Scholar Exchange",
       "summary": "Invite itinerant scholars to document guild practices.",
+      "tier": 4,
+      "display_order": 4,
       "culture_tags": ["guild_scholars", "settlement_trading_post"],
       "prerequisites": [
         {
