@@ -30,6 +30,23 @@ export type CultureTag = BiomeCultureTag | SettlementCultureTag | GuildCultureTa
 export type TechNodeId<T extends string = string> = SnakeCaseIdentifier<T>;
 export type TechTreeId<T extends string = string> = SnakeCaseIdentifier<T>;
 
+export type CultureTagNamespace = 'biome' | 'settlement' | 'guild';
+
+// Snake_case, namespaced identifiers aligned to enum sources (e.g., biome_taiga).
+export type CultureTagId = `${CultureTagNamespace}_${string}`;
+
+export interface CultureTagBinding {
+  id: CultureTagId;
+  source: CultureTagNamespace;
+  sourceValue: Biome | SettlementType | GuildType;
+  note?: string;
+}
+
+export interface TechNodePrerequisite {
+  node: TechNodeId;
+  relation: 'requires' | 'blocks' | 'excludes';
+}
+
 export interface TechPrerequisite {
   node: TechNodeId;
   relation: 'requires';
