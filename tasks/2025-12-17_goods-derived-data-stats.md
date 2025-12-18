@@ -1,6 +1,6 @@
 # Task Specification — Goods Derived Data & Stats
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Compute derived stats for the goods catalogue (e.g., tier totals, rarity-to-tier mapping, basic aggregates) using deterministic calculations that feed the Goods Manager UI without embedding economic simulation.
@@ -33,14 +33,16 @@ Compute derived stats for the goods catalogue (e.g., tier totals, rarity-to-tier
 - Sample fixtures/tests for structural verification.
 
 ## Review Gate
-- [ ] Derived stats are deterministic and side-effect free.
-- [ ] Rarity-tier mapping rules documented and enforced with warnings.
-- [ ] Outputs integrate cleanly with Goods Manager UI and export flows.
+- [x] Derived stats are deterministic and side-effect free.
+- [x] Rarity-tier mapping rules documented and enforced with warnings.
+- [x] Outputs integrate cleanly with Goods Manager UI and export flows.
 - **Approvers:** Economy Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Managed Good Data Model & Enum Integration; Goods Catalogue Import/Export fixtures.
 - Precedes: Goods Manager UI wiring of breakdown panels.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should rarity-tier mapping be configurable or fixed at this stage?

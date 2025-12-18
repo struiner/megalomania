@@ -1,6 +1,6 @@
 # Task Specification — HazardType Enum & SDK Alignment
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Create an authoritative `HazardType` enum under `v1/src/app/enums` and refactor SDK tooling (e.g., room creator/editor) to consume it, eliminating hardcoded hazard strings while keeping UI passive and deterministic.
@@ -32,14 +32,16 @@ Create an authoritative `HazardType` enum under `v1/src/app/enums` and refactor 
 - Sample fixtures for validation service/tests.
 
 ## Review Gate
-- [ ] Hazard options sourced from the new enum across SDK room tools (no hardcoded strings).
-- [ ] Deterministic ordering documented and enforced for pickers.
-- [ ] Ownership boundaries documented (enum is authoritative; UI is consumer).
+- [x] Hazard options sourced from the new enum across SDK room tools (no hardcoded strings).
+- [x] Deterministic ordering documented and enforced for pickers.
+- [x] Ownership boundaries documented (enum is authoritative; UI is consumer).
 - **Approvers:** SDK & Modding Engineer + Architecture Steward (World Generator consults).
 
 ## Dependencies & Sequencing
 - Precedes: Room Blueprint Data Model, Import/Export, Editor UI, Validation Service (hazard pickers/validators).
 - Can run in parallel with: Tech/Goods epics (independent).
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should hazards include severity categories or remain simple identifiers at structural stage?

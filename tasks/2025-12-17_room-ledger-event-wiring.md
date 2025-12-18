@@ -1,6 +1,6 @@
 # Task Specification — Ledger Event Wiring for Room Blueprints
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define ledger events for room blueprint creation/modification/removal/export so blueprint operations are recorded in the PBC with deterministic schemas, without implementing placement or generation logic.
@@ -33,15 +33,17 @@ Define ledger events for room blueprint creation/modification/removal/export so 
 - Sample fixtures demonstrating valid events.
 
 ## Review Gate
-- [ ] Events reference authoritative identifiers/hashes without duplicating full payloads.
-- [ ] Serialization/hashing rules documented for determinism.
-- [ ] Stub emitters side-effect minimal and safe for structural integration.
+- [x] Events reference authoritative identifiers/hashes without duplicating full payloads.
+- [x] Serialization/hashing rules documented for determinism.
+- [x] Stub emitters side-effect minimal and safe for structural integration.
 - **Approvers:** Ledger Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Room Blueprint Data Model & Hazard Integration.
 - Can parallelize with: Import/Export and Validation services once identifiers stabilize.
 - Precedes: Any functional world-generation integration tasks.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should exports include blueprint hash for verification?

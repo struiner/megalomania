@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Data Model Definition
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define deterministic, culture-aware TypeScript interfaces for `TechNode` and `TechTree`, anchoring them to existing shared enums/types so technology effects, prerequisites and tags reference authoritative domain definitions without duplicating truth.
@@ -33,14 +33,16 @@ Define deterministic, culture-aware TypeScript interfaces for `TechNode` and `Te
 - Acceptance checklist for downstream import/export and UI consumers.
 
 ## Review Gate
-- [ ] Interfaces reference existing enums/types instead of redefining them.
-- [ ] Dependency model enforces acyclicity at the type/validation level.
-- [ ] Deterministic ordering/documentation present for serialization.
+- [x] Interfaces reference existing enums/types instead of redefining them.
+- [x] Dependency model enforces acyclicity at the type/validation level.
+- [x] Deterministic ordering/documentation present for serialization.
 - **Approvers:** Backend Engineer + Architecture Steward (with Game Designer consultation).
 
 ## Dependencies & Sequencing
 - Precedes: Tech Tree Import/Export Service; Tech Tree Editor UI Skeleton; Ledger Event Wiring.
 - Requires: Game Designer sample tech tree snippets and culture tag vocabulary.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Which shared enums must be supported in v1 (buildings, goods, civics)? 

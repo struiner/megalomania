@@ -1,6 +1,6 @@
 # Task Specification — Ledger Event Wiring for Research Actions
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define and wire ledger event types for research start and completion so tech research actions are recorded in the PBC with deterministic schemas, without implementing progression mechanics.
@@ -33,15 +33,17 @@ Define and wire ledger event types for research start and completion so tech res
 - Sample events/fixtures for integration testing with import/export and editor UI.
 
 ## Review Gate
-- [ ] Event schemas reference tech identifiers from the data model without duplication.
-- [ ] Serialization and hashing rules documented for determinism.
-- [ ] Stub emitters are side-effect minimal and safe to integrate at structural stage.
+- [x] Event schemas reference tech identifiers from the data model without duplication.
+- [x] Serialization and hashing rules documented for determinism.
+- [x] Stub emitters are side-effect minimal and safe to integrate at structural stage.
 - **Approvers:** Ledger Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition (identifiers), Shared Enum & Type Integration (valid ids).
 - Can parallelize with: Import/Export Service once identifiers are stable.
 - Precedes: Functional research mechanics tasks.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Required granularity for timestamps (minute-level per epic; any tighter?).

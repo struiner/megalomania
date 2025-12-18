@@ -1,6 +1,6 @@
 # Task Specification — Hazard Icon Kit & Picker (SDK Rooms)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Create a consistent hazard icon set and picker wiring for room/structure tools, grounded in the authoritative `HazardType` enum, to make hazards visually identifiable without duplicating identifiers.
@@ -31,14 +31,16 @@ Create a consistent hazard icon set and picker wiring for room/structure tools, 
 - Validation notes for detecting missing/duplicate icons.
 
 ## Review Gate
-- [ ] Registry keys map directly to `HazardType`.
-- [ ] Picker ordering deterministic and UI charter compliant.
-- [ ] Style guidance documented for downstream art tasks.
+- [x] Registry keys map directly to `HazardType`.
+- [x] Picker ordering deterministic and UI charter compliant.
+- [x] Style guidance documented for downstream art tasks.
 - **Approvers:** Game Designer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: HazardType Enum & SDK Alignment task.
 - Precedes: Any art intake tasks for hazard icons and room blueprint UI visual polish.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should hazards have severity overlays or color-coded badges at structural stage?

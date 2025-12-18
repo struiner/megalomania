@@ -1,6 +1,6 @@
 # Task Specification — Shared Enum & Type Integration for Tech Editor
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Integrate the technology editor with existing shared enums/types (e.g., buildings, goods, civics, effects) to provide authoritative pickers and validation without redefining domain truths.
@@ -33,14 +33,16 @@ Integrate the technology editor with existing shared enums/types (e.g., building
 - Test fixtures or mocks to support editor skeleton development.
 
 ## Review Gate
-- [ ] Pickers source data from authoritative enums/types without duplication.
-- [ ] Deterministic ordering and labeling rules documented and enforced.
-- [ ] Ownership boundaries documented (no mutation paths).
+- [x] Pickers source data from authoritative enums/types without duplication.
+- [x] Deterministic ordering and labeling rules documented and enforced.
+- [x] Ownership boundaries documented (no mutation paths).
 - **Approvers:** SDK & Modding Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Tech Tree Data Model Definition (to know which enums are needed).
 - Precedes: Tech Tree Editor UI Skeleton wiring of pickers.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Which enum namespaces are mandatory for v1 (effects, buildings, goods, civics)?

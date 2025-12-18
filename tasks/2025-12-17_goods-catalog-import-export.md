@@ -1,6 +1,6 @@
 # Task Specification — Goods Catalogue Import/Export Service
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Implement deterministic JSON import/export for the goods catalogue, validating `ManagedGood` entries against shared enums and numeric bounds while preserving ordering for reproducible SDK workflows.
@@ -33,14 +33,16 @@ Implement deterministic JSON import/export for the goods catalogue, validating `
 - Sample JSON fixtures (valid/invalid) for testing.
 
 ## Review Gate
-- [ ] Invalid entries are rejected with actionable errors.
-- [ ] Exported JSON is deterministic for identical input.
-- [ ] Version/migration hooks exist and are documented.
+- [x] Invalid entries are rejected with actionable errors.
+- [x] Exported JSON is deterministic for identical input.
+- [x] Version/migration hooks exist and are documented.
 - **Approvers:** SDK & Modding Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Managed Good Data Model & Enum Integration.
 - Precedes: Goods Manager UI Skeleton wiring and Derived Data & Stats computation.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should price/complexity be clamped or strictly validated?

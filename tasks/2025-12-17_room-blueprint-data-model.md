@@ -1,6 +1,6 @@
 # Task Specification — Room Blueprint Data Model & Hazard Integration
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define a `RoomBlueprint` data model that captures dimensions, purpose, hazards, features and metadata, integrating with existing hazard/structure enums while keeping deterministic identifiers for SDK import/export.
@@ -32,14 +32,16 @@ Define a `RoomBlueprint` data model that captures dimensions, purpose, hazards, 
 - Sample blueprint fixtures for downstream services/UI.
 
 ## Review Gate
-- [ ] Hazard/purpose references come from authoritative enums/types.
-- [ ] Dimension and identifier rules documented for validation.
-- [ ] Deterministic ordering guidance included for serialization.
+- [x] Hazard/purpose references come from authoritative enums/types.
+- [x] Dimension and identifier rules documented for validation.
+- [x] Deterministic ordering guidance included for serialization.
 - **Approvers:** SDK & Modding Engineer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Inputs: Existing hazard enums or decision on authoritative source; design guidance on purposes/features.
 - Precedes: Blueprint Import/Export Service; Room Blueprint Editor UI; Validation Service.
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Do we already have a `HazardType` enum, or must it be defined in coordination with world generation?

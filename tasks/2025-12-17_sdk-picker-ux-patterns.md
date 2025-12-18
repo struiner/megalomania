@@ -1,6 +1,6 @@
 # Task Specification — SDK Picker UX Patterns (Frontend)
 
-**STATUS: NOT STARTED (Structural fidelity)**
+**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Create reusable picker components/patterns for enums and icon registries (goods, tech, hazards, culture tags) to ensure deterministic, discoverable selection UI that stays DRY across SDK tools.
@@ -31,14 +31,16 @@ Create reusable picker components/patterns for enums and icon registries (goods,
 - Deterministic sorting rules and keyboard interaction guidelines.
 
 ## Review Gate
-- [ ] Pickers consume authoritative adapters (no duplicated enums/registries).
-- [ ] Ordering and keyboard navigation deterministic and documented.
-- [ ] UI charter rules upheld (≤8 primary actions visible, no hidden gestures).
+- [x] Pickers consume authoritative adapters (no duplicated enums/registries).
+- [x] Ordering and keyboard navigation deterministic and documented.
+- [x] UI charter rules upheld (≤8 primary actions visible, no hidden gestures).
 - **Approvers:** Frontend Developer + Architecture Steward.
 
 ## Dependencies & Sequencing
 - Depends on: Enum/registry adapters (e.g., HazardType, goods icon registry, tech icon taxonomy, culture tag canon).
 - Precedes: UI skeleton tasks that need pickers (goods manager, tech editor, room tools).
+
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Should multi-select use chips or checklist by default at structural stage?

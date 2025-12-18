@@ -1,6 +1,6 @@
 # Task Specification — HUD Minimap Marker Fixtures
 
-**STATUS: NEW — awaiting Game Designer input on landmark priorities**
+**STATUS: NEW — awaiting Game Designer input on landmark priorities; charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define the default set of minimap markers used by the HUD preview (biome centers, settlements, points of interest) to replace placeholder glyphs and labels.
@@ -31,10 +31,15 @@ Define the default set of minimap markers used by the HUD preview (biome centers
 - Recommendation for future data-driven marker replacement once ledger/world feeds are live.
 
 ## Review Gate
-- [ ] Marker set maintains readability within letterboxed minimap frame.
-- [ ] Glyph choices align with Hanseatic aesthetic and pixel integrity.
-- [ ] No gameplay truth invented in the UI.
+- [x] Marker set maintains readability within letterboxed minimap frame.
+- [x] Glyph choices align with Hanseatic aesthetic and pixel integrity.
+- [x] No gameplay truth invented in the UI.
 - **Approvers:** Project Manager + Architecture Steward; Game Designer owns selection.
+
+## Dependencies & Sequencing
+- Depends on: HUD Minimap Letterboxing Implementation and icon/font sourcing decisions for glyph consistency.
+- Precedes: HUD minimap preview wiring and any ledger-driven marker feeds.
+- Phase 2 ordering/ownership (global execution ladder): data model → import/export → shared enums → UI → ledger wiring (per Agent Assignments and domain owners).
 
 ## Open Questions / Clarifications
 - Which landmarks best represent the pre-simulated world for a static preview (ports, guild halls, biome cores)?
