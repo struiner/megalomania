@@ -1,4 +1,4 @@
-import dayjs, { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs';
 import { CityEventType } from '../enums/SettlementEventType';
 import { SettlementType } from '../enums/SettlementType';
 import { SettlementDisasterType } from '../enums/SettlementDisasterType';
@@ -12,6 +12,10 @@ import {
   Hash128,
   PlayerID,
 } from './anna-readme.models';
+import {
+  CultureTagId,
+  TechResearchPointer,
+} from './tech-tree.models';
 
 export enum TimeSpeed {
   SLOW = 3000,
@@ -73,6 +77,47 @@ export interface DisasterEventData {
   affectedPopulation: number;
   affectedStructures: Structure[];
 }
+
+export enum ResearchLedgerEventType {
+  RESEARCH_START = 'RESEARCH_START',
+  RESEARCH_COMPLETE = 'RESEARCH_COMPLETE',
+  RESEARCH_CANCELLED = 'RESEARCH_CANCELLED',
+}
+
+export interface CrossPlayerResearchValidation {
+  validators: PlayerID[];
+  expectedCultureTags?: CultureTagId[];
+  validationNotes?: string;
+}
+
+export interface ResearchEventBasePayload {
+  researchId: string;
+  tech: TechResearchPointer;
+  initiatedBy: PlayerID;
+  minuteTimestampIso: string; // normalized to the start of the minute for determinism
+  crossPlayerValidation?: CrossPlayerResearchValidation;
+}
+
+export interface ResearchStartedPayload extends ResearchEventBasePayload {
+  source: 'player' | 'scripted' | 'system';
+  initiatingCharacterId?: string;
+}
+
+export interface ResearchCompletedPayload extends ResearchEventBasePayload {
+  completionProof?: Hash128;
+  completionNotes?: string;
+}
+
+export interface ResearchCancelledPayload extends ResearchEventBasePayload {
+  cancelledBy: PlayerID;
+  reason: 'player_cancelled' | 'validation_failed' | 'interrupted';
+  cancellationNotes?: string;
+}
+
+export type ResearchLedgerEvent =
+  | LedgerEvent<ResearchStartedPayload>
+  | LedgerEvent<ResearchCompletedPayload>
+  | LedgerEvent<ResearchCancelledPayload>;
 
 // Per-Player Blockchain DTOs are sourced from the README-aligned design models.
 export type { EventHeaderDTO, BlockHeaderDTO, CrossRefDTO };
