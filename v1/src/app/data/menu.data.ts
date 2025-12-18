@@ -5,6 +5,18 @@ import { WorldGenerationComponent } from '../pages/config/gen/world-generation.c
 import { DesignDocumentComponent } from '../pages/design/design-document.component';
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
+import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
+import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
+import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
+import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
+import { WorldRenderComponent } from '../pages/world/world-render.component';
+import { HudPageComponent } from '../pages/hud/hud-page.component';
+import { TechTreeEditorComponent } from '../pages/tech-tree-editor/tech-tree-editor.component';
+import { RoomBlueprintEditorComponent } from '../pages/room-blueprint-editor/room-blueprint-editor.component';
+import { WorldGenerationComponent } from '../pages/config/gen/world-generation.component';
+import { DesignDocumentComponent } from '../pages/design/design-document.component';
+import { KirbyComponent } from '../pages/kirby/kirby.component';
+import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
 import { GoodsManagerPageComponent } from '../pages/sdk/goods-manager/goods-manager-page.component';
 import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
 import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
@@ -257,11 +269,11 @@ export const MENU: MenuItem[] = [
         description: 'SDK tech shell for fixture-backed goods management.',
       },
       {
-        title: 'Room Creator',
+        title: 'Room Blueprints',
         type: 'route',
         route: 'sdk/rooms',
-        sdkComponent: RoomCreatorComponent,
-        description: 'Workspace for designing rooms or interiors.',
+        sdkComponent: RoomBlueprintEditorComponent,
+        description: 'Header/list/detail/action shell for room blueprint editing.',
       },
       {
         title: 'Settlement Manager',
