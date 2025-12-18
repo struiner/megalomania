@@ -85,7 +85,7 @@ import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types'
                 type="number"
                 min="1"
                 [ngModel]="selectedNode()?.tier"
-                (ngModelChange)="updateNode({ tier: $event ? (Number($event) || 1) : 1 })"
+                (ngModelChange)="updateNode({ tier: $event ? ($event || 1) : 1 })"
               />
             </label>
             <label class="field field-span">

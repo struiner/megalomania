@@ -12,15 +12,16 @@ import {
   CultureTagId,
   CultureTagNamespace,
   TechNode,
-  TechNodeEffects,
-  TechNodePrerequisite,
-  TECH_PREREQUISITE_RELATION,
+  TechEffects,
+  TechPrerequisiteLink,
+  TechPrerequisiteRelation,
   TechTree,
   TechTreeExportResult,
   TechTreeImportResult,
   TechTreeOrdering,
   TechTreeValidationIssue,
 } from '../models/tech-tree.model';
+import { TECH_PREREQUISITE_RELATION, TechNodeEffects, TechNodePrerequisite } from '../models/tech-tree.models';
 
 interface CultureTagDefinition extends CultureTagBinding {}
 
@@ -93,26 +94,26 @@ export class TechTreeIoService {
     const issues: TechTreeValidationIssue[] = [];
 
     const techTreeId = this.normalizeIdentifier(
-      (raw.tech_tree_id as string) ?? (raw as Record<string, string>).techTreeId ?? ''
+      (raw['tech_tree_id'] as string) ?? (raw as Record<string, string>)['techTreeId'] ?? ''
     );
 
-    const nodes = Array.isArray(raw.nodes)
-      ? (raw.nodes as unknown[]).map((node, index) => this.normalizeNode(node, `nodes[${index}]`, issues))
+    const nodes = Array.isArray(raw['nodes'])
+      ? (raw['nodes'] as unknown[]).map((node, index) => this.normalizeNode(node, `nodes[${index}]`, issues))
       : [];
 
     const normalizedTree: TechTree = {
       tech_tree_id: techTreeId,
-      version: this.toInteger(raw.version, 'version', issues),
+      version: this.toInteger(raw['version'], 'version', issues),
       default_culture_tags: this.normalizeCultureTagArray(
-        (raw.default_culture_tags as string[] | undefined)
-          || (raw as Record<string, string[]>).defaultCultureTags
+        (raw['default_culture_tags'] as string[] | undefined)
+          || (raw as Record<string, string[]>)['defaultCultureTags']
           || [],
         'default_culture_tags',
         issues,
       ),
       nodes,
-      ordering: raw.ordering ? this.normalizeOrdering(raw.ordering as TechTreeOrdering) : undefined,
-      metadata: (raw.metadata as TechTree['metadata']) || undefined,
+      ordering: raw['ordering'] ? this.normalizeOrdering(raw['ordering'] as TechTreeOrdering) : undefined,
+      metadata: (raw['metadata'] as TechTree['metadata']) || undefined,
     };
 
     return { tree: normalizedTree, issues };
@@ -120,28 +121,28 @@ export class TechTreeIoService {
 
   private normalizeNode(raw: unknown, path: string, issues: TechTreeValidationIssue[]): TechNode {
     const nodeObject = (raw || {}) as Record<string, unknown>;
-    const nodeId = this.normalizeIdentifier((nodeObject.id as string) || '');
+    const nodeId = this.normalizeIdentifier((nodeObject['id'] as string) || '');
 
     const cultureTags = this.normalizeCultureTagArray(
-      (nodeObject.culture_tags as string[]) || (nodeObject as Record<string, string[]>).cultureTags || [],
+      (nodeObject['culture_tags'] as string[]) || (nodeObject as Record<string, string[]>)['cultureTags'] || [],
       `${path}.culture_tags`,
       issues,
     );
 
     const node: TechNode = {
       id: nodeId,
-      title: ((nodeObject.title as string) || '').trim(),
-      summary: ((nodeObject.summary as string) || '').trim(),
-      tier: this.toInteger(nodeObject.tier, `${path}.tier`, issues, 1),
-      category: ((nodeObject.category as string) || '').trim() || undefined,
+      title: ((nodeObject['title'] as string) || '').trim(),
+      summary: ((nodeObject['summary'] as string) || '').trim(),
+      tier: this.toInteger(nodeObject['tier'], `${path}.tier`, issues, 1),
+      category: ((nodeObject['category'] as string) || '').trim() || undefined,
       culture_tags: cultureTags,
       prerequisites: this.normalizePrerequisites(
-        (nodeObject.prerequisites as TechNodePrerequisite[]) || [],
+        (nodeObject['prerequisites'] as TechNodePrerequisite[]) || [],
         `${path}.prerequisites`,
         issues,
       ),
-      effects: this.normalizeEffects((nodeObject.effects as Partial<TechNodeEffects>) || {}, `${path}.effects`, issues),
-      metadata: (nodeObject.metadata as Record<string, unknown>) || undefined,
+      effects: this.normalizeEffects((nodeObject['effects'] as Partial<TechNodeEffects>) || {}, `${path}.effects`, issues),
+      metadata: (nodeObject['metadata'] as Record<string, unknown>) || undefined,
     };
 
     return node;
@@ -227,7 +228,7 @@ export class TechTreeIoService {
           : undefined,
       metadata: effects.metadata,
       guild_reputation: Array.isArray(effects.guild_reputation)
-        ? effects.guild_reputation.map((entry, index) => {
+        ? effects.guild_reputation.map((entry: { guild?: GuildType; delta?: number; }, index: any) => {
             const guild = (entry as { guild: GuildType }).guild;
             const delta = Number((entry as { delta: number }).delta);
 
@@ -337,8 +338,8 @@ export class TechTreeIoService {
       grants_settlement_specialization: effects.grants_settlement_specialization,
       guild_reputation: effects.guild_reputation
         ? effects.guild_reputation
-            .map((entry) => ({ guild: entry.guild, delta: entry.delta }))
-            .sort((left, right) => left.guild.localeCompare(right.guild))
+            .map((entry: { guild: any; delta: any; }) => ({ guild: entry.guild, delta: entry.delta }))
+            .sort((left: { guild: string; }, right: { guild: any; }) => left.guild.localeCompare(right.guild))
         : undefined,
       research_rate_modifier: effects.research_rate_modifier,
       metadata: effects.metadata,
@@ -444,7 +445,7 @@ export class TechTreeIoService {
     }
 
     if (effects.guild_reputation) {
-      effects.guild_reputation.forEach((entry, index) => {
+      effects.guild_reputation.forEach((entry: { guild: GuildType; delta: unknown; }, index: any) => {
         if (!Object.values(GuildType).includes(entry.guild)) {
           issues.push({
             path: `${context}.guild_reputation[${index}].guild`,
