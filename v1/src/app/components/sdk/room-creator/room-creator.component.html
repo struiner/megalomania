@@ -39,14 +39,15 @@
 
         <fieldset>
           <legend>Hazards</legend>
-          <label *ngFor="let hazard of hazards">
+          <label *ngFor="let hazard of hazardOptions">
             <input
               type="checkbox"
-              [value]="hazard"
-              (change)="toggleHazard(hazard, $any($event.target).checked)"
-              [checked]="form.controls.hazards.value.includes(hazard)"
+              [value]="hazard.value"
+              (change)="toggleHazard(hazard.value, $any($event.target).checked)"
+              [checked]="isHazardChecked(hazard)"
+              [disabled]="hazard.source === 'fallback'"
             />
-            {{ hazard }}
+            {{ hazard.label }}<span *ngIf="hazard.source === 'fallback'"> (fallback)</span>
           </label>
         </fieldset>
 
