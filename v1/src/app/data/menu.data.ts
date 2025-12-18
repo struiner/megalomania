@@ -12,6 +12,7 @@ import { StructureCreatorComponent } from '../components/sdk/structure-creator/s
 import { StructuremanagerComponent } from '../components/sdk/structuremanager/structuremanager.component';
 import { WorldRenderComponent } from '../pages/world/world-render.component';
 import { HudPageComponent } from '../pages/hud/hud-page.component';
+import { TechTreeEditorComponent } from '../pages/tech-tree-editor/tech-tree-editor.component';
 
 export const MENU: MenuItem[] = [
     {
@@ -282,6 +283,13 @@ export const MENU: MenuItem[] = [
         route: 'sdk/structure-manager',
         sdkComponent: StructuremanagerComponent,
         description: 'Placeholder view for the structure management tool.',
+      },
+      {
+        title: 'Tech Tree Editor',
+        type: 'route',
+        route: 'sdk/tech-tree',
+        sdkComponent: TechTreeEditorComponent,
+        description: 'Stable layout for editing tech tree overview, detail, and prerequisites.',
       },
     ],
   },
