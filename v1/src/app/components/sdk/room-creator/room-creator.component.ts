@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { HazardType } from '../../../enums/HazardType';
+import { RoomBlueprint } from '../../../models/room-blueprint.model';
+
+import { HazardTypeAdapterService, HazardOption } from '../../../services/hazard-type-adapter.service';
 
 import { HazardEnumAdapterService, HazardOption } from '../../../services/sdk/hazard-enum-adapter.service';
 import { HazardType } from '../../../enums/HazardType';
@@ -27,6 +31,7 @@ export class RoomCreatorComponent {
   constructor(private readonly hazardEnumAdapter: HazardEnumAdapterService) {}
 
   readonly hazardOptions: HazardOption[] = this.hazardEnumAdapter.getHazardOptions();
+  readonly hazards: HazardType[] = Object.values(HazardType);
 
   readonly form = this.formBuilder.group({
     name: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
@@ -87,5 +92,9 @@ export class RoomCreatorComponent {
 
     const normalized = this.hazardEnumAdapter.normalizeSelection(next);
     this.form.controls.hazards.setValue(this.hazardEnumAdapter.sortSelection(normalized));
+  }
+
+  hazardLabel(hazard: HazardType): string {
+    return this.hazardAdapter.labelFor(hazard);
   }
 }
