@@ -63,6 +63,10 @@ export class TechTreeIoService {
     return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
   }
 
+  getCultureTagOptions(): CultureTagBinding[] {
+    return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
+  }
+
   importTechTree(json: unknown): TechTreeImportResult {
     const parsed = this.parseJson(json);
     const normalized = this.normalizeTree(parsed);
@@ -161,7 +165,7 @@ export class TechTreeIoService {
       category: ((nodeObject.category as string) || '').trim() || undefined,
       culture_tags: cultureTags,
       prerequisites: this.normalizePrerequisites(
-        (nodeObject.prerequisites as TechNodePrerequisite[]) || [],
+        (nodeObject['prerequisites'] as TechNodePrerequisite[]) || [],
         `${path}.prerequisites`,
         issues,
       ),
