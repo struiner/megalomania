@@ -34,3 +34,14 @@ export enum HazardType {
   Electrical = 'electrical',
   MagicalBacklash = 'magical_backlash'
 }
+
+export const HAZARD_DISPLAY_ORDER: readonly HazardType[] = [
+  HazardType.Fire,
+  HazardType.Flood,
+  HazardType.Electrical,
+  HazardType.Intrusion,
+  HazardType.ToxicGas,
+  HazardType.Vacuum,
+  HazardType.StructuralFailure,
+  HazardType.Fauna,
+];

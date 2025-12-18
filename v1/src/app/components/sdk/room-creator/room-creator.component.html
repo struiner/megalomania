@@ -37,8 +37,12 @@
           <input type="text" formControlName="purpose" placeholder="Workshop, medbay..." />
         </label>
 
-        <fieldset>
+        <fieldset class="hazard-fieldset">
           <legend>Hazards</legend>
+          <app-hazard-picker
+            [selected]="form.controls.hazards.value"
+            (selectedChange)="updateHazards($event)"
+          ></app-hazard-picker>
           <label *ngFor="let hazard of hazardOptions">
             <input
               type="checkbox"
@@ -82,6 +86,7 @@
             <h4>{{ room.name }} · {{ room.width }}m × {{ room.height }}m</h4>
             <p class="lede">{{ room.features }}</p>
             <div class="tags">
+              <span class="tag" *ngFor="let hazard of room.hazards">{{ readableHazard(hazard) }}</span>
               <span class="tag" *ngFor="let hazard of room.hazards">{{ hazardLabel(hazard) }}</span>
             </div>
           </div>

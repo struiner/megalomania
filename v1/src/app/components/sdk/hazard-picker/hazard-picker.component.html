@@ -1,0 +1,45 @@
+<section class="hazard-picker" aria-label="Hazard picker">
+  <header class="hazard-picker__header">
+    <div>
+      <p class="eyebrow">Hazard icon kit</p>
+      <p class="lede">Deterministic ordering, pixel grid alignment, and badge slots for severity overlays.</p>
+    </div>
+    <div class="hazard-picker__validation" *ngIf="validationIssues.length">
+      <p class="eyebrow">Registry checks</p>
+      <ul>
+        <li *ngFor="let issue of validationIssues">{{ issue.message }}</li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="hazard-picker__grid" role="listbox" aria-multiselectable="true">
+    <button
+      type="button"
+      class="hazard-option"
+      *ngFor="let hazard of hazards; trackBy: trackByType"
+      (click)="toggleHazard(hazard.type)"
+      [attr.aria-pressed]="isSelected(hazard.type)"
+      [class.hazard-option--selected]="isSelected(hazard.type)"
+    >
+      <span class="hazard-option__icon" [style.borderColor]="hazard.badgeTint">
+        <span class="hazard-option__icon-swatch" [style.backgroundColor]="hazard.badgeTint"></span>
+        <span class="hazard-option__icon-id">{{ hazard.iconId }}</span>
+        <span class="hazard-option__overlay" aria-hidden="true">●</span>
+      </span>
+
+      <span class="hazard-option__content">
+        <span class="hazard-option__label">{{ hazard.label }}</span>
+        <span class="hazard-option__meta">
+          {{ hazard.gridSize }}px grid · {{ hazard.stroke }}px stroke · {{ hazard.contrast }} contrast
+        </span>
+        <span class="hazard-option__notes">{{ hazard.notes[0] }}</span>
+      </span>
+
+      <span class="hazard-option__badge" [style.backgroundColor]="hazard.badgeTint"></span>
+    </button>
+  </div>
+
+  <footer class="hazard-picker__footer">
+    <p class="lede">Icons reserve a 1px padding band for badge overlays; do not invent hazard truth here.</p>
+  </footer>
+</section>
