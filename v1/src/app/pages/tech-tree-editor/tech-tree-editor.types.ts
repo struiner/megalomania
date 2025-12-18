@@ -1,23 +1,33 @@
-export interface TechTreeNode {
-  id: string;
-  name: string;
-  summary: string;
-  tier: number;
-  category: string;
-  prerequisites: string[];
-}
+import {
+  CultureTagBinding,
+  TechNode,
+  TechNodeEffects,
+  TechTree,
+  TechTreeExportResult,
+  TechTreeImportResult,
+  TechTreeValidationIssue,
+} from '../../models/tech-tree.models';
+import { TechEnumOption } from '../../services/tech-enum-adapter.service';
 
-export interface TechTreeDocument {
-  nodes: TechTreeNode[];
-  lastImportedFrom?: string;
-}
+export type EditorTechTree = TechTree;
+export type EditorTechNode = TechNode;
+export type EditorTechTreeExport = TechTreeExportResult;
+export type EditorTechTreeImport = TechTreeImportResult;
+export type EditorTechNodeEffects = TechNodeEffects;
+export type EditorTechValidationIssue = TechTreeValidationIssue;
 
 export interface TechTreeImportPayload {
   sourceLabel: string;
-  document: TechTreeDocument;
+  raw: unknown;
 }
 
-export interface TechTreeExportPayload {
-  exportedAt: string;
-  document: TechTreeDocument;
+export interface CultureTagOption extends CultureTagBinding {
+  label: string;
+}
+
+export interface EffectOptionSet {
+  structures: TechEnumOption[];
+  goods: TechEnumOption[];
+  settlements: TechEnumOption[];
+  guilds: TechEnumOption[];
 }
