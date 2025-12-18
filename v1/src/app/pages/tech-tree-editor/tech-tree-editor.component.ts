@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CultureTagId, CultureTagNamespace } from '../../models/tech-tree.models';
 import { TechIconPickerComponent } from './tech-icon-picker.component';
 import { TechTreeConnectionOverlayComponent } from './tech-tree-connection-overlay.component';
+import { TechTreePreviewDialogComponent } from './tech-tree-preview-dialog.component';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
 import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, PrerequisiteOverlayNode } from './tech-tree-editor.types';
@@ -11,7 +12,13 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
 @Component({
   selector: 'app-tech-tree-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, TechIconPickerComponent, TechTreeConnectionOverlayComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TechIconPickerComponent,
+    TechTreeConnectionOverlayComponent,
+    TechTreePreviewDialogComponent,
+  ],
   providers: [TechTreeEditorService],
   template: `
     <section class="tech-tree-editor">
@@ -32,38 +39,53 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       <div class="workspace">
         <section class="panel overview">
           <header class="panel-header">
-            <p class="eyebrow">Overview</p>
-            <h2>Tree Map</h2>
-            <p class="hint">Tier-banded list with quick selection.</p>
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>Tree Map</h2>
+              <p class="hint">Grid rows map tiers; columns map deterministic display order.</p>
+            </div>
+            <div class="tier-controls">
+              <button type="button" class="pill" (click)="addTierBand()">+ Tier</button>
+              <button type="button" class="pill" (click)="trimTierBands()" [disabled]="!canTrimTierBands()">
+                Trim empty
+              </button>
+            </div>
           </header>
-          <div class="tier-bands">
-            <div
-              class="tier"
-              *ngFor="let tier of tierBands()"
-              [class.drop-target]="dragOverTier() === tier"
-              (dragover)="allowDrop($event)"
-              (dragenter)="markTierHover(tier)"
-              (drop)="dropOnTier(tier, $event)"
-            >
-              <p class="tier-label">Tier {{ tier }}</p>
-              <div class="node-list">
+          <div class="grid-meta">
+            <p class="hint">Drag nodes into cells; rows clamp to tier, columns clamp to display_order.</p>
+            <p class="hint">Empty bands are allowed for planning, but exports stay deterministic.</p>
+          </div>
+          <div class="tier-grid" [style.gridTemplateColumns]="gridTemplateColumns()">
+            <div class="column-label spacer">Tiers ▼ / Order →</div>
+            <div class="column-label" *ngFor="let column of gridColumnLabels()">Order {{ column }}</div>
+            <ng-container *ngFor="let tier of tierBands()">
+              <div class="row-label">Tier {{ tier }}</div>
+              <div
+                class="grid-cell"
+                *ngFor="let column of gridColumnLabels()"
+                [class.drop-target]="isGridHover(tier, column)"
+                (dragover)="allowDrop($event)"
+                (dragenter)="markGridHover(tier, column)"
+                (dragleave)="clearGridHover(tier, column)"
+                (drop)="dropOnGrid(tier, column, $event)"
+              >
                 <button
                   class="node-chip"
                   type="button"
-                  *ngFor="let node of tieredNodes().get(tier) || []"
+                  *ngIf="nodeAt(tier, column) as node"
                   [class.active]="node.id === selectedNode()?.id"
                   [class.dragging]="draggingNodeId() === node.id"
-                  (click)="selectNode(node.id)"
                   draggable="true"
                   (dragstart)="startDrag(node.id, $event)"
                   (dragend)="endDrag()"
+                  (click)="selectNode(node.id)"
                 >
                   <span class="name">{{ node.title }}</span>
                   <span class="meta">{{ node.category || 'Unsorted' }}</span>
                   <span class="meta tags">{{ describeTags(node.culture_tags) }}</span>
                 </button>
               </div>
-            </div>
+            </ng-container>
           </div>
         </section>
 
@@ -242,6 +264,7 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
         </div>
         <div class="buttons">
           <button type="button" (click)="triggerImport()">Import sample</button>
+          <button type="button" class="primary ghost" (click)="openPreview()">Preview dialog</button>
           <button type="button" class="primary" (click)="triggerExport()">Export snapshot</button>
         </div>
       </footer>
@@ -403,6 +426,15 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
           </div>
         </div>
       </div>
+      <app-tech-tree-preview-dialog
+        *ngIf="isPreviewOpen()"
+        [document]="document()"
+        [nodes]="nodes()"
+        [tierBands]="tierBands()"
+        [cultureTagOptions]="cultureTagOptions()"
+        [effectOptions]="effectOptions()"
+        (close)="closePreview()"
+      ></app-tech-tree-preview-dialog>
     </section>
   `,
   styles: [`
@@ -489,40 +521,97 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       font-size: 18px;
     }
 
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tier-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      color: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .pill:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .hint {
       margin: 2px 0 0;
       opacity: 0.75;
       font-size: 13px;
     }
 
-    .tier-bands {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .grid-meta {
+      display: grid;
+      gap: 2px;
     }
 
-    .tier {
-      border: 1px dashed rgba(255, 255, 255, 0.12);
-      padding: 8px;
+    .tier-grid {
+      display: grid;
+      gap: 8px;
+      align-items: stretch;
+      background: rgba(255, 255, 255, 0.02);
       border-radius: 6px;
-      transition: border-color 120ms ease, background 120ms ease;
+      padding: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
     }
 
-    .tier.drop-target {
-      border-color: #9de5ff;
-      background: rgba(157, 229, 255, 0.06);
-    }
-
-    .tier-label {
-      margin: 0 0 6px;
-      opacity: 0.78;
+    .column-label,
+    .row-label {
       font-size: 12px;
+      opacity: 0.78;
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
     }
 
-    .node-list {
+    .column-label {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .column-label.spacer {
+      justify-content: flex-start;
+      text-align: left;
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .grid-cell {
+      min-height: 78px;
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 4px;
+      transition: border-color 120ms ease, background 120ms ease;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      align-items: stretch;
+    }
+
+    .grid-cell.drop-target {
+      border-color: #9de5ff;
+      background: rgba(157, 229, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(157, 229, 255, 0.14);
     }
 
     .node-chip {
@@ -787,6 +876,13 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       box-shadow: 0 2px 0 #e19b28;
     }
 
+    .buttons button.primary.ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffe7be;
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: none;
+    }
+
     .buttons button.danger {
       background: rgba(255, 91, 91, 0.12);
       border-color: rgba(255, 91, 91, 0.4);
@@ -983,11 +1079,14 @@ export class TechTreeEditorComponent {
   effectOptions = this.service.effectOptions;
   iconOptions = this.service.iconOptions;
   tierBands = computed(() => this.service.getTierBands());
+  gridColumns = computed(() => this.service.getGridColumnCount());
+  gridColumnLabels = computed(() => Array.from({ length: this.gridColumns() }, (_, index) => index + 1));
+  gridTemplateColumns = computed(() => `120px repeat(${this.gridColumns()}, minmax(160px, 1fr))`);
 
   selectedNode = this.service.selectedNode;
   nodes = this.service.nodes;
   draggingNodeId = signal<string | null>(null);
-  dragOverTier = signal<number | null>(null);
+  dragOverSlot = signal<{ tier: number; column: number } | null>(null);
   validationIssues = this.service.validationIssues;
   lastExport = this.service.lastExport;
   governanceIssues = this.service.governanceIssues;
@@ -1004,16 +1103,6 @@ export class TechTreeEditorComponent {
   selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
     ? this.selectedNode()?.culture_tags
     : this.document().default_culture_tags));
-
-  tieredNodes = computed(() => {
-    const bandMap = new Map<number, EditorTechNode[]>();
-    this.nodes().forEach((node) => {
-      const bucket = bandMap.get(node.tier || 1) ?? [];
-      bucket.push(node);
-      bandMap.set(node.tier || 1, bucket);
-    });
-    return bandMap;
-  });
 
   prerequisiteColumns = computed(() => {
     const pending = [...this.nodes()];
@@ -1123,25 +1212,55 @@ export class TechTreeEditorComponent {
 
   endDrag(): void {
     this.draggingNodeId.set(null);
-    this.dragOverTier.set(null);
+    this.dragOverSlot.set(null);
   }
 
   allowDrop(event: DragEvent): void {
     event.preventDefault();
   }
 
-  markTierHover(tier: number): void {
-    this.dragOverTier.set(tier);
+  markGridHover(tier: number, column: number): void {
+    this.dragOverSlot.set({ tier, column });
   }
 
-  dropOnTier(tier: number, event: DragEvent): void {
+  clearGridHover(tier: number, column: number): void {
+    const hover = this.dragOverSlot();
+    if (hover?.tier === tier && hover.column === column) {
+      this.dragOverSlot.set(null);
+    }
+  }
+
+  isGridHover(tier: number, column: number): boolean {
+    const hover = this.dragOverSlot();
+    return hover?.tier === tier && hover.column === column;
+  }
+
+  dropOnGrid(tier: number, column: number, event: DragEvent): void {
     event.preventDefault();
     const nodeId = event.dataTransfer?.getData('text/plain') || this.draggingNodeId();
     if (nodeId) {
-      this.service.moveNodeToTier(nodeId, tier);
+      this.service.moveNodeToPosition(nodeId, tier, column);
       this.selectNode(nodeId);
     }
     this.endDrag();
+  }
+
+  addTierBand(): void {
+    this.service.addTierBand();
+  }
+
+  trimTierBands(): void {
+    this.service.trimTierBands();
+  }
+
+  canTrimTierBands(): boolean {
+    return this.service.canTrimTierBands();
+  }
+
+  nodeAt(tier: number, displayOrder: number): EditorTechNode | undefined {
+    return this.nodes().find(
+      (node) => (node.tier || 1) === tier && (node.display_order || 1) === displayOrder,
+    );
   }
 
   isUpstream(nodeId: string): boolean {
@@ -1256,5 +1375,11 @@ export class TechTreeEditorComponent {
       this.tagVersion.set(resolved.version);
       this.tagNote.set(resolved.governanceNote || '');
     }
+  openPreview(): void {
+    this.isPreviewOpen.set(true);
+  }
+
+  closePreview(): void {
+    this.isPreviewOpen.set(false);
   }
 }

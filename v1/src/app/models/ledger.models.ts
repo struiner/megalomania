@@ -1,10 +1,11 @@
 import { Dayjs } from 'dayjs';
+import { SettlementDisasterType } from '../enums/SettlementDisasterType';
 import { CityEventType } from '../enums/SettlementEventType';
 import { SettlementType } from '../enums/SettlementType';
-import { SettlementDisasterType } from '../enums/SettlementDisasterType';
+import { HazardType } from '../enums/HazardType';
+import { StructureType } from '../enums/StructureType';
 import { Structure } from '../types/Structure';
 import { Population } from '../types/settlement/Population';
-import { StructureType } from '../enums/StructureType';
 import {
   BlockHeaderDTO,
   CrossRefDTO,
@@ -16,6 +17,16 @@ import {
   CultureTagId,
   TechResearchPointer,
 } from './tech-tree.models';
+import {
+  RoomBlueprint,
+  RoomBlueprintIdentifier,
+} from './room-blueprint.models';
+  RoomBlueprintApplicationTarget,
+  RoomBlueprintReference,
+  RoomBlueprintValidationHook,
+  RoomConstructionSite,
+} from './room-blueprint.models';
+import { CultureTagId, TechResearchPointer } from './tech-tree.models';
 
 export enum TimeSpeed {
   SLOW = 3000,
@@ -72,7 +83,7 @@ export interface AdvancementEventData {
 }
 
 export interface DisasterEventData {
-  disasterType: SettlementDisasterType; // e.g., 'fire', 'flood'
+  disasterType: HazardType; // e.g., 'fire', 'flood'
   severity: number;
   affectedPopulation: number;
   affectedStructures: Structure[];
@@ -118,6 +129,123 @@ export type ResearchLedgerEvent =
   | LedgerEvent<ResearchStartedPayload>
   | LedgerEvent<ResearchCompletedPayload>
   | LedgerEvent<ResearchCancelledPayload>;
+
+export enum RoomBlueprintLedgerEventType {
+  CREATED = 'ROOM_BLUEPRINT_CREATED',
+  UPDATED = 'ROOM_BLUEPRINT_UPDATED',
+  DEPRECATED = 'ROOM_BLUEPRINT_DEPRECATED',
+}
+
+export interface RoomBlueprintEventBasePayload {
+  blueprint: RoomBlueprint;
+  checksum128: string;
+  serializationRulesVersion: string; // aligns with ROOM_BLUEPRINT_SERIALIZATION_RULES to enforce determinism
+  source: 'sdk' | 'import' | 'system';
+}
+
+export interface RoomBlueprintCreatedPayload extends RoomBlueprintEventBasePayload {
+  importOrder: number; // stable order within an import batch
+}
+
+export interface RoomBlueprintUpdatedPayload extends RoomBlueprintEventBasePayload {
+  previousBlueprint: RoomBlueprintIdentifier;
+  changeNotes?: string;
+}
+
+export interface RoomBlueprintDeprecatedPayload {
+  blueprint: RoomBlueprintIdentifier;
+  deprecatedAtVersion: string;
+  reason: 'superseded' | 'withdrawn' | 'invalidated';
+}
+
+export type RoomBlueprintLedgerEvent =
+  | LedgerEvent<RoomBlueprintCreatedPayload>
+  | LedgerEvent<RoomBlueprintUpdatedPayload>
+  | LedgerEvent<RoomBlueprintDeprecatedPayload>;
+export enum RoomLedgerEventType {
+  BLUEPRINT_CREATED = 'ROOM_BLUEPRINT_CREATED',
+  BLUEPRINT_UPDATED = 'ROOM_BLUEPRINT_UPDATED',
+  BLUEPRINT_APPLIED = 'ROOM_BLUEPRINT_APPLIED',
+  BLUEPRINT_EXPORTED = 'ROOM_BLUEPRINT_EXPORTED',
+  BLUEPRINT_DEPRECATED = 'ROOM_BLUEPRINT_DEPRECATED',
+  CONSTRUCTION_STARTED = 'ROOM_CONSTRUCTION_STARTED',
+  CONSTRUCTION_COMPLETED = 'ROOM_CONSTRUCTION_COMPLETED',
+  CONSTRUCTION_CANCELLED = 'ROOM_CONSTRUCTION_CANCELLED',
+}
+
+export interface RoomBlueprintEventBase {
+  blueprint: RoomBlueprintReference;
+  initiatedBy: PlayerID;
+  minuteTimestampIso: string; // normalized to the start of the minute for determinism
+  validation?: RoomBlueprintValidationHook;
+}
+
+export interface RoomBlueprintCreatedPayload extends RoomBlueprintEventBase {
+  source: 'player' | 'imported' | 'generated';
+  creationNotes?: string;
+}
+
+export interface RoomBlueprintUpdatedPayload extends RoomBlueprintEventBase {
+  previousRevisionHash: Hash128;
+  changeSummary?: string;
+}
+
+export interface RoomBlueprintAppliedPayload extends RoomBlueprintEventBase {
+  applicationId: string;
+  target: RoomBlueprintApplicationTarget;
+  applicationProof?: Hash128;
+}
+
+export interface RoomBlueprintExportedPayload extends RoomBlueprintEventBase {
+  exportFormat: 'json' | 'binary' | 'yaml';
+  exportHash: Hash128;
+  exportNotes?: string;
+}
+
+export interface RoomBlueprintDeprecatedPayload extends RoomBlueprintEventBase {
+  reason: 'superseded' | 'invalidated' | 'retired';
+  replacementBlueprintId?: string;
+  deprecationNotes?: string;
+}
+
+export interface RoomConstructionEventBase {
+  construction: RoomConstructionSite;
+  blueprint: RoomBlueprintReference;
+  initiatedBy: PlayerID;
+  minuteTimestampIso: string; // normalized to the start of the minute for determinism
+  validation?: RoomBlueprintValidationHook;
+}
+
+export interface RoomConstructionStartedPayload extends RoomConstructionEventBase {
+  scheduledCompletionIso?: string;
+  applicationId?: string;
+}
+
+export interface RoomConstructionCompletedPayload extends RoomConstructionEventBase {
+  completionProof?: Hash128;
+}
+
+export type RoomConstructionCancellationReason =
+  | 'player_cancelled'
+  | 'supply_shortage'
+  | 'validation_failed'
+  | 'hazard_conflict'
+  | 'other';
+
+export interface RoomConstructionCancelledPayload extends RoomConstructionEventBase {
+  reason: RoomConstructionCancellationReason;
+  notes?: string;
+}
+
+export type RoomLedgerEvent =
+  | LedgerEvent<RoomBlueprintCreatedPayload>
+  | LedgerEvent<RoomBlueprintUpdatedPayload>
+  | LedgerEvent<RoomBlueprintAppliedPayload>
+  | LedgerEvent<RoomBlueprintExportedPayload>
+  | LedgerEvent<RoomBlueprintDeprecatedPayload>
+  | LedgerEvent<RoomConstructionStartedPayload>
+  | LedgerEvent<RoomConstructionCompletedPayload>
+  | LedgerEvent<RoomConstructionCancelledPayload>;
 
 // Per-Player Blockchain DTOs are sourced from the README-aligned design models.
 export type { EventHeaderDTO, BlockHeaderDTO, CrossRefDTO };
