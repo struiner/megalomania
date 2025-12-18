@@ -100,6 +100,16 @@ legend {
   padding: 0 6px;
 }
 
+.hazard-fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hazard-fieldset app-hazard-picker {
+  width: 100%;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));

@@ -10,24 +10,32 @@ import { TechTreeIoService } from '../../services/tech-tree-io.service';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import {
   CultureTagOption,
+  CultureTagDeleteInput,
+  CultureTagEditInput,
+  CultureTagProposalInput,
   EditorTechNode,
   EditorTechNodeEffects,
   EditorTechTree,
   EditorTechTreeExport,
   EditorTechTreeImport,
   EditorTechValidationIssue,
+  GovernedCultureTagOption,
   EffectOptionSet,
   TechTreeImportPayload,
 } from './tech-tree-editor.types';
+import { CultureTagGovernanceAdapterService } from '../../services/culture-tag-governance.adapter';
+import { TechTreeImportError } from '../../services/tech-tree-io.service';
 
 @Injectable()
 export class TechTreeEditorService {
   private readonly io = inject(TechTreeIoService);
   private readonly enumAdapter = inject(TechEnumAdapterService);
   private readonly iconRegistry = inject(TechIconRegistryService);
+  private readonly tagGovernance = inject(CultureTagGovernanceAdapterService);
 
   private documentState = signal<EditorTechTree>(TECH_TREE_FIXTURE_DOCUMENT);
   private selectedId = signal<string>(TECH_TREE_FIXTURE_DOCUMENT.nodes[0]?.id ?? '');
+  private tierBandLimit = signal<number>(this.deriveMaxTier(TECH_TREE_FIXTURE_DOCUMENT.nodes));
 
   document = computed(() => this.documentState());
   nodes = computed(() => this.documentState().nodes);
@@ -37,11 +45,18 @@ export class TechTreeEditorService {
   validationIssues = signal<EditorTechValidationIssue[]>([]);
   lastImport = signal<EditorTechTreeImport | null>(null);
   lastExport = signal<EditorTechTreeExport | null>(null);
+  importErrorMessage = signal<string | null>(null);
+  governanceIssues = computed<EditorTechValidationIssue[]>(() => this.tagGovernance.issues());
+  cultureTagAuditTrail = computed(() => this.tagGovernance.auditTrail());
+  cultureTagUsage = computed(() => this.collectCultureTagUsage());
 
-  cultureTagOptions = computed<CultureTagOption[]>(() =>
-    this.io.getCultureTagOptions().map((entry) => ({
+  cultureTagOptions = computed<GovernedCultureTagOption[]>(() =>
+    this.tagGovernance.vocabulary().map((entry) => ({
       ...entry,
       label: entry.id.replace(/_/g, ' '),
+      status: entry.status,
+      version: entry.version,
+      governanceNote: entry.note,
     })),
   );
 
@@ -162,18 +177,31 @@ export class TechTreeEditorService {
   }
 
   moveNodeToTier(nodeId: string, tier: number): void {
-    const nextTier = this.clampTier(tier);
-    const nextNodes = this.documentState().nodes.map((node) =>
-      node.id === nodeId
-        ? {
-            ...node,
-            tier: nextTier,
-          }
-        : node,
-    );
+    const targetTier = this.clampTier(tier);
+    const tierOccupancy = this.documentState().nodes.filter((node) => (node.tier || 1) === targetTier).length;
+    this.moveNodeToPosition(nodeId, targetTier, tierOccupancy + 1);
+  }
+
+  moveNodeToPosition(nodeId: string, tier: number, displayOrder: number): void {
+    const targetTier = this.clampTier(tier);
+    const targetOrder = this.clampDisplayOrder(displayOrder);
+    const movingNode = this.documentState().nodes.find((node) => node.id === nodeId);
+
+    if (!movingNode) return;
+
+    const withoutNode = this.documentState().nodes.filter((node) => node.id !== nodeId);
+    const normalizedNodes = this.normalizeDisplayOrders([
+      ...withoutNode,
+      {
+        ...movingNode,
+        tier: targetTier,
+        display_order: targetOrder,
+      },
+    ]);
+
     this.commitTree({
       ...this.documentState(),
-      nodes: nextNodes,
+      nodes: normalizedNodes,
     });
     this.selectNode(nodeId);
   }
@@ -187,17 +215,15 @@ export class TechTreeEditorService {
       };
 
       this.commitTree(treeWithSource);
+      this.tierBandLimit.set(this.deriveMaxTier(treeWithSource.nodes));
       this.lastImport.set(importResult);
       this.selectedId.set(importResult.tree.nodes[0]?.id ?? '');
+      this.importErrorMessage.set(null);
     } catch (error) {
-      this.validationIssues.set([
-        {
-          path: 'import',
-          message: error instanceof Error ? error.message : 'Unknown import error.',
-          severity: 'error',
-        },
-      ]);
-      // TODO: route structured import errors to a user-visible surface instead of swallowing them here.
+      const issues = this.toImportIssues(error);
+      this.validationIssues.set(issues);
+      this.lastImport.set(null);
+      this.importErrorMessage.set(this.describeImportError(error));
     }
   }
 
@@ -209,11 +235,29 @@ export class TechTreeEditorService {
   }
 
   getTierBands(): number[] {
-    const maxTier = Math.min(
-      256,
-      this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier || 1), 1),
-    );
+    const maxTier = Math.min(256, Math.max(this.tierBandLimit(), this.deriveMaxTier(this.documentState().nodes)));
     return Array.from({ length: maxTier }, (_, index) => index + 1);
+  }
+
+  getGridColumnCount(): number {
+    const maxColumn = this.documentState().nodes.reduce(
+      (max, node) => Math.max(max, (node.display_order || 0) + 1),
+      1,
+    );
+    return Math.min(24, Math.max(4, maxColumn));
+  }
+
+  addTierBand(): void {
+    const nextTier = Math.min(32, Math.max(this.getTierBands().length + 1, this.tierBandLimit() + 1));
+    this.tierBandLimit.set(nextTier);
+  }
+
+  trimTierBands(): void {
+    this.tierBandLimit.set(this.deriveMaxTier(this.documentState().nodes));
+  }
+
+  canTrimTierBands(): boolean {
+    return this.tierBandLimit() > this.deriveMaxTier(this.documentState().nodes);
   }
 
   toggleCultureTag(tagId: CultureTagId): void {
@@ -228,6 +272,23 @@ export class TechTreeEditorService {
     }
 
     this.updateCultureTags(Array.from(nextTags));
+  }
+
+  proposeCultureTag(input: CultureTagProposalInput): void {
+    this.tagGovernance.proposeCreate(input);
+  }
+
+  updateCultureTagProposal(input: CultureTagEditInput): void {
+    this.tagGovernance.proposeEdit(input);
+  }
+
+  requestCultureTagDeletion(input: CultureTagDeleteInput): void {
+    const usage = this.cultureTagUsage()[input.id] || [];
+    this.tagGovernance.requestDelete({
+      id: input.id,
+      referencedBy: usage,
+      auditRef: input.auditRef,
+    });
   }
 
   upsertPrerequisite(nodeId: string, prerequisite: TechNodePrerequisite): void {
@@ -251,6 +312,36 @@ export class TechTreeEditorService {
       [key]: values,
     } as EditorTechNodeEffects;
     this.updateEffects(nextEffects);
+  }
+
+  private toImportIssues(error: unknown): EditorTechValidationIssue[] {
+    if (error instanceof TechTreeImportError && error.issues?.length) {
+      return error.issues;
+    }
+
+    const fallback: EditorTechValidationIssue = {
+      path: 'import',
+      message: error instanceof Error ? error.message : 'Unknown import error.',
+      severity: 'error',
+    };
+
+    return [fallback];
+  }
+
+  private describeImportError(error: unknown): string {
+    if (error instanceof TechTreeImportError) {
+      if (error.kind === 'parse') {
+        return 'Import failed: the provided payload was not readable as a tech tree JSON document.';
+      }
+
+      if (error.kind === 'validation') {
+        return 'Import blocked: validation errors detected. Review the validation list for details.';
+      }
+
+      return error.message;
+    }
+
+    return error instanceof Error ? error.message : 'Unknown import error.';
   }
 
   private generateId(seed: string): string {
@@ -278,16 +369,40 @@ export class TechTreeEditorService {
   }
 
   private commitTree(tree: EditorTechTree): void {
-    const exportResult = this.io.exportTechTree(tree);
+    const normalizedTree: EditorTechTree = {
+      ...tree,
+      nodes: this.normalizeDisplayOrders(tree.nodes),
+    };
+
+    const exportResult = this.io.exportTechTree(normalizedTree);
     this.documentState.set(exportResult.orderedTree);
     this.validationIssues.set(exportResult.issues);
     this.lastExport.set(exportResult);
+    this.tierBandLimit.set(this.deriveMaxTier(exportResult.orderedTree.nodes));
   }
 
   private collectFallbackEffectValues(key: keyof EditorTechNodeEffects): string[] {
     return this.documentState()
       .nodes.flatMap((node) => ((node.effects || {})[key] as string[] | undefined) || [])
       .filter(Boolean);
+  }
+
+  private collectCultureTagUsage(): Record<CultureTagId, string[]> {
+    const usage: Record<CultureTagId, string[]> = {};
+
+    const registerUsage = (tagId: CultureTagId, location: string) => {
+      usage[tagId] = usage[tagId] || [];
+      usage[tagId].push(location);
+    };
+
+    (this.documentState().default_culture_tags || []).forEach((tag) => registerUsage(tag, 'defaults'));
+
+    this.documentState().nodes.forEach((node) => {
+      const tags = node.culture_tags.length ? node.culture_tags : this.documentState().default_culture_tags || [];
+      tags.forEach((tag) => registerUsage(tag, node.id));
+    });
+
+    return usage;
   }
 
   updateIconSelection(iconId: string | null): void {
@@ -304,5 +419,50 @@ export class TechTreeEditorService {
 
   private clampTier(value: number): number {
     return Math.min(256, Math.max(1, Math.floor(value || 1)));
+  }
+
+  private clampDisplayOrder(value: number): number {
+    return Math.min(512, Math.max(1, Math.floor(value || 1)));
+  }
+
+  private deriveMaxTier(nodes: EditorTechNode[]): number {
+    return Math.max(1, ...nodes.map((node) => this.clampTier(node.tier || 1)));
+  }
+
+  private normalizeDisplayOrders(nodes: EditorTechNode[]): EditorTechNode[] {
+    const buckets = new Map<number, EditorTechNode[]>();
+
+    nodes.forEach((node) => {
+      const tier = this.clampTier(node.tier || 1);
+      const bucket = buckets.get(tier) ?? [];
+      bucket.push({ ...node, tier });
+      buckets.set(tier, bucket);
+    });
+
+    const normalized: EditorTechNode[] = [];
+
+    buckets.forEach((bucket, tier) => {
+      const ordered = bucket
+        .sort(
+          (left, right) =>
+            (left.display_order ?? Number.MAX_SAFE_INTEGER)
+              - (right.display_order ?? Number.MAX_SAFE_INTEGER)
+            || left.id.localeCompare(right.id),
+        )
+        .map((node, index) => ({
+          ...node,
+          display_order: index + 1,
+          tier,
+        }));
+
+      normalized.push(...ordered);
+    });
+
+    return normalized.sort(
+      (left, right) =>
+        (left.tier || 1) - (right.tier || 1)
+        || (left.display_order || 0) - (right.display_order || 0)
+        || left.id.localeCompare(right.id),
+    );
   }
 }

@@ -30,6 +30,17 @@ import {
   TechTreeValidationIssue,
 } from '../models/tech-tree.models';
 
+export class TechTreeImportError extends Error {
+  constructor(
+    message: string,
+    readonly kind: 'parse' | 'validation' | 'unknown',
+    readonly issues: TechTreeValidationIssue[] = [],
+  ) {
+    super(message);
+    this.name = 'TechTreeImportError';
+  }
+}
+
 interface CultureTagDefinition extends CultureTagBinding {}
 
 interface NormalizedTreeResult {
@@ -101,7 +112,13 @@ export class TechTreeIoService {
       try {
         return JSON.parse(json) as Record<string, unknown>;
       } catch (error) {
-        throw new Error('Tech tree payload is not valid JSON.');
+        throw new TechTreeImportError('Tech tree payload is not valid JSON.', 'parse', [
+          {
+            path: 'import.parse',
+            message: 'Tech tree payload is not valid JSON.',
+            severity: 'error',
+          },
+        ]);
       }
     }
 
@@ -109,7 +126,13 @@ export class TechTreeIoService {
       return json as Record<string, unknown>;
     }
 
-    throw new Error('Tech tree payload must be a JSON string or object.');
+    throw new TechTreeImportError('Tech tree payload must be a JSON string or object.', 'parse', [
+      {
+        path: 'import.payload',
+        message: 'Tech tree payload must be a JSON string or object.',
+        severity: 'error',
+      },
+    ]);
   }
 
   private normalizeTree(raw: Record<string, unknown>): NormalizedTreeResult {
@@ -161,7 +184,7 @@ export class TechTreeIoService {
       category: ((nodeObject.category as string) || '').trim() || undefined,
       culture_tags: cultureTags,
       prerequisites: this.normalizePrerequisites(
-        (nodeObject.prerequisites as TechNodePrerequisite[]) || [],
+        (nodeObject['prerequisites'] as TechNodePrerequisite[]) || [],
         `${path}.prerequisites`,
         issues,
       ),
@@ -782,7 +805,7 @@ export class TechTreeIoService {
     const errors = issues.filter((issue) => issue.severity === 'error');
     if (errors.length) {
       const message = errors.map((issue) => `${issue.path}: ${issue.message}`).join(' | ');
-      throw new Error(`Tech tree validation failed: ${message}`);
+      throw new TechTreeImportError(`Tech tree validation failed: ${message}`.trim(), 'validation', errors);
     }
   }
 }

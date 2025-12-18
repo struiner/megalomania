@@ -3,7 +3,7 @@ import { GoodsType } from '../enums/GoodsType';
 import { StructureType } from '../enums/StructureType';
 import { TechTree } from '../models/tech-tree.models';
 import { MIXED_CASE_TECH_TREE, OUT_OF_RANGE_TIER_TREE } from '../data/tech-trees/tech-tree-normalization.fixtures';
-import { TechTreeIoService } from './tech-tree-io.service';
+import { TechTreeImportError, TechTreeIoService } from './tech-tree-io.service';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
@@ -35,9 +35,26 @@ describe('TechTreeIoService normalization harness', () => {
   });
 
   it('enforces tier bounds with actionable errors', () => {
-    expect(() => service.importTechTree(clone(OUT_OF_RANGE_TIER_TREE))).toThrowError(
-      /Tier must be between 1 and 256/,
-    );
+    try {
+      service.importTechTree(clone(OUT_OF_RANGE_TIER_TREE));
+      fail('Expected tier bound validation to throw');
+    } catch (error) {
+      expect(error instanceof TechTreeImportError).toBeTrue();
+      const issues = (error as TechTreeImportError).issues;
+      expect(issues.some((issue) => /tier/.test(issue.path))).toBeTrue();
+    }
+  });
+
+  it('attaches structured issues for parse failures', () => {
+    try {
+      service.importTechTree('{not-json');
+      fail('Expected parse failure to throw');
+    } catch (error) {
+      expect(error instanceof TechTreeImportError).toBeTrue();
+      const typed = error as TechTreeImportError;
+      expect(typed.kind).toBe('parse');
+      expect(typed.issues.some((issue) => issue.path.startsWith('import'))).toBeTrue();
+    }
   });
 
   it('orders nodes deterministically by tier, display_order, and id', () => {

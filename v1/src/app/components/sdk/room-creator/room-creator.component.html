@@ -37,16 +37,21 @@
           <input type="text" formControlName="purpose" placeholder="Workshop, medbay..." />
         </label>
 
-        <fieldset>
+        <fieldset class="hazard-fieldset">
           <legend>Hazards</legend>
-          <label *ngFor="let hazard of hazards">
+          <app-hazard-picker
+            [selected]="form.controls.hazards.value"
+            (selectedChange)="updateHazards($event)"
+          ></app-hazard-picker>
+          <label *ngFor="let hazard of hazardOptions">
             <input
               type="checkbox"
-              [value]="hazard"
-              (change)="toggleHazard(hazard, $any($event.target).checked)"
-              [checked]="form.controls.hazards.value.includes(hazard)"
+              [value]="hazard.canonical || hazard.value"
+              (change)="toggleHazardFromOption(hazard, $any($event.target).checked)"
+              [checked]="isHazardChecked(hazard)"
+              [disabled]="hazard.source === 'fallback'"
             />
-            {{ hazard }}
+            {{ hazard.label }}<span *ngIf="hazard.source === 'fallback'"> (fallback)</span>
           </label>
         </fieldset>
 
@@ -78,10 +83,11 @@
         <li *ngFor="let room of rooms(); let i = index">
           <div>
             <p class="eyebrow">{{ room.purpose }}</p>
-            <h4>{{ room.name }} · {{ room.width }}m × {{ room.height }}m</h4>
-            <p class="lede">{{ room.features }}</p>
+            <h4>{{ room.name }} · {{ room.dimensions.width }}m × {{ room.dimensions.height }}m</h4>
+            <p class="lede">{{ room.notes }}</p>
             <div class="tags">
-              <span class="tag" *ngFor="let hazard of room.hazards">{{ hazard }}</span>
+              <span class="tag" *ngFor="let hazard of room.hazards">{{ readableHazard(hazard) }}</span>
+              <span class="tag" *ngFor="let hazard of room.hazards">{{ readableHazard(hazard) }}</span>
             </div>
           </div>
           <button type="button" (click)="removeRoom(i)">Remove</button>
