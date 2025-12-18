@@ -1,6 +1,6 @@
 # Task Specification — Tech Tree Data Model Definition
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETE (Structural fidelity shipped via canonical tech-tree models and compatibility aliases)**
 
 ## Task Summary
 Define deterministic, culture-aware TypeScript interfaces for `TechNode` and `TechTree`, anchoring them to existing shared enums/types so technology effects, prerequisites and tags reference authoritative domain definitions without duplicating truth.
@@ -31,6 +31,8 @@ Define deterministic, culture-aware TypeScript interfaces for `TechNode` and `Te
 - Documentation notes on deterministic ordering and allowed identifier patterns.
 - Mapping guide showing how shared enums/types are referenced (no duplication).
 - Acceptance checklist for downstream import/export and UI consumers.
+
+**Evidence:** Canonical models and ordering rules live in `v1/src/app/models/tech-tree.models.ts` with compatibility aliases in `v1/src/app/models/tech-tree.model.ts`.
 
 ## Review Gate
 - [x] Interfaces reference existing enums/types instead of redefining them.

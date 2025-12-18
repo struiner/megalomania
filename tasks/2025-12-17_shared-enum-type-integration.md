@@ -1,6 +1,6 @@
 # Task Specification — Shared Enum & Type Integration for Tech Editor
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETE (Structural fidelity; read-only enum adapters wired into tech editor)**
 
 ## Task Summary
 Integrate the technology editor with existing shared enums/types (e.g., buildings, goods, civics, effects) to provide authoritative pickers and validation without redefining domain truths.
@@ -31,6 +31,8 @@ Integrate the technology editor with existing shared enums/types (e.g., building
 - Documentation of enum sources, refresh cadence, and ownership boundaries.
 - Deterministic sorting/labeling rules for pickers.
 - Test fixtures or mocks to support editor skeleton development.
+
+**Evidence:** `TechEnumAdapterService` (v1/src/app/services/tech-enum-adapter.service.ts) and its companion notes (`tech-enum-adapter.md`) provide read-only, sorted pickers now consumed by the tech editor effect selectors.
 
 ## Review Gate
 - [x] Pickers source data from authoritative enums/types without duplication.

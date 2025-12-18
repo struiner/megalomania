@@ -3,7 +3,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
-import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
+import { EditorTechNode, EditorTechNodeEffects } from './tech-tree-editor.types';
 
 @Component({
   selector: 'app-tech-tree-editor',
@@ -19,8 +19,10 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
           <p class="lede">Stable, bottom-anchored shell for reading and adjusting technology entries.</p>
         </div>
         <div class="status">
+          <p class="label">Tree</p>
+          <p class="value">{{ document().tech_tree_id }} · v{{ document().version }}</p>
           <p class="label">Source</p>
-          <p class="value">{{ document().lastImportedFrom || 'unlinked (fixtures)' }}</p>
+          <p class="value">{{ document().metadata?.source_label || 'unlinked (fixtures)' }}</p>
         </div>
       </header>
 
@@ -53,8 +55,9 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
                   (dragstart)="startDrag(node.id, $event)"
                   (dragend)="endDrag()"
                 >
-                  <span class="name">{{ node.name }}</span>
-                  <span class="meta">{{ node.category }}</span>
+                  <span class="name">{{ node.title }}</span>
+                  <span class="meta">{{ node.category || 'Unsorted' }}</span>
+                  <span class="meta tags">{{ describeTags(node.culture_tags) }}</span>
                 </button>
               </div>
             </div>
@@ -64,16 +67,16 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
         <section class="panel detail" *ngIf="selectedNode(); else selectPrompt">
           <header class="panel-header">
             <p class="eyebrow">Node Detail</p>
-            <h2>{{ selectedNode()?.name }}</h2>
-            <p class="hint">Three-field stub for name, summary, and tier.</p>
+            <h2>{{ selectedNode()?.title }}</h2>
+            <p class="hint">Structured fields plus culture tags and enum-bound effects.</p>
           </header>
           <div class="form-grid">
             <label class="field">
-              <span class="field-label">Name</span>
+              <span class="field-label">Title</span>
               <input
                 type="text"
-                [ngModel]="selectedNode()?.name"
-                (ngModelChange)="updateNode({ name: $event || '' })"
+                [ngModel]="selectedNode()?.title"
+                (ngModelChange)="updateNode({ title: $event || '' })"
               />
             </label>
             <label class="field">
@@ -101,6 +104,69 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
                 (ngModelChange)="updateNode({ category: $event || '' })"
               />
             </label>
+            <div class="field field-span tag-picker">
+              <span class="field-label">Culture tags</span>
+              <div class="tag-grid">
+                <label class="tag-option" *ngFor="let tag of cultureTagOptions()">
+                  <input type="checkbox" [checked]="selectedCultureTagSet().has(tag.id)" (change)="toggleCultureTag(tag.id)" />
+                  <span>{{ tag.label }}</span>
+                </label>
+              </div>
+              <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }}</p>
+            </div>
+            <div class="field field-span effect-grid">
+              <span class="field-label">Effects (enum aligned)</span>
+              <div class="effect-row">
+                <label class="effect-field">
+                  <span>Unlock structures</span>
+                  <select
+                    multiple
+                    [ngModel]="selectedNode()?.effects?.unlock_structures || []"
+                    (ngModelChange)="updateEffectsList('unlock_structures', $event || [])"
+                  >
+                    <option *ngFor="let option of effectOptions().structures" [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </label>
+                <label class="effect-field">
+                  <span>Unlock goods</span>
+                  <select
+                    multiple
+                    [ngModel]="selectedNode()?.effects?.unlock_goods || []"
+                    (ngModelChange)="updateEffectsList('unlock_goods', $event || [])"
+                  >
+                    <option *ngFor="let option of effectOptions().goods" [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </label>
+                <label class="effect-field">
+                  <span>Settlement unlocks</span>
+                  <select
+                    multiple
+                    [ngModel]="selectedNode()?.effects?.unlock_settlements || []"
+                    (ngModelChange)="updateEffectsList('unlock_settlements', $event || [])"
+                  >
+                    <option *ngFor="let option of effectOptions().settlements" [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </label>
+                <label class="effect-field">
+                  <span>Guild unlocks</span>
+                  <select
+                    multiple
+                    [ngModel]="selectedNode()?.effects?.unlock_guilds || []"
+                    (ngModelChange)="updateEffectsList('unlock_guilds', $event || [])"
+                  >
+                    <option *ngFor="let option of effectOptions().guilds" [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </label>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -118,15 +184,18 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
           </header>
           <div class="prereq-diagram" [style.gridTemplateColumns]="diagramColumns()">
             <div class="prereq-column" *ngFor="let column of prerequisiteColumns(); let columnIndex = index">
-              <div class="prereq-node"
+                <div class="prereq-node"
                    *ngFor="let node of column"
                    [class.active]="node.id === selectedNode()?.id"
                    [class.upstream]="isUpstream(node.id)"
                    (click)="selectNode(node.id)">
-                <p class="name">{{ node.name }}</p>
-                <p class="meta">Tier {{ node.tier }} · {{ node.category }}</p>
+                <p class="name">{{ node.title }}</p>
+                <p class="meta">Tier {{ node.tier }} · {{ node.category || 'Unsorted' }}</p>
                 <div class="connectors" *ngIf="node.prerequisites.length && columnIndex > 0">
-                  <span *ngFor="let prereq of node.prerequisites" [class.highlight]="prereq === selectedNode()?.id"></span>
+                  <span
+                    *ngFor="let prereq of node.prerequisites"
+                    [class.highlight]="prereq.node === selectedNode()?.id"
+                  ></span>
                 </div>
               </div>
             </div>
@@ -152,11 +221,22 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       </footer>
 
       <section class="export-log" *ngIf="lastExport()">
-        <p class="eyebrow">Last export</p>
+        <p class="eyebrow">Last export (deterministic)</p>
         <div class="log-body">
-          <p class="timestamp">{{ lastExport()?.exportedAt }}</p>
-          <pre>{{ lastExport() | json }}</pre>
+          <p class="timestamp">Issues: {{ lastExport()?.issues.length }}</p>
+          <pre>{{ lastExport()?.json }}</pre>
         </div>
+      </section>
+
+      <section class="issue-list" *ngIf="validationIssues().length">
+        <p class="eyebrow">Validation</p>
+        <ul>
+          <li *ngFor="let issue of validationIssues()">
+            <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+            <span class="path">{{ issue.path }}</span>
+            <span class="message">{{ issue.message }}</span>
+          </li>
+        </ul>
       </section>
     </section>
   `,
@@ -208,6 +288,8 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
     .status {
       text-align: right;
       min-width: 200px;
+      display: grid;
+      gap: 2px;
     }
 
     .status .label {
@@ -300,6 +382,12 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       font-size: 12px;
     }
 
+    .node-chip .meta.tags {
+      display: block;
+      opacity: 0.6;
+      font-size: 11px;
+    }
+
     .node-chip.active {
       border-color: #9de5ff;
       background: rgba(157, 229, 255, 0.12);
@@ -340,6 +428,51 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
 
     .field-span {
       grid-column: span 2;
+    }
+
+    .tag-picker {
+      gap: 6px;
+    }
+
+    .tag-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 6px;
+    }
+
+    .tag-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .effect-grid {
+      display: grid;
+      gap: 6px;
+    }
+
+    .effect-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .effect-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    select[multiple] {
+      min-height: 72px;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.35);
+      color: inherit;
     }
 
     .prereq-diagram {
@@ -481,6 +614,51 @@ import { TechTreeExportPayload, TechTreeNode } from './tech-tree-editor.types';
       line-height: 1.4;
     }
 
+    .issue-list {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.28);
+    }
+
+    .issue-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .issue-list li {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .issue-list .severity {
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .issue-list .severity.error {
+      background: rgba(255, 102, 102, 0.18);
+      border: 1px solid rgba(255, 102, 102, 0.4);
+    }
+
+    .issue-list .path {
+      opacity: 0.8;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .issue-list .message {
+      opacity: 0.9;
+    }
+
     @media (max-width: 1200px) {
       .workspace {
         grid-template-columns: 1fr;
@@ -500,21 +678,27 @@ export class TechTreeEditorComponent {
   private service = inject(TechTreeEditorService);
 
   document = this.service.document;
+  cultureTagOptions = this.service.cultureTagOptions;
+  effectOptions = this.service.effectOptions;
   tierBands = computed(() => this.service.getTierBands());
 
   selectedNode = this.service.selectedNode;
   nodes = this.service.nodes;
   draggingNodeId = signal<string | null>(null);
   dragOverTier = signal<number | null>(null);
+  validationIssues = this.service.validationIssues;
+  lastExport = this.service.lastExport;
 
-  lastExport = signal<TechTreeExportPayload | null>(null);
+  selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
+    ? this.selectedNode()?.culture_tags
+    : this.document().default_culture_tags));
 
   tieredNodes = computed(() => {
-    const bandMap = new Map<number, TechTreeNode[]>();
+    const bandMap = new Map<number, EditorTechNode[]>();
     this.nodes().forEach((node) => {
-      const bucket = bandMap.get(node.tier) ?? [];
+      const bucket = bandMap.get(node.tier || 1) ?? [];
       bucket.push(node);
-      bandMap.set(node.tier, bucket);
+      bandMap.set(node.tier || 1, bucket);
     });
     return bandMap;
   });
@@ -522,13 +706,14 @@ export class TechTreeEditorComponent {
   prerequisiteColumns = computed(() => {
     const pending = [...this.nodes()];
     const placed = new Set<string>();
-    const columns: TechTreeNode[][] = [];
+    const columns: EditorTechNode[][] = [];
 
     while (pending.length) {
-      const column: TechTreeNode[] = [];
+      const column: EditorTechNode[] = [];
       for (let index = pending.length - 1; index >= 0; index -= 1) {
         const node = pending[index];
-        if (node.prerequisites.every((pr) => placed.has(pr))) {
+        const prerequisites = node.prerequisites || [];
+        if (prerequisites.every((prerequisite) => placed.has(prerequisite.node))) {
           column.unshift(node);
           pending.splice(index, 1);
         }
@@ -566,7 +751,7 @@ export class TechTreeEditorComponent {
     this.service.deleteSelected();
   }
 
-  updateNode(partial: Partial<TechTreeNode>): void {
+  updateNode(partial: Partial<EditorTechNode>): void {
     this.service.updateNode(partial);
   }
 
@@ -600,17 +785,29 @@ export class TechTreeEditorComponent {
 
   isUpstream(nodeId: string): boolean {
     const selected = this.selectedNode();
-    return selected?.prerequisites.includes(nodeId) ?? false;
+    return selected?.prerequisites.some((prerequisite) => prerequisite.node === nodeId) ?? false;
   }
 
   triggerImport(): void {
     this.service.requestImport({
       sourceLabel: 'fixture-import',
-      document: TECH_TREE_FIXTURE_DOCUMENT,
+      raw: TECH_TREE_FIXTURE_DOCUMENT,
     });
   }
 
   triggerExport(): void {
-    this.lastExport.set(this.service.requestExport());
+    this.service.requestExport();
+  }
+
+  toggleCultureTag(tagId: string): void {
+    this.service.toggleCultureTag(tagId);
+  }
+
+  updateEffectsList(key: keyof EditorTechNodeEffects, values: string[]): void {
+    this.service.updateEffectsList(key, values);
+  }
+
+  describeTags(tags: string[] = []): string {
+    return tags.length ? tags.join(', ') : 'inherits defaults';
   }
 }

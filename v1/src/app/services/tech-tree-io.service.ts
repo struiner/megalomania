@@ -14,7 +14,7 @@ import {
   TechNode,
   TechNodeEffects,
   TechNodePrerequisite,
-  TechPrerequisiteRelation,
+  TECH_PREREQUISITE_RELATION,
   TechTree,
   TechTreeExportResult,
   TechTreeImportResult,
@@ -35,6 +35,10 @@ interface NormalizedTreeResult {
 export class TechTreeIoService {
   private readonly cultureTagVocabulary = this.buildCultureTagVocabulary();
   private readonly migrations: Record<number, (tree: TechTree) => TechTree> = {};
+
+  getCultureTagOptions(): CultureTagBinding[] {
+    return Object.values(this.cultureTagVocabulary).sort((left, right) => left.id.localeCompare(right.id));
+  }
 
   importTechTree(json: unknown): TechTreeImportResult {
     const parsed = this.parseJson(json);
@@ -155,9 +159,9 @@ export class TechTreeIoService {
     return rawPrerequisites
       .map((prerequisite, index) => {
         const node = this.normalizeIdentifier(((prerequisite as TechNodePrerequisite).node as string) || '');
-        const relation = (prerequisite as TechNodePrerequisite).relation || TechPrerequisiteRelation.Requires;
+        const relation = (prerequisite as TechNodePrerequisite).relation || TECH_PREREQUISITE_RELATION.Requires;
 
-        if (relation !== TechPrerequisiteRelation.Requires) {
+        if (relation !== TECH_PREREQUISITE_RELATION.Requires) {
           issues.push({
             path: `${path}[${index}].relation`,
             message: `Unsupported prerequisite relation "${relation}" replaced with "requires".`,
@@ -168,7 +172,7 @@ export class TechTreeIoService {
         return node
           ? {
               node,
-              relation: TechPrerequisiteRelation.Requires,
+              relation: TECH_PREREQUISITE_RELATION.Requires,
             }
           : undefined;
       })
@@ -314,7 +318,7 @@ export class TechTreeIoService {
       if (prerequisite.node) {
         deduped.set(prerequisite.node, {
           node: prerequisite.node,
-          relation: TechPrerequisiteRelation.Requires,
+          relation: TECH_PREREQUISITE_RELATION.Requires,
         });
       }
     });
@@ -479,7 +483,7 @@ export class TechTreeIoService {
         issues.push({ path: `${path}[${index}]`, message: 'Prerequisite entry is missing a node id.', severity: 'error' });
       }
 
-      if (prerequisite.relation !== TechPrerequisiteRelation.Requires) {
+      if (prerequisite.relation !== TECH_PREREQUISITE_RELATION.Requires) {
         issues.push({
           path: `${path}[${index}].relation`,
           message: `Invalid prerequisite relation on ${node.id}: ${prerequisite.relation}`,

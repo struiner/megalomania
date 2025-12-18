@@ -1,6 +1,6 @@
 # Task Specification — Ledger Event Wiring for Research Actions
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETE (Structural fidelity; research lifecycle events and stub emitters implemented)**
 
 ## Task Summary
 Define and wire ledger event types for research start and completion so tech research actions are recorded in the PBC with deterministic schemas, without implementing progression mechanics.
@@ -31,6 +31,8 @@ Define and wire ledger event types for research start and completion so tech res
 - Stub service/API surface to emit events (no progression logic).
 - Documentation on ordering, validation and cross-player verification expectations.
 - Sample events/fixtures for integration testing with import/export and editor UI.
+
+**Evidence:** Research event schemas live in `v1/src/app/models/ledger.models.ts`; stub emitters and cross-player validation hooks are provided via `v1/src/app/services/tech-ledger.service.ts`.
 
 ## Review Gate
 - [x] Event schemas reference tech identifiers from the data model without duplication.

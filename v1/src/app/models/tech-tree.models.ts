@@ -44,6 +44,9 @@ export interface CultureTagBinding {
 
 export const TECH_PREREQUISITE_RELATIONS = ['requires'] as const;
 export type TechPrerequisiteRelation = (typeof TECH_PREREQUISITE_RELATIONS)[number];
+export const TECH_PREREQUISITE_RELATION = {
+  Requires: TECH_PREREQUISITE_RELATIONS[0],
+} as const;
 
 export interface TechNodePrerequisite {
   node: TechNodeId;
