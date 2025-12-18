@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CultureTagId } from '../../models/tech-tree.models';
 import { TechIconPickerComponent } from './tech-icon-picker.component';
 import { TechTreeConnectionOverlayComponent } from './tech-tree-connection-overlay.component';
+import { TechTreePreviewDialogComponent } from './tech-tree-preview-dialog.component';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
 import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, PrerequisiteOverlayNode } from './tech-tree-editor.types';
@@ -11,7 +12,13 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
 @Component({
   selector: 'app-tech-tree-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, TechIconPickerComponent, TechTreeConnectionOverlayComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TechIconPickerComponent,
+    TechTreeConnectionOverlayComponent,
+    TechTreePreviewDialogComponent,
+  ],
   providers: [TechTreeEditorService],
   template: `
     <section class="tech-tree-editor">
@@ -235,6 +242,7 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
         </div>
         <div class="buttons">
           <button type="button" (click)="triggerImport()">Import sample</button>
+          <button type="button" class="primary ghost" (click)="openPreview()">Preview dialog</button>
           <button type="button" class="primary" (click)="triggerExport()">Export snapshot</button>
         </div>
       </footer>
@@ -257,6 +265,16 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
           </li>
         </ul>
       </section>
+
+      <app-tech-tree-preview-dialog
+        *ngIf="isPreviewOpen()"
+        [document]="document()"
+        [nodes]="nodes()"
+        [tierBands]="tierBands()"
+        [cultureTagOptions]="cultureTagOptions()"
+        [effectOptions]="effectOptions()"
+        (close)="closePreview()"
+      ></app-tech-tree-preview-dialog>
     </section>
   `,
   styles: [`
@@ -611,6 +629,13 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       box-shadow: 0 2px 0 #e19b28;
     }
 
+    .buttons button.primary.ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffe7be;
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: none;
+    }
+
     .buttons button.danger {
       background: rgba(255, 91, 91, 0.12);
       border-color: rgba(255, 91, 91, 0.4);
@@ -720,6 +745,7 @@ export class TechTreeEditorComponent {
   dragOverTier = signal<number | null>(null);
   validationIssues = this.service.validationIssues;
   lastExport = this.service.lastExport;
+  isPreviewOpen = signal(false);
 
   selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
     ? this.selectedNode()?.culture_tags
@@ -888,5 +914,13 @@ export class TechTreeEditorComponent {
 
   describeTags(tags: string[] = []): string {
     return tags.length ? tags.join(', ') : 'inherits defaults';
+  }
+
+  openPreview(): void {
+    this.isPreviewOpen.set(true);
+  }
+
+  closePreview(): void {
+    this.isPreviewOpen.set(false);
   }
 }
