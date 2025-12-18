@@ -30,6 +30,7 @@ Define an authoritative culture tag canon and world-aligned traits for tech tree
 - Adapter/service exposing tags for tech editor pickers and import/export validation.
 - Documentation on extension rules and determinism (ordering, casing).
 - Fixtures demonstrating valid/invalid culture-tagged tech nodes.
+- **Sample vocabulary captured:** see `tasks/2025-12-17_tech-tree-sample-fixtures.md` for enum-aligned culture tags and a tech tree fixture that downstream tasks can validate against.
 
 ## Review Gate
 - [ ] Tags map to authoritative world data (no duplicate/freeform tags).
@@ -48,4 +49,3 @@ Define an authoritative culture tag canon and world-aligned traits for tech tree
     answer: Possibly by distinguishing preferred array with possible array
 - Do we need reserved tags for procedurally generated cultures, and how are they namespaced?
     answer: no, namespace prefers readabiliy for procedurally generated cultures, but can vary per culture.
-
