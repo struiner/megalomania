@@ -2,6 +2,7 @@ import { Dayjs } from 'dayjs';
 import { SettlementDisasterType } from '../enums/SettlementDisasterType';
 import { CityEventType } from '../enums/SettlementEventType';
 import { SettlementType } from '../enums/SettlementType';
+import { HazardType } from '../enums/HazardType';
 import { StructureType } from '../enums/StructureType';
 import { Structure } from '../types/Structure';
 import { Population } from '../types/settlement/Population';
@@ -13,6 +14,13 @@ import {
   PlayerID,
 } from './anna-readme.models';
 import {
+  CultureTagId,
+  TechResearchPointer,
+} from './tech-tree.models';
+import {
+  RoomBlueprint,
+  RoomBlueprintIdentifier,
+} from './room-blueprint.models';
   RoomBlueprintApplicationTarget,
   RoomBlueprintReference,
   RoomBlueprintValidationHook,
@@ -75,7 +83,7 @@ export interface AdvancementEventData {
 }
 
 export interface DisasterEventData {
-  disasterType: SettlementDisasterType; // e.g., 'fire', 'flood'
+  disasterType: HazardType; // e.g., 'fire', 'flood'
   severity: number;
   affectedPopulation: number;
   affectedStructures: Structure[];
@@ -122,6 +130,38 @@ export type ResearchLedgerEvent =
   | LedgerEvent<ResearchCompletedPayload>
   | LedgerEvent<ResearchCancelledPayload>;
 
+export enum RoomBlueprintLedgerEventType {
+  CREATED = 'ROOM_BLUEPRINT_CREATED',
+  UPDATED = 'ROOM_BLUEPRINT_UPDATED',
+  DEPRECATED = 'ROOM_BLUEPRINT_DEPRECATED',
+}
+
+export interface RoomBlueprintEventBasePayload {
+  blueprint: RoomBlueprint;
+  checksum128: string;
+  serializationRulesVersion: string; // aligns with ROOM_BLUEPRINT_SERIALIZATION_RULES to enforce determinism
+  source: 'sdk' | 'import' | 'system';
+}
+
+export interface RoomBlueprintCreatedPayload extends RoomBlueprintEventBasePayload {
+  importOrder: number; // stable order within an import batch
+}
+
+export interface RoomBlueprintUpdatedPayload extends RoomBlueprintEventBasePayload {
+  previousBlueprint: RoomBlueprintIdentifier;
+  changeNotes?: string;
+}
+
+export interface RoomBlueprintDeprecatedPayload {
+  blueprint: RoomBlueprintIdentifier;
+  deprecatedAtVersion: string;
+  reason: 'superseded' | 'withdrawn' | 'invalidated';
+}
+
+export type RoomBlueprintLedgerEvent =
+  | LedgerEvent<RoomBlueprintCreatedPayload>
+  | LedgerEvent<RoomBlueprintUpdatedPayload>
+  | LedgerEvent<RoomBlueprintDeprecatedPayload>;
 export enum RoomLedgerEventType {
   BLUEPRINT_CREATED = 'ROOM_BLUEPRINT_CREATED',
   BLUEPRINT_UPDATED = 'ROOM_BLUEPRINT_UPDATED',
