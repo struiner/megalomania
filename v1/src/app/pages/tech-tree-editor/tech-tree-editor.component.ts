@@ -8,6 +8,7 @@ import { TechTreePreviewDialogComponent } from './tech-tree-preview-dialog.compo
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
 import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, PrerequisiteOverlayNode } from './tech-tree-editor.types';
+import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
 
 @Component({
   selector: 'app-tech-tree-editor',
@@ -17,6 +18,7 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
     FormsModule,
     TechIconPickerComponent,
     TechTreeConnectionOverlayComponent,
+    CultureTagComboboxComponent,
     TechTreePreviewDialogComponent,
   ],
   providers: [TechTreeEditorService],
@@ -140,6 +142,12 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
             </div>
             <div class="field field-span tag-picker">
               <span class="field-label">Culture tags</span>
+              <app-culture-tag-combobox
+                [options]="cultureTagOptions()"
+                [selectedIds]="selectedCultureTags()"
+                (selectionChange)="replaceCultureTags($event)"
+              ></app-culture-tag-combobox>
+              <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }}</p>
               <div class="tag-grid">
                 <label class="tag-option" *ngFor="let tag of cultureTagOptions()">
                   <input type="checkbox" [checked]="selectedCultureTagSet().has(tag.id)" (change)="toggleCultureTag(tag.id)" />
@@ -688,20 +696,8 @@ import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, Prerequ
       gap: 6px;
     }
 
-    .tag-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 6px;
-    }
-
-    .tag-option {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.02);
+    .tag-picker app-culture-tag-combobox {
+      width: 100%;
     }
 
     .tag-label {
@@ -1089,6 +1085,16 @@ export class TechTreeEditorComponent {
   dragOverSlot = signal<{ tier: number; column: number } | null>(null);
   validationIssues = this.service.validationIssues;
   lastExport = this.service.lastExport;
+  resolvedCultureTags = computed(() => {
+    const explicitTags = this.selectedNode()?.culture_tags || [];
+    return explicitTags.length ? explicitTags : this.document().default_culture_tags;
+  });
+  selectedCultureTagSet = computed(() => new Set(this.resolvedCultureTags()));
+  selectedCultureTags = computed(() =>
+    this.cultureTagOptions()
+      .filter((option) => this.selectedCultureTagSet().has(option.id))
+      .map((option) => option.id),
+  );
   governanceIssues = this.service.governanceIssues;
   cultureTagAuditTrail = this.service.cultureTagAuditTrail;
   cultureTagUsage = this.service.cultureTagUsage;
@@ -1279,8 +1285,8 @@ export class TechTreeEditorComponent {
     this.service.requestExport();
   }
 
-  toggleCultureTag(tagId: CultureTagId): void {
-    this.service.toggleCultureTag(tagId);
+  replaceCultureTags(tagIds: CultureTagId[]): void {
+    this.service.updateCultureTags(tagIds);
   }
 
   updateEffectsList(key: keyof EditorTechNodeEffects, values: string[]): void {
