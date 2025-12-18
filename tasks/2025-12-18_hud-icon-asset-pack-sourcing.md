@@ -46,3 +46,9 @@ Select and authorize a canonical pixel icon asset pack (or sprite sheet commissi
     answer: yes
 - Is a custom commission preferred over an existing pack to guarantee exclusivity?
     answer: not really, aesthetics and recognizeability are paramount.
+
+## Decision Log (2025-12-18)
+- **Selected pack**: Kenney “Game Icons” (CC0) as the canonical HUD source; recolor to brass/ink per theme foundations. Supplemental: Game-Icons.net (CC BY 3.0, attribution required) only if a glyph is missing; 0x72 Dungeon Tileset II sprites can backfill minimap markers.
+- **Pilot mapping**: Inventory → `backpack`; Ledger → `ledger`/`book`; Map → `map`; Crew → `group`; Trade → `scales`; Quests → `compass` (fallback `star`); Settings → `cog`; Help → `question`; Status header → `anchor`; Notifications header → `bell`. (See `v1/src/app/pages/hud/hud-icon-asset-pack-sourcing.md` for integration steps.)
+- **Palette fit**: Two-tone brass stroke on parchment/dark wood plates, optional cool shadow inset; restrict to 1–2 colors to maintain engraved tone.
+- **Integration next steps**: Generate 16px/32px sprite atlases, add SCSS tokens/hooks, and keep emoji glyphs as runtime fallback until sprite loading is wired. Attribution string must be added if any Game-Icons.net glyphs enter the atlas.

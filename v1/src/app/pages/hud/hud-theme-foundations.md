@@ -37,6 +37,7 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Fill**: Minimal flat fills; prefer negative space with brass/copper strokes and limited parchment fill.
 - **Framing**: Square or shield outlines sized to 16px/24px; align icon baselines with button grid slots.
 - **States**: Hover = `Highlight Copper` stroke with `Cool Shadow` inset; Active = thicker 2px brass stroke.
+- **Asset base**: Kenney “Game Icons” (CC0) recolored to brass/ink is the canonical pack for the HUD; Game-Icons.net (CC BY 3.0) may supplement gaps with attribution. 0x72 Dungeon Tileset II sprites can backfill minimap markers.
 
 > TODO: Produce a 12–16 icon pilot set for button grid and info pane headers to validate stroke/spacing rules (follow-up task).
 

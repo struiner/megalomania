@@ -18,13 +18,14 @@ This document fulfills the planning deliverables for `tasks/2025-12-18_hud-theme
 > TODO: Confirm where to host the HUD SCSS partial (e.g., `v1/src/app/pages/hud/theme/_hud-theme.scss`) to avoid cross-domain leakage.
 
 ## Retrofit Sequence
+0. Lock **Kenney “Game Icons” (CC0)** as the canonical HUD pack (see `hud-icon-asset-pack-sourcing.md`); generate 16px/32px sprite atlases with brass/ink recolor and keep Game-Icons.net only as a credited supplemental source.
 1. Introduce SCSS token partial and wire into bottom HUD, button grid, info panes, overlay shell, and minimap frame incrementally.
 2. Validate safe-area handling after styling changes to ensure padding reserves are unaffected.
 3. QA pixel integrity at 1× and 2× scaling; adjust mixins if dither patterns blur.
 4. Replace placeholder emoji icons with the token-aligned pilot set (see follow-up tasks) before enabling hover/active states.
 
 ## Gaps & Follow-up Tasks
-- Pixel icon pilot set needed for button grid/info headers (brass/copper stroke rules). Tracked in `tasks/2025-12-18_hud-icon-pilot-set.md`.
+- Pixel icon pilot set needed for button grid/info headers (brass/copper stroke rules) derived from the Kenney pack mapping. Tracked in `tasks/2025-12-18_hud-icon-pilot-set.md`.
 - Parchment/wood texture swatches required to validate dither patterns at 2×. Tracked in `tasks/2025-12-18_hud-texture-swatch-production.md`.
 - Accessibility check on warning/alert palette variants. Tracked in `tasks/2025-12-18_hud-accessible-warning-palette.md`.
 
