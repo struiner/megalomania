@@ -5,7 +5,7 @@ import { WorldGenerationComponent } from '../pages/config/gen/world-generation.c
 import { DesignDocumentComponent } from '../pages/design/design-document.component';
 import { KirbyComponent } from '../pages/kirby/kirby.component';
 import { BiomeOverviewComponent } from '../pages/biomes/biome-overview.component';
-import { GoodsManagerComponent } from '../components/sdk/goods-manager/goods-manager.component';
+import { GoodsManagerPageComponent } from '../pages/goods-manager/goods-manager-page.component';
 import { RoomCreatorComponent } from '../components/sdk/room-creator/room-creator.component';
 import { SettlementManagerComponent } from '../components/sdk/settlement-manager/settlement-manager.component';
 import { StructureCreatorComponent } from '../components/sdk/structure-creator/structure-creator.component';
@@ -250,11 +250,16 @@ export const MENU: MenuItem[] = [
     title: 'SDK',
     children: [
       {
-        title: 'Goods Manager',
-        type: 'route',
-        route: 'sdk/goods',
-        sdkComponent: GoodsManagerComponent,
-        description: 'Placeholder surface for the goods management SDK tool.',
+        title: 'Tech',
+        children: [
+          {
+            title: 'Goods Manager',
+            type: 'route',
+            route: 'sdk/tech/goods',
+            sdkComponent: GoodsManagerPageComponent,
+            description: 'Structural goods manager shell using fixtures and SDK layout conventions.',
+          },
+        ],
       },
       {
         title: 'Room Creator',
