@@ -1,0 +1,344 @@
+# Goods Derived Stats Service Documentation
+
+## Overview
+
+The `GoodsDerivedStatsService` provides deterministic, side-effect free functions to compute derived statistics from the goods catalog. It supports tier/category breakdowns, rarity-to-tier mapping validation, aggregate counts, and per-culture breakdowns.
+
+## Core Functionality
+
+### Main Entry Point
+
+```typescript
+computeDerivedStats(
+  goods: ManagedGood[], 
+  rarityTierMapping?: RarityTierMapping[],
+  cultureGroups?: Record<string, string>
+): GoodsDerivedStats
+```
+
+**Parameters:**
+- `goods`: Array of managed goods with required fields
+- `rarityTierMapping`: Optional custom rarity-tier mapping rules (defaults provided)
+- `cultureGroups`: Optional culture grouping configuration (defaults provided)
+
+**Returns:** Comprehensive `GoodsDerivedStats` object with all computed data and validation warnings.
+
+## Data Types
+
+### ManagedGood Interface
+
+```typescript
+interface ManagedGood {
+  type: GoodsType;           // Unique goods identifier
+  title: string;             // Display name
+  rarity: number;            // 1-5 numeric rating
+  complexity: number;        // 1-5 tier level
+  basePrice: number;         // Base price value
+  category: GoodCategory | string; // Goods category
+  cultureTags?: string[];    // Optional culture associations
+  description?: string;      // Optional description
+  components?: Array<{ type: GoodsType; amount: number }>; // Recipe components
+}
+```
+
+### Core Result Types
+
+```typescript
+interface TierBreakdown {
+  tier: number;          // 1-5
+  count: number;         // Number of goods in this tier
+  percentage: number;    // Percentage of total goods
+}
+
+interface RarityBreakdown {
+  rarity: Rarity;        // Common, Uncommon, Rare, Exotic, Legendary
+  count: number;         // Number of goods with this rarity
+  percentage: number;    // Percentage of total goods
+}
+
+interface CategoryBreakdown {
+  category: GoodCategory | string;
+  count: number;
+  percentage: number;
+}
+
+interface CultureAggregate {
+  cultureTag: string;           // Culture group name
+  totalGoods: number;           // Total goods in this culture
+  categories: CategoryBreakdown[]; // Category breakdown per culture
+  rarities: RarityBreakdown[];     // Rarity breakdown per culture
+  averageComplexity: number;        // Average complexity score
+  averageBasePrice: number;         // Average base price
+}
+```
+
+## Configuration
+
+### Default Rarity-Tier Mapping
+
+The service includes configurable rarity-tier mapping rules:
+
+```typescript
+const DEFAULT_RARITY_TIER_MAPPING = [
+  { rarity: Rarity.Common, expectedTierRange: [1, 2], confidence: 0.9 },
+  { rarity: Rarity.Uncommon, expectedTierRange: [2, 3], confidence: 0.8 },
+  { rarity: Rarity.Rare, expectedTierRange: [3, 4], confidence: 0.8 },
+  { rarity: Rarity.Exotic, expectedTierRange: [4, 5], confidence: 0.7 },
+  { rarity: Rarity.Legendary, expectedTierRange: [5, 5], confidence: 0.9 },
+];
+```
+
+**Configuration Options:**
+- `expectedTierRange`: [min, max] acceptable tier range for each rarity
+- `confidence`: How strictly to apply this rule (0-1 scale)
+
+### Culture Grouping
+
+Default culture groups based on existing tags:
+
+```typescript
+const CULTURE_TAG_GROUPS = {
+  // Biome-based
+  'biome_taiga': 'Northern Cultures',
+  'biome_forest': 'Forest Cultures',
+  'biome_plains': 'Plains Cultures',
+  // ... more groups
+};
+```
+
+## Core Functions
+
+### Tier Breakdown Computation
+
+```typescript
+computeTierBreakdown(goods: ManagedGood[]): TierBreakdown[]
+```
+
+Groups goods by complexity tier (1-5) and provides counts and percentages.
+
+### Rarity Breakdown Computation
+
+```typescript
+computeRarityBreakdown(goods: ManagedGood[]): RarityBreakdown[]
+```
+
+Maps numeric rarity (1-5) to enum values and provides distribution statistics.
+
+### Category Breakdown Computation
+
+```typescript
+computeCategoryBreakdown(goods: ManagedGood[]): CategoryBreakdown[]
+```
+
+Groups goods by category and provides distribution analysis.
+
+### Per-Culture Aggregates
+
+```typescript
+computeCultureAggregates(
+  goods: ManagedGood[], 
+  cultureGroups?: Record<string, string>
+): CultureAggregate[]
+```
+
+Groups goods by culture tags and computes comprehensive statistics per culture group.
+
+## Validation System
+
+### Rarity-Tier Mapping Validation
+
+```typescript
+validateRarityTierMapping(
+  goods: ManagedGood[], 
+  mapping: RarityTierMapping[]
+): ValidationWarning[]
+```
+
+Checks goods against rarity-tier mapping rules and generates warnings for mismatches.
+
+### Input Data Validation
+
+```typescript
+validateInputData(goods: ManagedGood[]): ValidationWarning[]
+```
+
+Validates required fields and data integrity, generating error-level warnings for issues.
+
+### Warning Types
+
+```typescript
+type ValidationWarning = {
+  type: 'rarity_mismatch' | 'missing_data' | 'category_mismatch' | 'calculation_inconsistency';
+  severity: 'warning' | 'error';
+  message: string;
+  affectedGoods: GoodsType[];
+  suggestedFix?: string;
+};
+```
+
+## Deterministic Ordering
+
+All calculations use deterministic ordering to ensure reproducible results:
+
+1. **Primary sort**: By `GoodsType` (alphabetical)
+2. **Secondary sort**: By `title` (alphabetical)  
+3. **Tertiary sort**: By `rarity` (numeric)
+
+This ordering is preserved in:
+- Input processing
+- Output arrays
+- Metadata tracking
+
+## Usage Examples
+
+### Basic Usage
+
+```typescript
+const service = inject(GoodsDerivedStatsService);
+
+// Convert existing data to ManagedGood format
+const managedGoods = goodsData.map(good => ({
+  type: good.type,
+  title: good.title,
+  rarity: good.rarity,
+  complexity: good.complexity,
+  basePrice: good.basePrice,
+  category: good.category,
+  cultureTags: good.cultureTags || []
+}));
+
+// Compute comprehensive stats
+const stats = service.computeDerivedStats(managedGoods);
+
+// Access results
+console.log(`Total goods: ${stats.totalGoods}`);
+console.log(`Tier breakdown:`, stats.tierBreakdown);
+console.log(`Validation warnings: ${stats.validationWarnings.length}`);
+```
+
+### Custom Configuration
+
+```typescript
+// Custom rarity-tier mapping for a specific game balance
+const customMapping = [
+  { rarity: Rarity.Common, expectedTierRange: [1, 1], confidence: 1.0 },
+  { rarity: Rarity.Uncommon, expectedTierRange: [2, 2], confidence: 1.0 },
+  // ... more rules
+];
+
+// Custom culture groups
+const customCultureGroups = {
+  'biome_arctic': 'Polar Cultures',
+  'biome_tropical': 'Tropical Cultures'
+};
+
+const stats = service.computeDerivedStats(goods, customMapping, customCultureGroups);
+```
+
+### Filtering and Analysis
+
+```typescript
+// Get summary for quick overview
+const summary = service.getSummaryStats(stats);
+// "Total Goods: 25 | Tier Distribution: T1:5,T2:8,T3:7,T4:3,T5:2 | Rarity Distribution: Common:12,Uncommon:8,Rare:3,Exotic:2,Legendary:0 | Validation Issues: 3"
+
+// Filter warnings by severity
+const errors = stats.validationWarnings.filter(w => w.severity === 'error');
+const warnings = stats.validationWarnings.filter(w => w.severity === 'warning');
+
+// Analyze culture-specific data
+const forestCultures = stats.cultureAggregates.find(c => c.cultureTag === 'Forest Cultures');
+if (forestCultures) {
+  console.log(`Forest cultures have ${forestCultures.totalGoods} goods`);
+  console.log(`Average complexity: ${forestCultures.averageComplexity.toFixed(2)}`);
+}
+```
+
+## Integration Points
+
+### Goods Manager UI Integration
+
+The service integrates with existing goods management components:
+
+```typescript
+// In goods manager component
+const stats = this.statsService.computeDerivedStats(this.goods());
+
+// Display tier breakdown
+this.tierBreakdown = stats.tierBreakdown;
+
+// Display validation warnings
+this.validationWarnings = stats.validationWarnings;
+```
+
+### Export/Import Integration
+
+Results are structured for easy serialization and integration with export routines:
+
+```typescript
+// Export stats for external analysis
+const exportData = {
+  summary: stats.metadata,
+  totals: {
+    totalGoods: stats.totalGoods,
+    categories: stats.categoryBreakdown,
+    tiers: stats.tierBreakdown,
+    rarities: stats.rarityBreakdown
+  },
+  cultureData: stats.cultureAggregates,
+  validation: stats.validationWarnings
+};
+```
+
+## Performance Considerations
+
+- **Time Complexity**: O(n log n) due to deterministic sorting
+- **Space Complexity**: O(n) for storing breakdowns and aggregates
+- **Deterministic Performance**: Same input always produces same computation time
+- **Memory Efficiency**: Uses Maps and Sets for efficient aggregation
+
+## Error Handling
+
+- **Invalid Input**: Gracefully handles malformed data with validation warnings
+- **Missing Data**: Reports missing required fields without failing
+- **Calculation Errors**: Uses defensive programming to prevent runtime errors
+- **Type Safety**: Full TypeScript coverage for compile-time safety
+
+## Testing and Verification
+
+The service includes comprehensive validation:
+
+1. **Input Validation**: Checks all required fields
+2. **Rarity-Tier Mapping**: Validates against configurable rules
+3. **Deterministic Ordering**: Ensures reproducible results
+4. **Edge Cases**: Handles empty arrays, single items, and boundary values
+5. **Culture Aggregates**: Validates culture grouping logic
+
+## Future Extensions
+
+The modular design supports future enhancements:
+
+- **Custom Aggregation Functions**: Plugin architecture for new statistics
+- **Real-time Updates**: Reactive streams for live data changes
+- **Advanced Filtering**: More sophisticated filtering and grouping options
+- **Export Formats**: Additional serialization formats (CSV, XML, etc.)
+- **Caching Layer**: Optional result caching for frequently accessed data
+
+## Migration Guide
+
+### From Existing Implementation
+
+If migrating from embedded logic in components:
+
+1. **Extract Data**: Convert existing data to `ManagedGood[]` format
+2. **Replace Logic**: Replace manual breakdowns with service calls
+3. **Update UI**: Use validation warnings for user feedback
+4. **Test Determinism**: Verify reproducible results across environments
+
+### Breaking Changes
+
+- **Input Format**: Requires `ManagedGood[]` instead of component-specific types
+- **Output Structure**: Returns structured `GoodsDerivedStats` object
+- **Configuration**: Optional parameters for customization
+
+This service provides a robust foundation for goods catalog analysis while maintaining the deterministic, side-effect free requirements specified in the task charter.
