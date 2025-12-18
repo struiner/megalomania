@@ -10,21 +10,27 @@ import { TechTreeIoService } from '../../services/tech-tree-io.service';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import {
   CultureTagOption,
+  CultureTagDeleteInput,
+  CultureTagEditInput,
+  CultureTagProposalInput,
   EditorTechNode,
   EditorTechNodeEffects,
   EditorTechTree,
   EditorTechTreeExport,
   EditorTechTreeImport,
   EditorTechValidationIssue,
+  GovernedCultureTagOption,
   EffectOptionSet,
   TechTreeImportPayload,
 } from './tech-tree-editor.types';
+import { CultureTagGovernanceAdapterService } from '../../services/culture-tag-governance.adapter';
 
 @Injectable()
 export class TechTreeEditorService {
   private readonly io = inject(TechTreeIoService);
   private readonly enumAdapter = inject(TechEnumAdapterService);
   private readonly iconRegistry = inject(TechIconRegistryService);
+  private readonly tagGovernance = inject(CultureTagGovernanceAdapterService);
 
   private documentState = signal<EditorTechTree>(TECH_TREE_FIXTURE_DOCUMENT);
   private selectedId = signal<string>(TECH_TREE_FIXTURE_DOCUMENT.nodes[0]?.id ?? '');
@@ -37,11 +43,17 @@ export class TechTreeEditorService {
   validationIssues = signal<EditorTechValidationIssue[]>([]);
   lastImport = signal<EditorTechTreeImport | null>(null);
   lastExport = signal<EditorTechTreeExport | null>(null);
+  governanceIssues = computed<EditorTechValidationIssue[]>(() => this.tagGovernance.issues());
+  cultureTagAuditTrail = computed(() => this.tagGovernance.auditTrail());
+  cultureTagUsage = computed(() => this.collectCultureTagUsage());
 
-  cultureTagOptions = computed<CultureTagOption[]>(() =>
-    this.io.getCultureTagOptions().map((entry) => ({
+  cultureTagOptions = computed<GovernedCultureTagOption[]>(() =>
+    this.tagGovernance.vocabulary().map((entry) => ({
       ...entry,
       label: entry.id.replace(/_/g, ' '),
+      status: entry.status,
+      version: entry.version,
+      governanceNote: entry.note,
     })),
   );
 
@@ -230,6 +242,23 @@ export class TechTreeEditorService {
     this.updateCultureTags(Array.from(nextTags));
   }
 
+  proposeCultureTag(input: CultureTagProposalInput): void {
+    this.tagGovernance.proposeCreate(input);
+  }
+
+  updateCultureTagProposal(input: CultureTagEditInput): void {
+    this.tagGovernance.proposeEdit(input);
+  }
+
+  requestCultureTagDeletion(input: CultureTagDeleteInput): void {
+    const usage = this.cultureTagUsage()[input.id] || [];
+    this.tagGovernance.requestDelete({
+      id: input.id,
+      referencedBy: usage,
+      auditRef: input.auditRef,
+    });
+  }
+
   upsertPrerequisite(nodeId: string, prerequisite: TechNodePrerequisite): void {
     const node = this.documentState().nodes.find((candidate) => candidate.id === nodeId);
     if (!node) return;
@@ -288,6 +317,24 @@ export class TechTreeEditorService {
     return this.documentState()
       .nodes.flatMap((node) => ((node.effects || {})[key] as string[] | undefined) || [])
       .filter(Boolean);
+  }
+
+  private collectCultureTagUsage(): Record<CultureTagId, string[]> {
+    const usage: Record<CultureTagId, string[]> = {};
+
+    const registerUsage = (tagId: CultureTagId, location: string) => {
+      usage[tagId] = usage[tagId] || [];
+      usage[tagId].push(location);
+    };
+
+    (this.documentState().default_culture_tags || []).forEach((tag) => registerUsage(tag, 'defaults'));
+
+    this.documentState().nodes.forEach((node) => {
+      const tags = node.culture_tags.length ? node.culture_tags : this.documentState().default_culture_tags || [];
+      tags.forEach((tag) => registerUsage(tag, node.id));
+    });
+
+    return usage;
   }
 
   updateIconSelection(iconId: string | null): void {
