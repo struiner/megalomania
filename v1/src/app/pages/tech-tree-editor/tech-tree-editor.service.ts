@@ -29,22 +29,71 @@ export class TechTreeEditorService {
     if (!current) return;
 
     const updated = { ...current, ...partial } satisfies TechTreeNode;
-    this.documentState.set({
-      ...this.documentState(),
-      nodes: this.documentState().nodes.map((node) => (node.id === updated.id ? updated : node)),
-    });
+    const nextNodes = this.documentState().nodes.map((node) => (node.id === updated.id ? updated : node));
+    this.commitNodes(nextNodes);
     this.selectNode(updated.id);
   }
 
+  createNode(): void {
+    const newId = this.generateId('new_tech');
+    const newNode: TechTreeNode = {
+      id: newId,
+      name: 'New Technology',
+      summary: 'Describe what this unlocks and who it belongs to.',
+      tier: 1,
+      category: 'Unsorted',
+      prerequisites: [],
+    };
+
+    this.commitNodes([...this.documentState().nodes, newNode]);
+    this.selectedId.set(newId);
+  }
+
+  duplicateSelected(): void {
+    const current = this.selectedNode();
+    if (!current) return;
+
+    const duplicateId = this.generateId(`${current.id}_copy`);
+    const duplicate: TechTreeNode = {
+      ...current,
+      id: duplicateId,
+      name: `${current.name} (Copy)`,
+    };
+
+    this.commitNodes([...this.documentState().nodes, duplicate]);
+    this.selectedId.set(duplicateId);
+  }
+
+  deleteSelected(): void {
+    const current = this.selectedNode();
+    if (!current) return;
+
+    const remaining = this.documentState().nodes.filter((node) => node.id !== current.id);
+    this.commitNodes(remaining);
+    this.selectedId.set(remaining[0]?.id ?? '');
+  }
+
+  moveNodeToTier(nodeId: string, tier: number): void {
+    const nextTier = Math.max(1, tier);
+    const nextNodes = this.documentState().nodes.map((node) =>
+      node.id === nodeId
+        ? {
+            ...node,
+            tier: nextTier,
+          }
+        : node,
+    );
+    this.commitNodes(nextNodes);
+    this.selectNode(nodeId);
+  }
+
   requestImport(payload: TechTreeImportPayload): void {
-    // Hook point for the import service. For now, we accept the document and record provenance.
-    this.documentState.set({ ...payload.document, lastImportedFrom: payload.sourceLabel });
-    const newSelectedId = payload.document.nodes[0]?.id ?? '';
-    this.selectedId.set(newSelectedId);
+    const baseDocument: TechTreeDocument = { ...payload.document, lastImportedFrom: payload.sourceLabel };
+    this.commitNodes(payload.document.nodes, baseDocument);
+    this.selectedId.set(payload.document.nodes[0]?.id ?? '');
   }
 
   requestExport(): TechTreeExportPayload {
-    // Hook point for the export service. Caller can swap this for an API or SDK integration.
     const exportedAt = new Date().toISOString();
     return {
       exportedAt,
@@ -53,7 +102,46 @@ export class TechTreeEditorService {
   }
 
   getTierBands(): number[] {
-    const maxTier = this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier), 1);
+    const maxTier = this.documentState().nodes.reduce((max, node) => Math.max(max, node.tier || 1), 1);
     return Array.from({ length: maxTier }, (_, index) => index + 1);
+  }
+
+  private generateId(seed: string): string {
+    const existing = new Set(this.documentState().nodes.map((node) => node.id));
+    let attempt = this.slugify(seed);
+    let counter = 1;
+
+    while (existing.has(attempt)) {
+      attempt = `${this.slugify(seed)}_${counter}`;
+      counter += 1;
+    }
+
+    return attempt;
+  }
+
+  private slugify(value: string): string {
+    const slug = value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/_{2,}/g, '_')
+      .replace(/^_+|_+$/g, '');
+
+    return slug || 'tech_node';
+  }
+
+  private commitNodes(nodes: TechTreeNode[], baseDocument?: TechTreeDocument): void {
+    const sorted = [...nodes].sort((left, right) => {
+      if ((left.tier || 1) !== (right.tier || 1)) {
+        return (left.tier || 1) - (right.tier || 1);
+      }
+      return left.name.localeCompare(right.name);
+    });
+
+    const document = baseDocument ?? this.documentState();
+    this.documentState.set({
+      ...document,
+      nodes: sorted,
+    });
   }
 }

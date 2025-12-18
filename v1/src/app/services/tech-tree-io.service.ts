@@ -2,51 +2,71 @@ import { Injectable } from '@angular/core';
 import { Biome } from '../enums/Biome';
 import { GoodsType } from '../enums/GoodsType';
 import { GuildType } from '../enums/GuildType';
+import { FloraUseType } from '../enums/FloraUseType';
 import { SettlementSpecialization } from '../enums/SettlementSpecialization';
 import { SettlementType } from '../enums/SettlementType';
+import { StructureEffect } from '../enums/StructureEffect';
 import { StructureType } from '../enums/StructureType';
 import {
-  TechEffects,
+  CultureTagBinding,
+  CultureTagId,
+  CultureTagNamespace,
   TechNode,
-  TechPrerequisiteLink,
+  TechNodeEffects,
+  TechNodePrerequisite,
   TechPrerequisiteRelation,
   TechTree,
+  TechTreeExportResult,
+  TechTreeImportResult,
   TechTreeOrdering,
+  TechTreeValidationIssue,
 } from '../models/tech-tree.model';
 
-type CultureTagDefinition = {
-  source: 'biome' | 'settlement' | 'guild';
-  enumValue: Biome | SettlementType | GuildType;
-};
+interface CultureTagDefinition extends CultureTagBinding {}
+
+interface NormalizedTreeResult {
+  tree: TechTree;
+  issues: TechTreeValidationIssue[];
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class TechTreeIoService {
-  private readonly cultureTagVocabulary: Record<string, CultureTagDefinition> = {
-    biome_taiga: { source: 'biome', enumValue: Biome.Taiga },
-    biome_beach: { source: 'biome', enumValue: Biome.Beach },
-    settlement_trading_post: { source: 'settlement', enumValue: SettlementType.TradingPost },
-    settlement_hamlet: { source: 'settlement', enumValue: SettlementType.Hamlet },
-    guild_merchants: { source: 'guild', enumValue: GuildType.Merchants },
-    guild_scholars: { source: 'guild', enumValue: GuildType.Scholars },
-  };
-
+  private readonly cultureTagVocabulary = this.buildCultureTagVocabulary();
   private readonly migrations: Record<number, (tree: TechTree) => TechTree> = {};
 
-  importTechTree(json: unknown): TechTree {
+  importTechTree(json: unknown): TechTreeImportResult {
     const parsed = this.parseJson(json);
-    const migrated = this.applyMigrations(parsed);
-    const normalized = this.normalizeTree(migrated);
-    this.validateTree(normalized);
-    return this.sortForDeterminism(normalized);
+    const normalized = this.normalizeTree(parsed);
+    const migrated = this.applyMigrations(normalized.tree);
+    const ordered = this.sortForDeterminism(migrated.tree);
+    const validationIssues = this.validateTree(ordered);
+
+    const issues = [...normalized.issues, ...migrated.issues, ...validationIssues];
+    this.throwIfErrors(issues);
+
+    return {
+      tree: ordered,
+      issues,
+      normalizedFrom: json,
+    };
   }
 
-  exportTechTree(tree: TechTree): string {
-    const normalized = this.normalizeTree(tree);
-    this.validateTree(normalized);
-    const ordered = this.sortForDeterminism(normalized);
-    return JSON.stringify(ordered, null, 2);
+  exportTechTree(tree: TechTree): TechTreeExportResult {
+    const normalized = this.normalizeTree(tree as unknown as Record<string, unknown>);
+    const migrated = this.applyMigrations(normalized.tree);
+    const ordered = this.sortForDeterminism(migrated.tree);
+    const validationIssues = this.validateTree(ordered);
+
+    const issues = [...normalized.issues, ...migrated.issues, ...validationIssues];
+    this.throwIfErrors(issues);
+
+    return {
+      json: JSON.stringify(ordered, null, 2),
+      issues,
+      orderedTree: ordered,
+    };
   }
 
   private parseJson(json: unknown): Record<string, unknown> {
@@ -65,97 +85,170 @@ export class TechTreeIoService {
     throw new Error('Tech tree payload must be a JSON string or object.');
   }
 
-  private applyMigrations(tree: Record<string, unknown>): TechTree {
-    const targetVersion = this.toNumber(tree.version);
-    let migrated: TechTree = { ...(tree as TechTree), version: targetVersion };
+  private normalizeTree(raw: Record<string, unknown>): NormalizedTreeResult {
+    const issues: TechTreeValidationIssue[] = [];
 
-    Object.keys(this.migrations)
-      .map(version => Number(version))
-      .sort((a, b) => a - b)
-      .forEach(version => {
-        if (migrated.version < version) {
-          migrated = this.migrations[version](migrated);
-        }
-      });
-
-    return migrated;
-  }
-
-  private normalizeTree(raw: Record<string, unknown>): TechTree {
     const techTreeId = this.normalizeIdentifier(
       (raw.tech_tree_id as string) ?? (raw as Record<string, string>).techTreeId ?? ''
     );
 
     const nodes = Array.isArray(raw.nodes)
-      ? (raw.nodes as unknown[]).map(node => this.normalizeNode(node))
+      ? (raw.nodes as unknown[]).map((node, index) => this.normalizeNode(node, `nodes[${index}]`, issues))
       : [];
 
-    return {
+    const normalizedTree: TechTree = {
       tech_tree_id: techTreeId,
-      version: this.toNumber(raw.version),
+      version: this.toInteger(raw.version, 'version', issues),
       default_culture_tags: this.normalizeCultureTagArray(
-        (raw.default_culture_tags as string[] | undefined) || (raw as Record<string, string[]>).defaultCultureTags || []
+        (raw.default_culture_tags as string[] | undefined)
+          || (raw as Record<string, string[]>).defaultCultureTags
+          || [],
+        'default_culture_tags',
+        issues,
       ),
       nodes,
       ordering: raw.ordering ? this.normalizeOrdering(raw.ordering as TechTreeOrdering) : undefined,
-      metadata: (raw.metadata as Record<string, unknown>) || undefined,
+      metadata: (raw.metadata as TechTree['metadata']) || undefined,
     };
+
+    return { tree: normalizedTree, issues };
   }
 
-  private normalizeNode(raw: unknown): TechNode {
+  private normalizeNode(raw: unknown, path: string, issues: TechTreeValidationIssue[]): TechNode {
     const nodeObject = (raw || {}) as Record<string, unknown>;
     const nodeId = this.normalizeIdentifier((nodeObject.id as string) || '');
 
-    return {
+    const cultureTags = this.normalizeCultureTagArray(
+      (nodeObject.culture_tags as string[]) || (nodeObject as Record<string, string[]>).cultureTags || [],
+      `${path}.culture_tags`,
+      issues,
+    );
+
+    const node: TechNode = {
       id: nodeId,
       title: ((nodeObject.title as string) || '').trim(),
       summary: ((nodeObject.summary as string) || '').trim(),
-      culture_tags: this.normalizeCultureTagArray(
-        (nodeObject.culture_tags as string[]) || (nodeObject as Record<string, string[]>).cultureTags || []
+      tier: this.toInteger(nodeObject.tier, `${path}.tier`, issues, 1),
+      category: ((nodeObject.category as string) || '').trim() || undefined,
+      culture_tags: cultureTags,
+      prerequisites: this.normalizePrerequisites(
+        (nodeObject.prerequisites as TechNodePrerequisite[]) || [],
+        `${path}.prerequisites`,
+        issues,
       ),
-      prerequisites: this.normalizePrerequisites((nodeObject.prerequisites as TechPrerequisiteLink[]) || []),
-      effects: this.normalizeEffects((nodeObject.effects as Partial<TechEffects>) || {}),
+      effects: this.normalizeEffects((nodeObject.effects as Partial<TechNodeEffects>) || {}, `${path}.effects`, issues),
       metadata: (nodeObject.metadata as Record<string, unknown>) || undefined,
     };
+
+    return node;
   }
 
-  private normalizePrerequisites(rawPrerequisites: TechPrerequisiteLink[]): TechPrerequisiteLink[] {
+  private normalizePrerequisites(
+    rawPrerequisites: TechNodePrerequisite[],
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): TechNodePrerequisite[] {
     if (!Array.isArray(rawPrerequisites)) {
       return [];
     }
 
     return rawPrerequisites
-      .map(prerequisite => {
-        const node = this.normalizeIdentifier(((prerequisite as TechPrerequisiteLink).node as string) || '');
-        const relation = (prerequisite as TechPrerequisiteLink).relation || TechPrerequisiteRelation.Requires;
+      .map((prerequisite, index) => {
+        const node = this.normalizeIdentifier(((prerequisite as TechNodePrerequisite).node as string) || '');
+        const relation = (prerequisite as TechNodePrerequisite).relation || TechPrerequisiteRelation.Requires;
+
+        if (relation !== TechPrerequisiteRelation.Requires) {
+          issues.push({
+            path: `${path}[${index}].relation`,
+            message: `Unsupported prerequisite relation "${relation}" replaced with "requires".`,
+            severity: 'warning',
+          });
+        }
 
         return node
           ? {
               node,
-              relation: relation === TechPrerequisiteRelation.Requires ? relation : TechPrerequisiteRelation.Requires,
+              relation: TechPrerequisiteRelation.Requires,
             }
           : undefined;
       })
-      .filter((value): value is TechPrerequisiteLink => Boolean(value));
+      .filter((value): value is TechNodePrerequisite => Boolean(value));
   }
 
-  private normalizeEffects(effects: Partial<TechEffects>): TechEffects {
-    return {
-      unlock_structures: this.normalizeStringArray(effects.unlock_structures as string[]),
-      unlock_goods: this.normalizeStringArray(effects.unlock_goods as string[]),
+  private normalizeEffects(
+    effects: Partial<TechNodeEffects>,
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): TechNodeEffects {
+    const normalizeEnumArray = (
+      values: unknown,
+      enumObject: Record<string, string>,
+      key: string,
+    ): string[] => {
+      if (!Array.isArray(values)) return [];
+
+      const allowed = new Set(Object.values(enumObject));
+      return this.uniqueAndSort(
+        (values as unknown[])
+          .map((value) => this.normalizeIdentifier(String(value || '')))
+          .filter((value) => {
+            if (!value) return false;
+            if (!allowed.has(value)) {
+              issues.push({
+                path: `${path}.${key}`,
+                message: `Value "${value}" is not present in authoritative enum; kept as fallback.`,
+                severity: 'warning',
+              });
+            }
+            return true;
+          }),
+      );
+    };
+
+    const normalized: TechNodeEffects = {
+      unlock_structures: normalizeEnumArray(effects.unlock_structures, StructureType, 'unlock_structures'),
+      unlock_structure_effects: normalizeEnumArray(
+        effects.unlock_structure_effects,
+        StructureEffect,
+        'unlock_structure_effects',
+      ),
+      unlock_goods: normalizeEnumArray(effects.unlock_goods, GoodsType, 'unlock_goods'),
+      unlock_settlements: normalizeEnumArray(effects.unlock_settlements, SettlementType, 'unlock_settlements'),
+      unlock_guilds: normalizeEnumArray(effects.unlock_guilds, GuildType, 'unlock_guilds'),
+      flora_unlocks: normalizeEnumArray(effects.flora_unlocks, FloraUseType as unknown as Record<string, string>, 'flora_unlocks'),
       grants_settlement_specialization: effects.grants_settlement_specialization,
-      guild_reputation: effects.guild_reputation
-        ? {
-            guild: effects.guild_reputation.guild,
-            delta: this.toNumber(effects.guild_reputation.delta),
-          }
-        : undefined,
       research_rate_modifier:
         effects.research_rate_modifier !== undefined
-          ? this.toNumber(effects.research_rate_modifier)
+          ? Number(effects.research_rate_modifier)
           : undefined,
       metadata: effects.metadata,
+      guild_reputation: Array.isArray(effects.guild_reputation)
+        ? effects.guild_reputation.map((entry, index) => {
+            const guild = (entry as { guild: GuildType }).guild;
+            const delta = Number((entry as { delta: number }).delta);
+
+            if (guild && !Object.values(GuildType).includes(guild)) {
+              issues.push({
+                path: `${path}.guild_reputation[${index}].guild`,
+                message: `Guild "${guild}" is not present in authoritative enum; kept as fallback.`,
+                severity: 'warning',
+              });
+            }
+
+            if (!Number.isFinite(delta)) {
+              issues.push({
+                path: `${path}.guild_reputation[${index}].delta`,
+                message: 'guild_reputation.delta must be a finite number.',
+                severity: 'error',
+              });
+            }
+
+            return { guild, delta } as { guild: GuildType; delta: number };
+          })
+        : undefined,
     };
+
+    return normalized;
   }
 
   private normalizeOrdering(ordering: TechTreeOrdering): TechTreeOrdering {
@@ -163,7 +256,7 @@ export class TechTreeIoService {
     const prerequisites = ordering.prerequisites || {};
     const normalizedPrereqs: Record<string, string[]> = {};
 
-    Object.keys(prerequisites).forEach(key => {
+    Object.keys(prerequisites).forEach((key) => {
       const normalizedKey = this.normalizeIdentifier(key);
       normalizedPrereqs[normalizedKey] = this.normalizeStringArray(prerequisites[key]);
     });
@@ -176,13 +269,18 @@ export class TechTreeIoService {
 
   private sortForDeterminism(tree: TechTree): TechTree {
     const nodes = [...tree.nodes]
-      .map(node => ({
+      .map((node) => ({
         ...node,
         culture_tags: this.uniqueAndSort(node.culture_tags),
         prerequisites: this.sortPrerequisites(node.prerequisites),
-        effects: this.orderEffects(node.effects),
+        effects: node.effects ? this.orderEffects(node.effects) : undefined,
       }))
-      .sort((left, right) => left.id.localeCompare(right.id));
+      .sort((left, right) => {
+        if (left.tier !== right.tier) {
+          return (left.tier ?? 0) - (right.tier ?? 0);
+        }
+        return left.id.localeCompare(right.id);
+      });
 
     const orderedTree: TechTree = {
       tech_tree_id: tree.tech_tree_id,
@@ -199,20 +297,20 @@ export class TechTreeIoService {
   private buildOrdering(nodes: TechNode[]): TechTreeOrdering {
     const prerequisites: Record<string, string[]> = {};
 
-    nodes.forEach(node => {
-      prerequisites[node.id] = node.prerequisites.map(prerequisite => prerequisite.node);
+    nodes.forEach((node) => {
+      prerequisites[node.id] = node.prerequisites.map((prerequisite) => prerequisite.node);
     });
 
     return {
-      nodes: nodes.map(node => node.id),
+      nodes: nodes.map((node) => node.id),
       prerequisites,
     };
   }
 
-  private sortPrerequisites(prerequisites: TechPrerequisiteLink[]): TechPrerequisiteLink[] {
-    const deduped = new Map<string, TechPrerequisiteLink>();
+  private sortPrerequisites(prerequisites: TechNodePrerequisite[]): TechNodePrerequisite[] {
+    const deduped = new Map<string, TechNodePrerequisite>();
 
-    prerequisites.forEach(prerequisite => {
+    prerequisites.forEach((prerequisite) => {
       if (prerequisite.node) {
         deduped.set(prerequisite.node, {
           node: prerequisite.node,
@@ -224,111 +322,188 @@ export class TechTreeIoService {
     return Array.from(deduped.values()).sort((left, right) => left.node.localeCompare(right.node));
   }
 
-  private orderEffects(effects: TechEffects): TechEffects {
+  private orderEffects(effects: TechNodeEffects): TechNodeEffects {
     return {
       unlock_structures: this.uniqueAndSort(effects.unlock_structures || []),
+      unlock_structure_effects: this.uniqueAndSort(effects.unlock_structure_effects || []),
       unlock_goods: this.uniqueAndSort(effects.unlock_goods || []),
+      unlock_settlements: this.uniqueAndSort(effects.unlock_settlements || []),
+      unlock_guilds: this.uniqueAndSort(effects.unlock_guilds || []),
+      flora_unlocks: this.uniqueAndSort(effects.flora_unlocks || []),
       grants_settlement_specialization: effects.grants_settlement_specialization,
       guild_reputation: effects.guild_reputation
-        ? { guild: effects.guild_reputation.guild, delta: effects.guild_reputation.delta }
+        ? effects.guild_reputation
+            .map((entry) => ({ guild: entry.guild, delta: entry.delta }))
+            .sort((left, right) => left.guild.localeCompare(right.guild))
         : undefined,
       research_rate_modifier: effects.research_rate_modifier,
       metadata: effects.metadata,
-    };
+    } as TechNodeEffects;
   }
 
-  private validateTree(tree: TechTree): void {
+  private validateTree(tree: TechTree): TechTreeValidationIssue[] {
+    const issues: TechTreeValidationIssue[] = [];
+
     if (!tree.tech_tree_id) {
-      throw new Error('Tech tree id is required.');
+      issues.push({ path: 'tech_tree_id', message: 'Tech tree id is required.', severity: 'error' });
     }
 
     if (!Number.isInteger(tree.version) || tree.version < 0) {
-      throw new Error('Tech tree version must be a non-negative integer.');
-    }
-
-    if (tree.default_culture_tags.length > 0) {
-      this.assertCultureTags(tree.default_culture_tags, 'default_culture_tags');
+      issues.push({ path: 'version', message: 'Tech tree version must be a non-negative integer.', severity: 'error' });
     }
 
     if (!Array.isArray(tree.nodes) || tree.nodes.length === 0) {
-      throw new Error('Tech tree must include at least one node.');
+      issues.push({ path: 'nodes', message: 'Tech tree must include at least one node.', severity: 'error' });
+      return issues;
     }
 
     const nodeIds = new Set<string>();
-    tree.nodes.forEach(node => {
+    tree.nodes.forEach((node, index) => {
       if (!node.id) {
-        throw new Error('Every tech node must have an id.');
+        issues.push({ path: `nodes[${index}].id`, message: 'Every tech node must have an id.', severity: 'error' });
       }
 
       if (nodeIds.has(node.id)) {
-        throw new Error(`Duplicate tech node id detected: ${node.id}`);
+        issues.push({ path: `nodes[${index}].id`, message: `Duplicate tech node id detected: ${node.id}`, severity: 'error' });
       }
 
       nodeIds.add(node.id);
     });
 
-    tree.nodes.forEach(node => {
+    tree.nodes.forEach((node, index) => {
       if (!node.title.trim() || !node.summary.trim()) {
-        throw new Error(`Tech node ${node.id} must include a title and summary.`);
+        issues.push({
+          path: `nodes[${index}]`,
+          message: `Tech node ${node.id || index} must include a title and summary.`,
+          severity: 'error',
+        });
       }
 
       const cultureTags = node.culture_tags.length > 0 ? node.culture_tags : tree.default_culture_tags;
-      this.assertCultureTags(cultureTags, `culture tags for node ${node.id}`);
+      if (!cultureTags.length) {
+        issues.push({
+          path: `nodes[${index}].culture_tags`,
+          message: 'Each node must specify culture tags or rely on default_culture_tags.',
+          severity: 'error',
+        });
+      }
 
-      this.validateEffects(node.effects, node.id);
-      this.validatePrerequisites(node, nodeIds);
+      cultureTags.forEach((tag) => {
+        if (!this.cultureTagVocabulary[tag]) {
+          issues.push({
+            path: `nodes[${index}].culture_tags`,
+            message: `Culture tag "${tag}" is not in the authoritative vocabulary; kept as fallback.`,
+            severity: 'warning',
+          });
+        }
+      });
+
+      this.validateEffects(node.effects, `nodes[${index}].effects`, issues);
+      this.validatePrerequisites(node, nodeIds, `nodes[${index}].prerequisites`, issues);
     });
 
-    this.assertAcyclicPrerequisites(tree.nodes);
+    issues.push(...this.assertAcyclicPrerequisites(tree.nodes));
+    return issues;
   }
 
-  private validateEffects(effects: TechEffects, context: string): void {
-    this.assertEnumValues(effects.unlock_structures, StructureType, `unlock_structures in ${context}`);
-    this.assertEnumValues(effects.unlock_goods, GoodsType, `unlock_goods in ${context}`);
+  private validateEffects(effects: TechNodeEffects | undefined, context: string, issues: TechTreeValidationIssue[]): void {
+    if (!effects) return;
 
-    if (effects.grants_settlement_specialization) {
-      this.assertEnumValue(
-        effects.grants_settlement_specialization,
-        SettlementSpecialization,
-        `grants_settlement_specialization in ${context}`
-      );
+    this.assertEnumValues(effects.unlock_structures || [], StructureType, `${context}.unlock_structures`, issues);
+    this.assertEnumValues(effects.unlock_goods || [], GoodsType, `${context}.unlock_goods`, issues);
+    this.assertEnumValues(
+      effects.unlock_structure_effects || [],
+      StructureEffect,
+      `${context}.unlock_structure_effects`,
+      issues,
+    );
+    this.assertEnumValues(
+      effects.unlock_settlements || [],
+      SettlementType,
+      `${context}.unlock_settlements`,
+      issues,
+    );
+    this.assertEnumValues(
+      effects.flora_unlocks || [],
+      FloraUseType as unknown as Record<string, string>,
+      `${context}.flora_unlocks`,
+      issues,
+    );
+
+    if (effects.grants_settlement_specialization &&
+      !Object.values(SettlementSpecialization).includes(effects.grants_settlement_specialization)) {
+      issues.push({
+        path: `${context}.grants_settlement_specialization`,
+        message: 'Settlement specialization must use the authoritative enum or be removed.',
+        severity: 'error',
+      });
     }
 
     if (effects.guild_reputation) {
-      this.assertEnumValue(effects.guild_reputation.guild, GuildType, `guild_reputation.guild in ${context}`);
+      effects.guild_reputation.forEach((entry, index) => {
+        if (!Object.values(GuildType).includes(entry.guild)) {
+          issues.push({
+            path: `${context}.guild_reputation[${index}].guild`,
+            message: `Guild "${entry.guild}" is not present in authoritative enum; kept as fallback.`,
+            severity: 'warning',
+          });
+        }
 
-      if (!Number.isFinite(effects.guild_reputation.delta)) {
-        throw new Error(`guild_reputation.delta in ${context} must be a finite number.`);
-      }
+        if (!Number.isFinite(entry.delta)) {
+          issues.push({
+            path: `${context}.guild_reputation[${index}].delta`,
+            message: 'guild_reputation.delta must be a finite number.',
+            severity: 'error',
+          });
+        }
+      });
     }
 
     if (effects.research_rate_modifier !== undefined && !Number.isFinite(effects.research_rate_modifier)) {
-      throw new Error(`research_rate_modifier in ${context} must be a finite number.`);
+      issues.push({
+        path: `${context}.research_rate_modifier`,
+        message: 'research_rate_modifier must be a finite number.',
+        severity: 'error',
+      });
     }
   }
 
-  private validatePrerequisites(node: TechNode, nodeIds: Set<string>): void {
-    node.prerequisites.forEach(prerequisite => {
+  private validatePrerequisites(
+    node: TechNode,
+    nodeIds: Set<string>,
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): void {
+    node.prerequisites.forEach((prerequisite, index) => {
       if (!prerequisite.node) {
-        throw new Error(`Prerequisite entry on ${node.id} is missing a node id.`);
+        issues.push({ path: `${path}[${index}]`, message: 'Prerequisite entry is missing a node id.', severity: 'error' });
       }
 
       if (prerequisite.relation !== TechPrerequisiteRelation.Requires) {
-        throw new Error(`Invalid prerequisite relation on ${node.id}: ${prerequisite.relation}`);
+        issues.push({
+          path: `${path}[${index}].relation`,
+          message: `Invalid prerequisite relation on ${node.id}: ${prerequisite.relation}`,
+          severity: 'error',
+        });
       }
 
-      if (!nodeIds.has(prerequisite.node)) {
-        throw new Error(`Prerequisite on ${node.id} references unknown node ${prerequisite.node}.`);
+      if (prerequisite.node && !nodeIds.has(prerequisite.node)) {
+        issues.push({
+          path: `${path}[${index}]`,
+          message: `Prerequisite references unknown node ${prerequisite.node}.`,
+          severity: 'error',
+        });
       }
     });
   }
 
-  private assertAcyclicPrerequisites(nodes: TechNode[]): void {
+  private assertAcyclicPrerequisites(nodes: TechNode[]): TechTreeValidationIssue[] {
+    const issues: TechTreeValidationIssue[] = [];
     const adjacency: Record<string, string[]> = {};
     const visitState: Record<string, 'unvisited' | 'visiting' | 'visited'> = {};
 
-    nodes.forEach(node => {
-      adjacency[node.id] = node.prerequisites.map(prerequisite => prerequisite.node);
+    nodes.forEach((node) => {
+      adjacency[node.id] = node.prerequisites.map((prerequisite) => prerequisite.node);
       visitState[node.id] = 'unvisited';
     });
 
@@ -351,40 +526,35 @@ export class TechTreeIoService {
       return false;
     };
 
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (visitState[node.id] === 'unvisited' && hasCycle(node.id)) {
-        throw new Error(`Cycle detected in tech tree prerequisites starting at node ${node.id}.`);
+        issues.push({
+          path: `nodes`,
+          message: `Cycle detected in tech tree prerequisites starting at node ${node.id}.`,
+          severity: 'error',
+        });
       }
     });
+
+    return issues;
   }
 
-  private assertCultureTags(tags: string[], context: string): void {
-    if (!Array.isArray(tags) || tags.length === 0) {
-      throw new Error(`${context} must include at least one culture tag.`);
-    }
-
-    tags.forEach(tag => {
-      if (!this.cultureTagVocabulary[tag]) {
-        throw new Error(`${context} contains invalid culture tag: ${tag}`);
-      }
-    });
-  }
-
-  private assertEnumValues(values: string[], enumObject: Record<string, string>, context: string): void {
-    const allowed = new Set(Object.values(enumObject));
-    values.forEach(value => this.assertEnumValue(value, enumObject, context, allowed));
-  }
-
-  private assertEnumValue(
-    value: string,
+  private assertEnumValues(
+    values: string[],
     enumObject: Record<string, string>,
     context: string,
-    allowed?: Set<string>
+    issues: TechTreeValidationIssue[],
   ): void {
-    const allowedValues = allowed || new Set(Object.values(enumObject));
-    if (!allowedValues.has(value)) {
-      throw new Error(`${context} must be one of: ${Array.from(allowedValues).join(', ')}`);
-    }
+    const allowed = new Set(Object.values(enumObject));
+    values.forEach((value) => {
+      if (!allowed.has(value)) {
+        issues.push({
+          path: context,
+          message: `${value} is not part of the authoritative enum; kept as fallback.`,
+          severity: 'warning',
+        });
+      }
+    });
   }
 
   private normalizeIdentifier(value: string): string {
@@ -396,22 +566,101 @@ export class TechTreeIoService {
       .toLowerCase();
   }
 
-  private normalizeCultureTagArray(tags: string[]): string[] {
-    return this.uniqueAndSort(tags.map(tag => this.normalizeIdentifier(tag)));
+  private normalizeCultureTagArray(
+    tags: string[],
+    path: string,
+    issues: TechTreeValidationIssue[],
+  ): CultureTagId[] {
+    if (!Array.isArray(tags)) return [];
+
+    return this.uniqueAndSort(
+      tags
+        .map((tag) => this.normalizeIdentifier(tag))
+        .filter((tag) => {
+          if (!tag) return false;
+          if (!this.cultureTagVocabulary[tag]) {
+            issues.push({
+              path,
+              message: `Culture tag "${tag}" is not in the authoritative vocabulary; kept as fallback.`,
+              severity: 'warning',
+            });
+          }
+          return true;
+        }) as CultureTagId[],
+    );
   }
 
   private normalizeStringArray(values?: string[]): string[] {
     if (!Array.isArray(values)) {
       return [];
     }
-    return this.uniqueAndSort(values.map(value => (value || '').toString().trim()).filter(Boolean));
+    return this.uniqueAndSort(values.map((value) => (value || '').toString().trim()).filter(Boolean));
   }
 
-  private uniqueAndSort(values: string[]): string[] {
+  private uniqueAndSort<T extends string>(values: T[]): T[] {
     return Array.from(new Set(values)).sort((left, right) => left.localeCompare(right));
   }
 
-  private toNumber(value: unknown): number {
-    return Number(value);
+  private toInteger(value: unknown, path: string, issues: TechTreeValidationIssue[], fallback = 0): number {
+    const parsed = Number(value ?? fallback);
+    if (!Number.isInteger(parsed)) {
+      issues.push({ path, message: `${path} must be an integer; defaulting to ${fallback}.`, severity: 'warning' });
+      return fallback;
+    }
+    return parsed;
+  }
+
+  private buildCultureTagVocabulary(): Record<string, CultureTagDefinition> {
+    const vocabulary: Record<string, CultureTagDefinition> = {};
+
+    const register = <T extends string>(enumObject: Record<string, T>, source: CultureTagNamespace) => {
+      Object.values(enumObject).forEach((value) => {
+        const normalized = `${source}_${this.normalizeIdentifier(String(value))}` as CultureTagId;
+        vocabulary[normalized] = {
+          id: normalized,
+          source,
+          sourceValue: value as unknown as Biome | SettlementType | GuildType,
+        };
+      });
+    };
+
+    register(Biome, 'biome');
+    register(SettlementType, 'settlement');
+    register(GuildType, 'guild');
+
+    return vocabulary;
+  }
+
+  private applyMigrations(tree: TechTree): NormalizedTreeResult {
+    let migrated: TechTree = { ...tree };
+    const issues: TechTreeValidationIssue[] = [];
+
+    Object.keys(this.migrations)
+      .map((version) => Number(version))
+      .sort((a, b) => a - b)
+      .forEach((version) => {
+        if ((migrated.metadata?.last_migration_applied ?? migrated.version) < version) {
+          migrated = this.migrations[version](migrated);
+          migrated = {
+            ...migrated,
+            metadata: { ...(migrated.metadata || {}), last_migration_applied: version },
+          };
+          issues.push({
+            path: 'metadata.last_migration_applied',
+            message: `Applied migration ${version}.`,
+            severity: 'warning',
+          });
+        }
+      });
+
+    return { tree: migrated, issues };
+  }
+
+  private throwIfErrors(issues: TechTreeValidationIssue[]): void {
+    const errors = issues.filter((issue) => issue.severity === 'error');
+    if (errors.length) {
+      const message = errors.map((issue) => `${issue.path}: ${issue.message}`).join(' | ');
+      throw new Error(`Tech tree validation failed: ${message}`);
+    }
   }
 }
