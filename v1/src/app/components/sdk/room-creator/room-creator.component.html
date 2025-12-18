@@ -39,14 +39,14 @@
 
         <fieldset>
           <legend>Hazards</legend>
-          <label *ngFor="let hazard of hazards">
+          <label *ngFor="let hazard of hazardOptions">
             <input
               type="checkbox"
-              [value]="hazard"
-              (change)="toggleHazard(hazard, $any($event.target).checked)"
-              [checked]="form.controls.hazards.value.includes(hazard)"
+              [value]="hazard.id"
+              (change)="toggleHazard(hazard.id, $any($event.target).checked)"
+              [checked]="form.controls.hazards.value.includes(hazard.id)"
             />
-            {{ hazard }}
+            {{ hazard.label }}
           </label>
         </fieldset>
 
@@ -81,7 +81,7 @@
             <h4>{{ room.name }} · {{ room.width }}m × {{ room.height }}m</h4>
             <p class="lede">{{ room.features }}</p>
             <div class="tags">
-              <span class="tag" *ngFor="let hazard of room.hazards">{{ hazard }}</span>
+              <span class="tag" *ngFor="let hazard of room.hazards">{{ hazardLabel(hazard) }}</span>
             </div>
           </div>
           <button type="button" (click)="removeRoom(i)">Remove</button>

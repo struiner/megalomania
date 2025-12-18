@@ -1,8 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HazardType } from '../../../enums/HazardType';
 import { RoomBlueprint } from '../../../models/room-blueprint.model';
+
+import { HazardTypeAdapterService, HazardOption } from '../../../services/hazard-type-adapter.service';
+
+interface RoomBlueprint {
+  name: string;
+  width: number;
+  height: number;
+  purpose: string;
+  hazards: HazardType[];
+  features: string;
+}
 
 @Component({
   selector: 'app-room-creator',
@@ -15,6 +26,9 @@ export class RoomCreatorComponent {
   private readonly formBuilder = new FormBuilder();
 
   readonly hazards: HazardType[] = Object.values(HazardType);
+  private readonly hazardAdapter = inject(HazardTypeAdapterService);
+
+  readonly hazardOptions: HazardOption[] = this.hazardAdapter.getHazardOptions();
 
   readonly form = this.formBuilder.group({
     name: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
@@ -58,5 +72,9 @@ export class RoomCreatorComponent {
         : [...hazards, hazard]
       : hazards.filter(existing => existing !== hazard);
     this.form.controls.hazards.setValue(next);
+  }
+
+  hazardLabel(hazard: HazardType): string {
+    return this.hazardAdapter.labelFor(hazard);
   }
 }
