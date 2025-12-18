@@ -1,3 +1,5 @@
+@use '../theme/hud-theme.tokens' as hudTheme;
+
 .button-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -17,7 +19,7 @@
   color: #f5e9ff;
   border-radius: 4px;
   padding: 8px 6px 6px;
-  font-family: 'Segoe UI', sans-serif;
+  @include hudTheme.pixel-font;
   font-size: 13px;
   letter-spacing: 0.3px;
   transition: background 120ms ease, border-color 120ms ease;

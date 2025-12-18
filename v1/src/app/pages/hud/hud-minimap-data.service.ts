@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { TilemapService } from '../../services/worldGeneration/tile-map.service';
+import {
+  HUD_MINIMAP_MARKER_FIXTURES,
+  HudMinimapMarkerFixture,
+} from './data/fixtures/hud-minimap-marker.fixtures';
 
 export interface HudMinimapMarker {
   label: string;
@@ -22,6 +26,7 @@ export class HudMinimapDataService {
   private readonly tileSize = 8;
   private readonly displayScale = 0.25;
   private readonly seed = 'hud-minimap-preview';
+  private readonly markerSafeAreaInset = 0.08; // normalized inset to keep markers off the frame edges/letterbox.
 
   constructor(private readonly tilemapService: TilemapService) {}
 
@@ -29,11 +34,7 @@ export class HudMinimapDataService {
     const preview = this.tilemapService.generateTilemapPreview(this.seed, this.tilesPerAxis);
     const tiles = preview.tilemap.map((row) => row.map((height) => this.normalizeHeight(height)));
 
-    // TODO: Select fixture markers with Game Designer input (biome centers, settlements, etc.). Track via task 2025-12-18_hud-minimap-marker-fixtures.
-    const markers: HudMinimapMarker[] = [
-      { label: 'Origin', x: 0.5, y: 0.5, glyph: '✦' },
-      { label: 'Harbor stub', x: 0.32, y: 0.68, glyph: '⚓' },
-    ];
+    const markers = this.buildMarkersFromFixtures();
 
     return {
       tiles,
@@ -60,5 +61,41 @@ export class HudMinimapDataService {
     }
 
     return 3;
+  }
+
+  private buildMarkersFromFixtures(): HudMinimapMarker[] {
+    return HUD_MINIMAP_MARKER_FIXTURES
+      .map((fixture) => ({
+        ...fixture,
+        x: this.applyMarkerSafeArea(fixture.x),
+        y: this.applyMarkerSafeArea(fixture.y),
+      }))
+      .sort((a, b) => this.sortMarkers(a, b))
+      .map(({ id: _id, priority: _priority, category: _category, source: _source, ...marker }) => marker);
+  }
+
+  private sortMarkers(a: HudMinimapMarkerFixture, b: HudMinimapMarkerFixture): number {
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
+
+    return a.label.localeCompare(b.label);
+  }
+
+  private applyMarkerSafeArea(value: number): number {
+    const clamped = Math.min(Math.max(value, 0), 1);
+    const inset = this.markerSafeAreaInset;
+    const minimum = 0 + inset;
+    const maximum = 1 - inset;
+
+    if (clamped < minimum) {
+      return minimum;
+    }
+
+    if (clamped > maximum) {
+      return maximum;
+    }
+
+    return clamped;
   }
 }

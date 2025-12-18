@@ -1,0 +1,207 @@
+<section class="sdk-shell">
+  <header class="sdk-shell__header">
+    <div>
+      <p class="eyebrow">SDK / Tech</p>
+      <h1>Goods Manager</h1>
+      <p class="lede">
+        Structural shell for browsing, editing, and exporting goods fixtures. Data stays fixture-backed via SDK enums
+        and does not own simulation truth.
+      </p>
+    </div>
+
+    <div class="chip-row" aria-label="Tier breakdown chips">
+      <span class="chip" *ngFor="let tier of tierBreakdown()">
+        <span class="chip__label">{{ tier[0] }}</span>
+        <span class="chip__value">{{ tier[1] }}</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="sdk-shell__grid">
+    <aside class="panel panel--list">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Fixture catalog</p>
+          <h3>Goods list</h3>
+        </div>
+        <span class="count">{{ filteredGoods().length }} items</span>
+      </div>
+
+      <form class="filters" [formGroup]="filterForm">
+        <label>
+          <span>Search</span>
+          <input type="search" placeholder="Name, category, or tag" formControlName="search" />
+        </label>
+
+        <div class="filters__row">
+          <label>
+            <span>Category</span>
+            <select formControlName="category">
+              <option value="all">All</option>
+              <option *ngFor="let option of categoryOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Tier</span>
+            <select formControlName="tier">
+              <option value="all">All</option>
+              <option value="Common">Common</option>
+              <option value="Uncommon">Uncommon</option>
+              <option value="Rare">Rare</option>
+              <option value="Legendary">Legendary</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Rarity</span>
+            <select formControlName="rarity">
+              <option value="all">All</option>
+              <option *ngFor="let option of rarityOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+            </select>
+          </label>
+        </div>
+      </form>
+
+      <ul class="goods-list">
+        <li *ngFor="let good of filteredGoods()">
+          <button type="button" class="list-row" (click)="selectGood(good.type)">
+            <div>
+              <p class="eyebrow">{{ readableEnum(good.type) }} · {{ readableEnum(good.category) }}</p>
+              <h4>{{ good.title }}</h4>
+              <p class="meta">Rarity {{ readableEnum(good.rarity) }} · Complexity {{ good.complexity }}</p>
+              <p class="summary" *ngIf="good.summary">{{ good.summary }}</p>
+              <div class="tags" *ngIf="good.tags.length">
+                <span class="tag" *ngFor="let tag of good.tags">{{ tag }}</span>
+              </div>
+            </div>
+
+            <div class="list-row__meta">
+              <span class="pill pill--tier pill--{{ good.tier | lowercase }}">{{ good.tier }}</span>
+              <button type="button" class="ghost" (click)="removeGood(good.type); $event.stopPropagation();">Remove</button>
+            </div>
+          </button>
+        </li>
+      </ul>
+    </aside>
+
+    <form class="panel panel--detail" [formGroup]="form" (ngSubmit)="saveGood()" novalidate>
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Detail</p>
+          <h3>{{ selectedGoodId() ? 'Edit entry' : 'Add new good' }}</h3>
+        </div>
+        <span class="count">{{ selectedGoodId() ? 'Editing' : 'Ready' }}</span>
+      </div>
+
+      <div class="detail-grid">
+        <label>
+          <span>Good type</span>
+          <select formControlName="type">
+            <option *ngFor="let option of goodsTypeOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Category</span>
+          <select formControlName="category">
+            <option *ngFor="let option of categoryOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Rarity</span>
+          <select formControlName="rarity">
+            <option *ngFor="let option of rarityOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Tier</span>
+          <select formControlName="tier">
+            <option value="Common">Common</option>
+            <option value="Uncommon">Uncommon</option>
+            <option value="Rare">Rare</option>
+            <option value="Legendary">Legendary</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Unit type</span>
+          <select formControlName="unitType">
+            <option *ngFor="let option of unitTypeOptions" [value]="option">{{ readableEnum(option) }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Complexity (1-5)</span>
+          <input type="number" min="1" max="5" formControlName="complexity" />
+        </label>
+
+        <label>
+          <span>Base price</span>
+          <input type="number" min="0" step="10" formControlName="basePrice" />
+        </label>
+      </div>
+
+      <label>
+        <span>Title</span>
+        <input type="text" formControlName="title" placeholder="Skyfruit" />
+      </label>
+
+      <label>
+        <span>Summary</span>
+        <input type="text" formControlName="summary" placeholder="Single-line summary for quick scanning" />
+      </label>
+
+      <label>
+        <span>Description</span>
+        <textarea rows="3" formControlName="description" placeholder="Flavor text or quick notes"></textarea>
+      </label>
+
+      <label>
+        <span>Flora sources</span>
+        <select formControlName="floraSources" multiple>
+          <option *ngFor="let option of floraOptions" [value]="option.value">{{ readableEnum(option) }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Tags (comma separated)</span>
+        <input type="text" formControlName="tags" placeholder="food, trade, staple" />
+      </label>
+
+      <footer class="action-row">
+        <div class="actions">
+          <button type="submit" class="primary">{{ selectedGoodId() ? 'Update entry' : 'Add to catalog' }}</button>
+          <button type="button" class="secondary" (click)="resetForm()">Reset form</button>
+          <button type="button" class="ghost" (click)="exportGoods()">Export fixtures</button>
+        </div>
+
+        <div class="validation" *ngIf="validationNotices().length">
+          <p *ngFor="let notice of validationNotices()">{{ notice }}</p>
+        </div>
+      </footer>
+    </form>
+
+    <aside class="panel panel--summary">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Breakdown</p>
+          <h3>Category coverage</h3>
+        </div>
+      </div>
+
+      <div class="chip-stack">
+        <span class="chip chip--wide" *ngFor="let category of categoryBreakdown()">
+          <span class="chip__label">{{ readableEnum(category[0]) }}</span>
+          <span class="chip__value">{{ category[1] }}</span>
+        </span>
+      </div>
+
+      <p class="lede">
+        Filters and tier chips align to the SDK consistency framework and avoid hidden truth by staying fixture-backed.
+      </p>
+    </aside>
+  </div>
+</section>

@@ -23,9 +23,11 @@ interface AuxiliaryDialogSpec {
   ctaRoute?: string[];
 }
 
+type AuxiliaryActionOwner = 'world-configuration' | 'reference-docs';
+
 type AuxiliaryActionTarget =
-  | { type: 'dialog'; dialog: AuxiliaryDialogSpec }
-  | { type: 'route'; route: string[]; dialogFallback?: AuxiliaryDialogSpec };
+  | { type: 'dialog'; owner: AuxiliaryActionOwner; dialog: AuxiliaryDialogSpec }
+  | { type: 'route'; owner: AuxiliaryActionOwner; route: string[]; dialogFallback?: AuxiliaryDialogSpec };
 
 @Component({
   selector: 'app-hud-page',
@@ -49,28 +51,30 @@ export class HudPageComponent implements OnInit, OnDestroy {
   protected overlayPanels: HudPanelDefinition[] = HUD_OVERLAY_PANELS;
 
   private readonly auxiliaryTargets: Record<string, AuxiliaryActionTarget> = {
-    // TODO: Task 2025-12-18_hud-auxiliary-dialog-ownership-clarification — confirm final destinations and CTA routing ownership.
     settings: {
-      type: 'dialog',
-      dialog: {
-        heading: 'HUD settings',
-        subheading: 'Display and control stubs',
+      owner: 'world-configuration',
+      type: 'route',
+      route: ['/world/generation'],
+      dialogFallback: {
+        heading: 'World configuration owns settings',
+        subheading: 'HUD only routes into the config workspace',
         icon: '⚙️',
         body:
-          'HUD-level toggles (safe-area padding, overlay drag bounds) live here while full configuration sits in the world generation workspace.',
-        ctaLabel: 'Open configuration workspace',
+          'Settings live in the world configuration workspace; HUD merely launches that surface. Retry navigation or open the workspace directly when route guards are active.',
+        ctaLabel: 'Open world configuration',
         ctaRoute: ['/world/generation'],
       },
     },
     help: {
+      owner: 'reference-docs',
       type: 'dialog',
       dialog: {
-        heading: 'HUD help',
-        subheading: 'Context + shortcuts',
+        heading: 'HUD help is owned by reference docs',
+        subheading: 'Shortcut primer + deep link',
         icon: '❔',
         body:
-          'Reference entry point for HUD controls, planned keyboard chords, and tutorial hooks; pinned to the design doc until a dedicated help surface lands.',
-        ctaLabel: 'View design doc',
+          'HUD shows the short-form primer only. Full control listings, chords, and tutorial hooks live in the design/reference documentation domain.',
+        ctaLabel: 'Open design doc',
         ctaRoute: ['/game/design-doc'],
       },
     },
@@ -180,7 +184,7 @@ export class HudPageComponent implements OnInit, OnDestroy {
 
   protected triggerAuxiliaryCta(): void {
     if (this.auxiliaryDialog?.ctaRoute) {
-      void this.router.navigate(this.auxiliaryDialog.ctaRoute);
+      this.navigateToRoute(this.auxiliaryDialog.ctaRoute);
       this.closeAuxiliaryDialog();
     }
   }
@@ -193,22 +197,32 @@ export class HudPageComponent implements OnInit, OnDestroy {
         heading: this.actions.find((action) => action.id === actionId)?.label ?? 'HUD action',
         subheading: 'Unmapped HUD action',
         icon: this.actions.find((action) => action.id === actionId)?.icon,
-        body: 'TODO: Confirm non-overlay HUD destinations (settings, help, etc.).',
+        body: 'No auxiliary routing is registered for this HUD action. Define its owning domain and destination before wiring.',
       };
       return;
     }
 
     if (target.type === 'route') {
-      if (target.dialogFallback) {
-        // TODO: Should fallback only appear on navigation failure/guard block rather than immediately?
-        this.auxiliaryDialog = target.dialogFallback;
-      }
-
-      void this.router.navigate(target.route);
+      this.navigateToRoute(target.route, target.dialogFallback);
       return;
     }
 
     this.auxiliaryDialog = target.dialog;
+  }
+
+  private navigateToRoute(route: string[], fallbackDialog?: AuxiliaryDialogSpec): void {
+    void this.router.navigate(route).then(
+      (navigated) => {
+        if (!navigated && fallbackDialog) {
+          this.auxiliaryDialog = fallbackDialog;
+        }
+      },
+      () => {
+        if (fallbackDialog) {
+          this.auxiliaryDialog = fallbackDialog;
+        }
+      },
+    );
   }
 
   private setBlockedPanel(block: HudPanelBlockNotice): void {

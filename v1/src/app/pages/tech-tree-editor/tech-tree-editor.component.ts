@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CultureTagId } from '../../models/tech-tree.models';
+import { CultureTagId, CultureTagNamespace } from '../../models/tech-tree.models';
 import { TechIconPickerComponent } from './tech-icon-picker.component';
 import { TechTreeConnectionOverlayComponent } from './tech-tree-connection-overlay.component';
+import { TechTreePreviewDialogComponent } from './tech-tree-preview-dialog.component';
 import { TECH_TREE_FIXTURE_DOCUMENT } from './tech-tree-editor.fixtures';
 import { TechTreeEditorService } from './tech-tree-editor.service';
 import { EditorTechNode, EditorTechNodeEffects, PrerequisiteOverlayEdge, PrerequisiteOverlayNode } from './tech-tree-editor.types';
@@ -12,7 +13,14 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
 @Component({
   selector: 'app-tech-tree-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, TechIconPickerComponent, TechTreeConnectionOverlayComponent, CultureTagComboboxComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TechIconPickerComponent,
+    TechTreeConnectionOverlayComponent,
+    CultureTagComboboxComponent,
+    TechTreePreviewDialogComponent,
+  ],
   providers: [TechTreeEditorService],
   template: `
     <section class="tech-tree-editor">
@@ -33,38 +41,53 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       <div class="workspace">
         <section class="panel overview">
           <header class="panel-header">
-            <p class="eyebrow">Overview</p>
-            <h2>Tree Map</h2>
-            <p class="hint">Tier-banded list with quick selection.</p>
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>Tree Map</h2>
+              <p class="hint">Grid rows map tiers; columns map deterministic display order.</p>
+            </div>
+            <div class="tier-controls">
+              <button type="button" class="pill" (click)="addTierBand()">+ Tier</button>
+              <button type="button" class="pill" (click)="trimTierBands()" [disabled]="!canTrimTierBands()">
+                Trim empty
+              </button>
+            </div>
           </header>
-          <div class="tier-bands">
-            <div
-              class="tier"
-              *ngFor="let tier of tierBands()"
-              [class.drop-target]="dragOverTier() === tier"
-              (dragover)="allowDrop($event)"
-              (dragenter)="markTierHover(tier)"
-              (drop)="dropOnTier(tier, $event)"
-            >
-              <p class="tier-label">Tier {{ tier }}</p>
-              <div class="node-list">
+          <div class="grid-meta">
+            <p class="hint">Drag nodes into cells; rows clamp to tier, columns clamp to display_order.</p>
+            <p class="hint">Empty bands are allowed for planning, but exports stay deterministic.</p>
+          </div>
+          <div class="tier-grid" [style.gridTemplateColumns]="gridTemplateColumns()">
+            <div class="column-label spacer">Tiers ▼ / Order →</div>
+            <div class="column-label" *ngFor="let column of gridColumnLabels()">Order {{ column }}</div>
+            <ng-container *ngFor="let tier of tierBands()">
+              <div class="row-label">Tier {{ tier }}</div>
+              <div
+                class="grid-cell"
+                *ngFor="let column of gridColumnLabels()"
+                [class.drop-target]="isGridHover(tier, column)"
+                (dragover)="allowDrop($event)"
+                (dragenter)="markGridHover(tier, column)"
+                (dragleave)="clearGridHover(tier, column)"
+                (drop)="dropOnGrid(tier, column, $event)"
+              >
                 <button
                   class="node-chip"
                   type="button"
-                  *ngFor="let node of tieredNodes().get(tier) || []"
+                  *ngIf="nodeAt(tier, column) as node"
                   [class.active]="node.id === selectedNode()?.id"
                   [class.dragging]="draggingNodeId() === node.id"
-                  (click)="selectNode(node.id)"
                   draggable="true"
                   (dragstart)="startDrag(node.id, $event)"
                   (dragend)="endDrag()"
+                  (click)="selectNode(node.id)"
                 >
                   <span class="name">{{ node.title }}</span>
                   <span class="meta">{{ node.category || 'Unsorted' }}</span>
                   <span class="meta tags">{{ describeTags(node.culture_tags) }}</span>
                 </button>
               </div>
-            </div>
+            </ng-container>
           </div>
         </section>
 
@@ -125,6 +148,20 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
                 (selectionChange)="replaceCultureTags($event)"
               ></app-culture-tag-combobox>
               <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }}</p>
+              <div class="tag-grid">
+                <label class="tag-option" *ngFor="let tag of cultureTagOptions()">
+                  <input type="checkbox" [checked]="selectedCultureTagSet().has(tag.id)" (change)="toggleCultureTag(tag.id)" />
+                  <div class="tag-label">
+                    <span class="name">{{ tag.label }}</span>
+                    <span class="status-badge" *ngIf="tag.status !== 'authoritative'">{{ tag.status }}</span>
+                  </div>
+                  <span class="meta">v{{ tag.version }}</span>
+                </label>
+              </div>
+              <div class="tag-actions">
+                <button type="button" class="ghost" (click)="openTagDialog('create')">Govern culture tags</button>
+                <p class="hint">Defaults: {{ describeTags(document().default_culture_tags) || 'none' }} · Governance emits notices without owning truth.</p>
+              </div>
             </div>
             <div class="field field-span effect-grid">
               <span class="field-label">Effects (enum aligned)</span>
@@ -235,6 +272,7 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
         </div>
         <div class="buttons">
           <button type="button" (click)="triggerImport()">Import sample</button>
+          <button type="button" class="primary ghost" (click)="openPreview()">Preview dialog</button>
           <button type="button" class="primary" (click)="triggerExport()">Export snapshot</button>
         </div>
       </footer>
@@ -257,6 +295,154 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
           </li>
         </ul>
       </section>
+
+      <section class="issue-list" *ngIf="governanceIssues().length">
+        <p class="eyebrow">Governance notices</p>
+        <ul>
+          <li *ngFor="let issue of governanceIssues()">
+            <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+            <span class="path">{{ issue.path }}</span>
+            <span class="message">{{ issue.message }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <div class="modal-backdrop" *ngIf="tagDialogMode() !== 'closed'">
+        <div class="modal">
+          <header class="modal-header">
+            <div>
+              <p class="eyebrow">Culture tag governance</p>
+              <h3>Adapter-backed proposals</h3>
+              <p class="hint">Operations route through the governance adapter with deterministic ordering and audit hooks.</p>
+            </div>
+            <button type="button" class="ghost" (click)="closeTagDialog()">Close</button>
+          </header>
+
+          <div class="tab-row">
+            <button type="button" [class.active]="tagDialogMode() === 'create'" (click)="switchTagMode('create')">Create</button>
+            <button
+              type="button"
+              [class.active]="tagDialogMode() === 'edit'"
+              [disabled]="!cultureTagOptions().length"
+              (click)="switchTagMode('edit')"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              [class.active]="tagDialogMode() === 'delete'"
+              [disabled]="!cultureTagOptions().length"
+              (click)="switchTagMode('delete')"
+            >
+              Delete
+            </button>
+          </div>
+
+          <div class="modal-body" *ngIf="tagDialogMode() === 'create'">
+            <div class="modal-grid">
+              <label class="field">
+                <span class="field-label">Namespace</span>
+                <select [ngModel]="tagNamespace()" (ngModelChange)="tagNamespace.set($event)">
+                  <option value="biome">Biome</option>
+                  <option value="settlement">Settlement</option>
+                  <option value="guild">Guild</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Slug (snake_case)</span>
+                <input type="text" [ngModel]="tagSlug()" (ngModelChange)="tagSlug.set($event || '')" />
+              </label>
+              <label class="field">
+                <span class="field-label">Version</span>
+                <input type="number" min="1" [ngModel]="tagVersion()" (ngModelChange)="tagVersion.set($event ? ($event || 1) : 1)" />
+              </label>
+              <label class="field field-span">
+                <span class="field-label">Note</span>
+                <textarea rows="3" [ngModel]="tagNote()" (ngModelChange)="tagNote.set($event || '')"></textarea>
+              </label>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="primary" (click)="submitTagCreate()">Propose create</button>
+            </div>
+          </div>
+
+          <div class="modal-body" *ngIf="tagDialogMode() === 'edit'">
+            <div class="modal-grid">
+              <label class="field">
+                <span class="field-label">Tag</span>
+                <select [ngModel]="tagTarget()" (ngModelChange)="setTagTarget($event)">
+                  <option *ngFor="let tag of cultureTagOptions()" [ngValue]="tag.id">
+                    {{ tag.label }} · v{{ tag.version }} ({{ tag.status }})
+                  </option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Version</span>
+                <input type="number" min="1" [ngModel]="tagVersion()" (ngModelChange)="tagVersion.set($event ? ($event || 1) : 1)" />
+              </label>
+              <label class="field field-span">
+                <span class="field-label">Note</span>
+                <textarea rows="3" [ngModel]="tagNote()" (ngModelChange)="tagNote.set($event || '')"></textarea>
+              </label>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="primary" (click)="submitTagEdit()" [disabled]="!tagTarget()">Propose edit</button>
+            </div>
+          </div>
+
+          <div class="modal-body" *ngIf="tagDialogMode() === 'delete'">
+            <div class="modal-grid">
+              <label class="field">
+                <span class="field-label">Tag</span>
+                <select [ngModel]="tagTarget()" (ngModelChange)="setTagTarget($event)">
+                  <option *ngFor="let tag of cultureTagOptions()" [ngValue]="tag.id">
+                    {{ tag.label }} · v{{ tag.version }} ({{ tag.status }})
+                  </option>
+                </select>
+              </label>
+              <div class="field field-span">
+                <span class="field-label">Usage</span>
+                <p class="hint" *ngIf="selectedTagUsage().length; else unusedTag">
+                  {{ selectedTagUsage().join(', ') }}
+                </p>
+                <ng-template #unusedTag>
+                  <p class="hint">No references detected in current tree.</p>
+                </ng-template>
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="danger" (click)="submitTagDelete()" [disabled]="!tagTarget()">Request delete</button>
+            </div>
+          </div>
+
+          <div class="issue-list slim" *ngIf="governanceIssues().length">
+            <p class="eyebrow">Adapter notices</p>
+            <ul>
+              <li *ngFor="let issue of governanceIssues()">
+                <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+                <span class="path">{{ issue.path }}</span>
+                <span class="message">{{ issue.message }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="audit-log" *ngIf="cultureTagAuditTrail().length">
+            <p class="eyebrow">Audit trail</p>
+            <ul>
+              <li *ngFor="let entry of cultureTagAuditTrail()">{{ entry }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <app-tech-tree-preview-dialog
+        *ngIf="isPreviewOpen()"
+        [document]="document()"
+        [nodes]="nodes()"
+        [tierBands]="tierBands()"
+        [cultureTagOptions]="cultureTagOptions()"
+        [effectOptions]="effectOptions()"
+        (close)="closePreview()"
+      ></app-tech-tree-preview-dialog>
     </section>
   `,
   styles: [`
@@ -343,40 +529,97 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       font-size: 18px;
     }
 
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tier-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      color: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .pill:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .hint {
       margin: 2px 0 0;
       opacity: 0.75;
       font-size: 13px;
     }
 
-    .tier-bands {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .grid-meta {
+      display: grid;
+      gap: 2px;
     }
 
-    .tier {
-      border: 1px dashed rgba(255, 255, 255, 0.12);
-      padding: 8px;
+    .tier-grid {
+      display: grid;
+      gap: 8px;
+      align-items: stretch;
+      background: rgba(255, 255, 255, 0.02);
       border-radius: 6px;
-      transition: border-color 120ms ease, background 120ms ease;
+      padding: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
     }
 
-    .tier.drop-target {
-      border-color: #9de5ff;
-      background: rgba(157, 229, 255, 0.06);
-    }
-
-    .tier-label {
-      margin: 0 0 6px;
-      opacity: 0.78;
+    .column-label,
+    .row-label {
       font-size: 12px;
+      opacity: 0.78;
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      align-self: stretch;
+      display: flex;
+      align-items: center;
     }
 
-    .node-list {
+    .column-label {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .column-label.spacer {
+      justify-content: flex-start;
+      text-align: left;
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .grid-cell {
+      min-height: 78px;
+      border-radius: 6px;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 4px;
+      transition: border-color 120ms ease, background 120ms ease;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      align-items: stretch;
+    }
+
+    .grid-cell.drop-target {
+      border-color: #9de5ff;
+      background: rgba(157, 229, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(157, 229, 255, 0.14);
     }
 
     .node-chip {
@@ -455,6 +698,30 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
 
     .tag-picker app-culture-tag-combobox {
       width: 100%;
+    }
+
+    .tag-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .effect-grid {
@@ -592,11 +859,24 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       min-width: 120px;
     }
 
+    button.ghost {
+      background: transparent;
+      border-style: dashed;
+      min-width: auto;
+    }
+
     .buttons button.primary {
       background: linear-gradient(180deg, #ffd369 0%, #ffaf3a 100%);
       color: #2d1b05;
       border-color: #ffaf3a;
       box-shadow: 0 2px 0 #e19b28;
+    }
+
+    .buttons button.primary.ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffe7be;
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: none;
     }
 
     .buttons button.danger {
@@ -678,6 +958,100 @@ import { CultureTagComboboxComponent } from './culture-tag-combobox.component';
       opacity: 0.9;
     }
 
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .modal {
+      width: min(920px, 100%);
+      background: #0f0c18;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-row button {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.05);
+      color: inherit;
+      min-width: 100px;
+      cursor: pointer;
+    }
+
+    .tab-row button.active {
+      background: rgba(157, 229, 255, 0.12);
+      border-color: rgba(157, 229, 255, 0.35);
+      box-shadow: 0 0 0 1px rgba(157, 229, 255, 0.12);
+    }
+
+    .modal-body {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      display: grid;
+      gap: 10px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .audit-log {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .audit-log ul {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .issue-list.slim {
+      margin-top: 0;
+    }
+
     @media (max-width: 1200px) {
       .workspace {
         grid-template-columns: 1fr;
@@ -701,11 +1075,14 @@ export class TechTreeEditorComponent {
   effectOptions = this.service.effectOptions;
   iconOptions = this.service.iconOptions;
   tierBands = computed(() => this.service.getTierBands());
+  gridColumns = computed(() => this.service.getGridColumnCount());
+  gridColumnLabels = computed(() => Array.from({ length: this.gridColumns() }, (_, index) => index + 1));
+  gridTemplateColumns = computed(() => `120px repeat(${this.gridColumns()}, minmax(160px, 1fr))`);
 
   selectedNode = this.service.selectedNode;
   nodes = this.service.nodes;
   draggingNodeId = signal<string | null>(null);
-  dragOverTier = signal<number | null>(null);
+  dragOverSlot = signal<{ tier: number; column: number } | null>(null);
   validationIssues = this.service.validationIssues;
   lastExport = this.service.lastExport;
   resolvedCultureTags = computed(() => {
@@ -718,16 +1095,20 @@ export class TechTreeEditorComponent {
       .filter((option) => this.selectedCultureTagSet().has(option.id))
       .map((option) => option.id),
   );
+  governanceIssues = this.service.governanceIssues;
+  cultureTagAuditTrail = this.service.cultureTagAuditTrail;
+  cultureTagUsage = this.service.cultureTagUsage;
 
-  tieredNodes = computed(() => {
-    const bandMap = new Map<number, EditorTechNode[]>();
-    this.nodes().forEach((node) => {
-      const bucket = bandMap.get(node.tier || 1) ?? [];
-      bucket.push(node);
-      bandMap.set(node.tier || 1, bucket);
-    });
-    return bandMap;
-  });
+  tagDialogMode = signal<'closed' | 'create' | 'edit' | 'delete'>('closed');
+  tagNamespace = signal<CultureTagNamespace>('biome');
+  tagSlug = signal('');
+  tagNote = signal('');
+  tagVersion = signal(1);
+  tagTarget = signal<CultureTagId | null>(null);
+
+  selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
+    ? this.selectedNode()?.culture_tags
+    : this.document().default_culture_tags));
 
   prerequisiteColumns = computed(() => {
     const pending = [...this.nodes()];
@@ -804,6 +1185,12 @@ export class TechTreeEditorComponent {
     return { nodes, edges, columns: columns.length };
   });
 
+  selectedTagUsage = computed(() => {
+    const target = this.tagTarget();
+    const usage = this.cultureTagUsage();
+    return target ? usage[target] || [] : [];
+  });
+
   selectNode(id: string): void {
     this.service.selectNode(id);
   }
@@ -831,25 +1218,55 @@ export class TechTreeEditorComponent {
 
   endDrag(): void {
     this.draggingNodeId.set(null);
-    this.dragOverTier.set(null);
+    this.dragOverSlot.set(null);
   }
 
   allowDrop(event: DragEvent): void {
     event.preventDefault();
   }
 
-  markTierHover(tier: number): void {
-    this.dragOverTier.set(tier);
+  markGridHover(tier: number, column: number): void {
+    this.dragOverSlot.set({ tier, column });
   }
 
-  dropOnTier(tier: number, event: DragEvent): void {
+  clearGridHover(tier: number, column: number): void {
+    const hover = this.dragOverSlot();
+    if (hover?.tier === tier && hover.column === column) {
+      this.dragOverSlot.set(null);
+    }
+  }
+
+  isGridHover(tier: number, column: number): boolean {
+    const hover = this.dragOverSlot();
+    return hover?.tier === tier && hover.column === column;
+  }
+
+  dropOnGrid(tier: number, column: number, event: DragEvent): void {
     event.preventDefault();
     const nodeId = event.dataTransfer?.getData('text/plain') || this.draggingNodeId();
     if (nodeId) {
-      this.service.moveNodeToTier(nodeId, tier);
+      this.service.moveNodeToPosition(nodeId, tier, column);
       this.selectNode(nodeId);
     }
     this.endDrag();
+  }
+
+  addTierBand(): void {
+    this.service.addTierBand();
+  }
+
+  trimTierBands(): void {
+    this.service.trimTierBands();
+  }
+
+  canTrimTierBands(): boolean {
+    return this.service.canTrimTierBands();
+  }
+
+  nodeAt(tier: number, displayOrder: number): EditorTechNode | undefined {
+    return this.nodes().find(
+      (node) => (node.tier || 1) === tier && (node.display_order || 1) === displayOrder,
+    );
   }
 
   isUpstream(nodeId: string): boolean {
@@ -880,7 +1297,95 @@ export class TechTreeEditorComponent {
     this.service.updateIconSelection(iconId);
   }
 
+  openTagDialog(mode: 'create' | 'edit' | 'delete'): void {
+    this.prepareTagDialog(mode);
+    this.tagDialogMode.set(mode);
+  }
+
+  switchTagMode(mode: 'create' | 'edit' | 'delete'): void {
+    this.prepareTagDialog(mode);
+    this.tagDialogMode.set(mode);
+  }
+
+  closeTagDialog(): void {
+    this.tagDialogMode.set('closed');
+  }
+
+  setTagTarget(tagId: CultureTagId | null): void {
+    this.tagTarget.set(tagId);
+    if (!tagId) return;
+
+    const tag = this.cultureTagOptions().find((entry) => entry.id === tagId);
+    if (tag) {
+      this.tagNamespace.set(tag.source);
+      this.tagVersion.set(tag.version);
+      this.tagNote.set(tag.governanceNote || '');
+    }
+  }
+
+  submitTagCreate(): void {
+    this.service.proposeCultureTag({
+      namespace: this.tagNamespace(),
+      slug: this.tagSlug(),
+      note: this.tagNote(),
+      version: this.tagVersion(),
+      auditRef: 'tech-tree-editor',
+    });
+  }
+
+  submitTagEdit(): void {
+    const target = this.tagTarget();
+    if (!target) return;
+    this.service.updateCultureTagProposal({
+      id: target,
+      note: this.tagNote(),
+      version: this.tagVersion(),
+      auditRef: 'tech-tree-editor',
+    });
+  }
+
+  submitTagDelete(): void {
+    const target = this.tagTarget();
+    if (!target) return;
+    this.service.requestCultureTagDeletion({
+      id: target,
+      auditRef: 'tech-tree-editor',
+    });
+  }
+
   describeTags(tags: string[] = []): string {
     return tags.length ? tags.join(', ') : 'inherits defaults';
+  }
+
+  private prepareTagDialog(mode: 'create' | 'edit' | 'delete'): void {
+    if (mode === 'create') {
+      this.tagNamespace.set('biome');
+      this.tagSlug.set('');
+      this.tagVersion.set(1);
+      this.tagNote.set('');
+      this.tagTarget.set(null);
+      return;
+    }
+
+    const existingTags = this.cultureTagOptions();
+    if (!existingTags.length) {
+      return;
+    }
+
+    const resolved =
+      (this.tagTarget() && existingTags.find((tag) => tag.id === this.tagTarget())) || existingTags[0];
+
+    if (resolved) {
+      this.tagTarget.set(resolved.id);
+      this.tagNamespace.set(resolved.source);
+      this.tagVersion.set(resolved.version);
+      this.tagNote.set(resolved.governanceNote || '');
+    }
+  openPreview(): void {
+    this.isPreviewOpen.set(true);
+  }
+
+  closePreview(): void {
+    this.isPreviewOpen.set(false);
   }
 }

@@ -1,6 +1,6 @@
 # Task Specification — HUD Auxiliary Dialog Ownership Clarification
 
-**STATUS: PENDING — requires Game Designer decision on final ownership and routing strategy; charter alignment approved for Phase 2 sequencing**
+**STATUS: RESOLVED — ownership and routing strategy finalized; HUD wiring updated with deterministic fallbacks**
 
 ## Task Summary
 Resolve the open question about auxiliary dialog ownership and determine the definitive routing strategy for settings, help, and other auxiliary actions.
@@ -30,6 +30,7 @@ Resolve the open question about auxiliary dialog ownership and determine the def
 - Documentation of dialog vs. route ownership patterns
 - Updated guidelines for future auxiliary feature additions
 - Migration plan for any existing inconsistencies
+- HUD CTA wiring + README/checklist updates reflecting the decisions
 
 ## Review Gate
 - [x] Decisions align with shallow modal depth requirements
@@ -45,8 +46,13 @@ Resolve the open question about auxiliary dialog ownership and determine the def
 
 ## Open Questions / Clarifications
 - Original: "Should settings/help open as standalone draggable dialogs or navigate to dedicated routes?"
-    answer: THe current solution of a separate dialog is good.
+    answer: Route to domain-owned surfaces; HUD primer dialog appears only when navigation is blocked.
 - Additional: Should auxiliary dialogs share the same ownership model as main HUD overlay system?
-    answer: no.
+    answer: No—settings and help stay owned by their destination domains (config + reference docs); HUD only launches them.
 - Platform considerations: How do decisions affect mobile/embedded contexts?
     answer: CUrrently the platform we aim for is desktop browser, mobile/embedded are important considerations for a later phase.
+
+## Final Decisions (implemented)
+- **Settings ownership**: Lives with the world configuration workspace (`/world/generation`). HUD simply launches this route and falls back to a stub dialog only if navigation is blocked; no configuration truth is stored in the HUD.
+- **Help ownership**: Lives with the reference/design documentation (`/game/design-doc`). HUD shows a short primer dialog plus CTA; tutorials/reference data remain outside the HUD.
+- **Modal depth + determinism**: Auxiliary dialogs appear at most one layer above the overlay (depth ≤ 2). Route CTAs attempt navigation first and only render the fallback primer on navigation failure to keep behavior deterministic.
