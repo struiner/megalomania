@@ -109,7 +109,7 @@ export class GoodsManagerPageComponent {
 
   readonly filteredGoods = computed(() => {
     const filters = this.filterValues();
-    const search = filters.search.toLowerCase().trim();
+    const search = (filters.search ?? '').toLowerCase().trim();
 
     return this.goods()
       .filter((good) => this.matchesFilters(good, filters, search))
@@ -312,7 +312,7 @@ export class GoodsManagerPageComponent {
     return this.toTitleCase(spaced);
   }
 
-  private matchesFilters(good: ManagedGood, filters: FilterFormValue, search: string): boolean {
+  private matchesFilters(good: ManagedGood, filters: FilterFormValue | Partial<FilterFormValue>, search: string): boolean {
     const matchesSearch = !search || [
       good.title,
       good.description ?? '',
@@ -321,9 +321,9 @@ export class GoodsManagerPageComponent {
       good.type,
     ].some((field) => field.toLowerCase().includes(search));
 
-    const matchesCategory = filters.category === 'all' || good.category === filters.category;
-    const matchesTier = filters.tier === 'all' || good.tier === filters.tier;
-    const matchesRarity = filters.rarity === 'all' || good.rarity === filters.rarity;
+    const matchesCategory = !filters.category || filters.category === 'all' || good.category === filters.category;
+    const matchesTier = !filters.tier || filters.tier === 'all' || good.tier === filters.tier;
+    const matchesRarity = !filters.rarity || filters.rarity === 'all' || good.rarity === filters.rarity;
 
     return matchesSearch && matchesCategory && matchesTier && matchesRarity;
   }

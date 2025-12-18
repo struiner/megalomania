@@ -1089,7 +1089,6 @@ export class TechTreeEditorComponent {
     const explicitTags = this.selectedNode()?.culture_tags || [];
     return explicitTags.length ? explicitTags : this.document().default_culture_tags;
   });
-  selectedCultureTagSet = computed(() => new Set(this.resolvedCultureTags()));
   selectedCultureTags = computed(() =>
     this.cultureTagOptions()
       .filter((option) => this.selectedCultureTagSet().has(option.id))
@@ -1105,6 +1104,7 @@ export class TechTreeEditorComponent {
   tagNote = signal('');
   tagVersion = signal(1);
   tagTarget = signal<CultureTagId | null>(null);
+  isPreviewOpen = signal(false);
 
   selectedCultureTagSet = computed(() => new Set(this.selectedNode()?.culture_tags?.length
     ? this.selectedNode()?.culture_tags
@@ -1381,6 +1381,16 @@ export class TechTreeEditorComponent {
       this.tagVersion.set(resolved.version);
       this.tagNote.set(resolved.governanceNote || '');
     }
+  }
+
+  toggleCultureTag(tagId: CultureTagId): void {
+    const currentTags = this.selectedNode()?.culture_tags || [];
+    const newTags = currentTags.includes(tagId)
+      ? currentTags.filter(id => id !== tagId)
+      : [...currentTags, tagId];
+    this.service.updateCultureTags(newTags);
+  }
+
   openPreview(): void {
     this.isPreviewOpen.set(true);
   }

@@ -32,7 +32,18 @@ export enum HazardType {
 
   // Techno-magical
   Electrical = 'electrical',
-  MagicalBacklash = 'magical_backlash'
+  MagicalBacklash = 'magical_backlash',
+
+  // Additional hazard types
+  Flooding = 'flooding',
+  VacuumExposure = 'vacuum_exposure',
+  HostileFauna = 'hostile_fauna',
+  Biohazard = 'biohazard',
+  Chemical = 'chemical',
+  ToxicGas = 'toxic_gas',
+  Vacuum = 'vacuum',
+  Fauna = 'fauna',
+  PressureLoss = 'pressure_loss'
 }
 
 export const HAZARD_DISPLAY_ORDER: readonly HazardType[] = [
@@ -41,7 +52,7 @@ export const HAZARD_DISPLAY_ORDER: readonly HazardType[] = [
   HazardType.Electrical,
   HazardType.Intrusion,
   HazardType.ToxicGas,
-  HazardType.Vacuum,
+  HazardType.VacuumExposure,
   HazardType.StructuralFailure,
-  HazardType.Fauna,
+  HazardType.HostileFauna,
 ];

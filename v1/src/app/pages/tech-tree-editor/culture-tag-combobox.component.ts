@@ -53,7 +53,7 @@ import { CultureTagOption } from './tech-tree-editor.types';
             [id]="inputId"
             type="text"
             [value]="query()"
-            (input)="updateQuery(($event.target as HTMLInputElement).value)"
+            (input)="updateQueryFromEvent($event)"
             (keydown)="handleInputKeydown($event)"
             [attr.aria-controls]="listboxId"
             aria-label="Filter culture tags"
@@ -372,6 +372,11 @@ export class CultureTagComboboxComponent implements OnChanges {
   updateQuery(next: string): void {
     this.query.set(next);
     this.activeIndex.set(0);
+  }
+
+  updateQueryFromEvent(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.updateQuery(target.value);
   }
 
   clearQuery(): void {

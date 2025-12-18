@@ -431,7 +431,7 @@ export class TechTreeEditorService {
 
     return normalized.sort(
       (left, right) =>
-        left.tier - right.tier
+        (left.tier || 1) - (right.tier || 1)
         || (left.display_order || 0) - (right.display_order || 0)
         || left.id.localeCompare(right.id),
     );
