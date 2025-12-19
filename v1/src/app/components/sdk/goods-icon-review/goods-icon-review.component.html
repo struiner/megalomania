@@ -1,0 +1,213 @@
+<!-- Goods Icon Review Component -->
+<div class="goods-icon-review">
+  <!-- Header with statistics -->
+  <header class="review-header">
+    <div class="header-content">
+      <h1>Goods Icon Registry Review</h1>
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-value">{{ stats.total }}</div>
+          <div class="stat-label">Total Goods</div>
+        </div>
+        <div class="stat-card complete">
+          <div class="stat-value">{{ stats.complete }}</div>
+          <div class="stat-label">Complete</div>
+          <div class="stat-percentage">{{ getCompletionPercentage() }}%</div>
+        </div>
+        <div class="stat-card placeholder">
+          <div class="stat-value">{{ stats.placeholder }}</div>
+          <div class="stat-label">Placeholder</div>
+        </div>
+        <div class="stat-card missing">
+          <div class="stat-value">{{ stats.missing }}</div>
+          <div class="stat-label">Missing</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Controls and filters -->
+  <section class="controls-section">
+    <div class="filters-panel">
+      <div class="filter-group">
+        <label for="categoryFilter">Category:</label>
+        <select id="categoryFilter" [(ngModel)]="filters.category" (change)="onFilterChange()">
+          <option value="all">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category" [disabled]="category === 'all'">
+            {{ category === 'all' ? 'All Categories' : category }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter" [(ngModel)]="filters.status" (change)="onFilterChange()">
+          <option value="all">All Statuses</option>
+          <option value="complete">Complete</option>
+          <option value="placeholder">Placeholder</option>
+          <option value="missing">Missing</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="eraFilter">Era:</label>
+        <select id="eraFilter" [(ngModel)]="filters.era" (change)="onFilterChange()">
+          <option value="all">All Eras</option>
+          <option *ngFor="let era of eras" [value]="era" [disabled]="era === 'all'">
+            {{ era === 'all' ? 'All Eras' : era }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group search-group">
+        <label for="searchText">Search:</label>
+        <input 
+          id="searchText" 
+          type="text" 
+          [(ngModel)]="filters.searchText" 
+          (input)="onFilterChange()"
+          placeholder="Search by name, type, or category..."
+        />
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" (click)="clearFilters()" class="btn-secondary">
+          Clear Filters
+        </button>
+        <button type="button" (click)="refreshValidation()" class="btn-secondary">
+          Refresh Validation
+        </button>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="actions-panel">
+      <button type="button" (click)="exportValidationReport()" class="btn-primary">
+        Export Validation Report
+      </button>
+      <button type="button" (click)="exportIconData()" class="btn-primary">
+        Export Icon Data (CSV)
+      </button>
+      <button 
+        type="button" 
+        (click)="showValidationPanel = !showValidationPanel" 
+        class="btn-secondary"
+        [class.active]="showValidationPanel"
+      >
+        Validation Issues ({{ getValidationIssueCount() }})
+      </button>
+    </div>
+  </section>
+
+  <!-- Validation panel -->
+  <section *ngIf="showValidationPanel" class="validation-panel">
+    <h3>Validation Issues</h3>
+    <div *ngIf="validationIssues.length === 0" class="no-issues">
+      ✅ No validation issues found!
+    </div>
+    <div *ngFor="let issue of validationIssues; trackBy: trackByIssue" class="validation-issue">
+      <div class="issue-header">
+        <span class="issue-icon">{{ getStatusIcon(issue.kind) }}</span>
+        <span class="issue-type">{{ issue.kind.toUpperCase().replace('-', ' ') }}</span>
+      </div>
+      <div class="issue-message">{{ issue.message }}</div>
+      <div class="issue-affected">
+        Affected: {{ issue.affectedTypes.join(', ') }}
+      </div>
+      <div *ngIf="issue.suggestedFix" class="issue-suggestion">
+        💡 {{ issue.suggestedFix }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Main content area -->
+  <main class="content-area">
+    <!-- Icons grid -->
+    <div class="icons-grid">
+      <div 
+        *ngFor="let icon of filteredIcons; trackBy: trackByIcon" 
+        class="icon-card"
+        [class.selected]="selectedIcon === icon"
+        (click)="selectIcon(icon)"
+      >
+        <div class="icon-preview">
+          <div class="icon-placeholder" [class]="getStatusClass(icon.status)">
+            <span class="status-icon">{{ getStatusIcon(icon.status) }}</span>
+            <div class="icon-dimensions">{{ icon.gridSize }}x{{ icon.gridSize/2 }}</div>
+          </div>
+        </div>
+        
+        <div class="icon-info">
+          <div class="icon-name">{{ icon.label }}</div>
+          <div class="icon-type">{{ icon.type }}</div>
+          <div class="icon-meta">
+            <span class="category-badge">{{ icon.category }}</span>
+            <span class="era-badge">{{ icon.era }}</span>
+            <span class="status-badge" [class]="getStatusClass(icon.status)">
+              {{ icon.status }}
+            </span>
+          </div>
+          <div class="icon-path" *ngIf="icon.spritePath">
+            {{ icon.spritePath }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected icon details -->
+    <aside *ngIf="selectedIcon" class="details-panel">
+      <div class="details-header">
+        <h3>{{ selectedIcon.label }}</h3>
+        <button type="button" (click)="selectedIcon = null" class="close-btn">×</button>
+      </div>
+      
+      <div class="details-content">
+        <div class="detail-row">
+          <label>Type:</label>
+          <span>{{ selectedIcon.type }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Category:</label>
+          <span>{{ selectedIcon.category }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Era:</label>
+          <span>{{ selectedIcon.era }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Status:</label>
+          <span [class]="getStatusClass(selectedIcon.status)">{{ selectedIcon.status }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Icon ID:</label>
+          <span class="code">{{ selectedIcon.iconId }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Sprite Path:</label>
+          <span class="code">{{ selectedIcon.spritePath || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Resolution:</label>
+          <span>{{ selectedIcon.resolution }}</span>
+        </div>
+        <div class="detail-row">
+          <label>Contrast:</label>
+          <span>{{ selectedIcon.contrast }}</span>
+        </div>
+        
+        <div class="notes-section" *ngIf="selectedIcon.notes?.length">
+          <h4>Art Guidelines:</h4>
+          <ul>
+            <li *ngFor="let note of selectedIcon.notes">{{ note }}</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading goods icon data...</div>
+  </div>
+</div>
