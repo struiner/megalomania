@@ -79,4 +79,14 @@ $hud-font-serif-stack: 'IM Fell English SC', 'EB Garamond', 'Georgia', serif;
       var(--hud-letterbox-flat-fill)
   );
   --hud-minimap-letterbox-contrast-stroke: var(--hud-letterbox-contrast-stroke, rgba(248, 245, 230, 0.38));
+  
+  // HUD Icon System Tokens
+  --hud-icon-stroke: var(--hud-brass, #c08a3b);
+  --hud-icon-shadow: var(--hud-shadow, #1b2433);
+  --hud-icon-bg: transparent;
+  --hud-icon-size-1x: 16px;
+  --hud-icon-size-2x: 32px;
+  --hud-icon-sprite-url-16: url('/assets/icons/sprites/hud-icons-16.png');
+  --hud-icon-sprite-url-32: url('/assets/icons/sprites/hud-icons-32.png');
+  --hud-icon-rendering: pixelated;
 }

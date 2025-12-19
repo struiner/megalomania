@@ -7,8 +7,11 @@ import { GoodsType } from '../enums/GoodsType';
 import { HazardType } from '../enums/HazardType';
 import { ChunkCoord, Hash128, PlayerID } from './anna-readme.models';
 
-// Re-export HazardType for convenience to match usage patterns
+// Re-export types for convenience to match usage patterns
 export { HazardType };
+export { StructureType };
+export { GoodsType };
+export { RoomHazardType };
 
 export type RoomHazard = string;
 

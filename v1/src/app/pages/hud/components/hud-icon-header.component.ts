@@ -17,7 +17,7 @@ export class HudIconHeaderComponent {
   subtitle?: string;
 
   @Input()
-  icon?: string;
+  iconId?: string; // Changed from 'icon' to 'iconId' for consistency with HudIconComponent
 
   @Input()
   badge?: string;

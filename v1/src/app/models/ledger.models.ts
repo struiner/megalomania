@@ -201,7 +201,7 @@ export interface RoomBlueprintExportedPayload extends RoomBlueprintEventBase {
 }
 
 export interface RoomBlueprintDeprecatedPayload extends RoomBlueprintEventBase {
-  reason: 'superseded' | 'invalidated' | 'retired';
+  reason: 'superseded' | 'invalidated' | 'withdrawn';
   replacementBlueprintId?: string;
   deprecationNotes?: string;
 }
