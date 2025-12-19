@@ -1,18 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { SettlementType } from '../../../../shared/enums/SettlementType';
 import { StructureType } from '../../../../shared/enums/StructureType';
 import { ID } from '../../../../shared/types/ID';
 import { Inventory } from '../../../../shared/types/Inventory';
 import { Position } from '../../../../shared/types/Position';
 import { Settlement } from '../../../../shared/types/Settlement';
-import { CultureService } from './culture/culture.service';
 import { SettlementSpecialization } from '../../../../shared/enums/SettlementSpecialization';
+import { CultureService } from './culture/culture.service';
+import { CITY_NAME_SERVICE, CityNameService } from './city-name.service';
 
 @Injectable({ providedIn: 'root' })
 export class CityGeneratorService {
-  constructor() {}
+  constructor(
+    @Inject(CITY_NAME_SERVICE) private readonly cityNameService: CityNameService,
+  ) {}
 
-  createSettlementAt(x: number, y: number, type: 'coastal' | 'inland', seedRandom: () => number,culture?:CultureService): Settlement {
+  createSettlementAt(x: number, y: number, type: 'coastal' | 'inland', seedRandom: () => number, culture?: CultureService): Settlement {
     const settlementType = this.pickSettlementType(type, seedRandom);
     const settlement = this.createBasicSettlement(x, y, settlementType, seedRandom);
 
@@ -26,7 +29,7 @@ export class CityGeneratorService {
   private createBasicSettlement(x: number, y: number, type: SettlementType, rand: () => number): Settlement {
     return {
       id: this.generateID(x, y),
-      name: this.generateSettlementName(rand),
+      name: this.cityNameService.generateSettlementName(rand, { type }),
       type,
       location: { x, y } as Position,
       x,
@@ -37,9 +40,9 @@ export class CityGeneratorService {
       structures: [],
       inventory: this.generateStartingInventory(rand),
       market: {
-          sellOrders: [],
-          buyOrders: [],
-          auction: []
+        sellOrders: [],
+        buyOrders: [],
+        auction: [],
       },
       rule: { leader: this.generateSimpleID(), subjects: [] },
     };
@@ -51,11 +54,11 @@ export class CityGeneratorService {
       if (roll < 0.2) return SettlementType.City;
       if (roll < 0.5) return SettlementType.Town;
       return SettlementType.Village;
-    } else {
-      const roll = rand();
-      if (roll < 0.5) return SettlementType.Village;
-      return SettlementType.Hamlet;
     }
+
+    const roll = rand();
+    if (roll < 0.5) return SettlementType.Village;
+    return SettlementType.Hamlet;
   }
 
   private applyTemplate(settlement: Settlement, type: SettlementType, rand: () => number): void {
@@ -81,33 +84,33 @@ export class CityGeneratorService {
   private addStructures(settlement: Settlement, structures: StructureType[]): void {
     for (const structureType of structures) {
       settlement.structures!.push({
-          id: this.generateSimpleID(),
-          type: structureType,
-          name: '',
-          durability: 0,
-          location: {
-              settlementId: undefined,
-              estateId: undefined,
-              position: {
-                  x: 0,
-                  y: 0
-              }
+        id: this.generateSimpleID(),
+        type: structureType,
+        name: '',
+        durability: 0,
+        location: {
+          settlementId: undefined,
+          estateId: undefined,
+          position: {
+            x: 0,
+            y: 0,
           },
-          inventory: {
-              equipment: {},
-              assets: {
-                  wallet: {
-                      thalers: 0,
-                      gold: 0,
-                      dollars: 0,
-                      guilders: 0,
-                      florins: 0
-                  },
-                  commodities: undefined,
-                  estates: undefined
-              }
+        },
+        inventory: {
+          equipment: {},
+          assets: {
+            wallet: {
+              thalers: 0,
+              gold: 0,
+              dollars: 0,
+              guilders: 0,
+              florins: 0,
+            },
+            commodities: undefined,
+            estates: undefined,
           },
-          actions: []
+        },
+        actions: [],
       });
     }
   }
@@ -129,7 +132,7 @@ export class CityGeneratorService {
       [SettlementType.TradingPost]: 1000 + Math.floor(rand() * 4000),
       [SettlementType.Tribe]: 1000 + Math.floor(rand() * 4000),
       [SettlementType.Metropolis]: 1000 + Math.floor(rand() * 4000),
-      [SettlementType.UndergroundCity]: 1000 + Math.floor(rand() * 4000),      
+      [SettlementType.UndergroundCity]: 1000 + Math.floor(rand() * 4000),
     }[type] || 50;
 
     return {
@@ -170,16 +173,8 @@ export class CityGeneratorService {
         },
         commodities: [],
         estates: [],
-      }
+      },
     };
-  }
-
-  private generateSettlementName(rand: () => number): string {
-
-    //TODO: nameServiceDI
-    const roots = ['Port', 'Lake', 'Stone', 'Bay', 'Shore', 'Cliff', 'North', 'South', 'East', 'West'];
-    const suffixes = ['ton', 'ville', 'stead', 'burg', 'mouth', 'ford', 'haven', 'holm'];
-    return `${roots[Math.floor(rand() * roots.length)]}${suffixes[Math.floor(rand() * suffixes.length)]}`;
   }
 
   private generateSimpleID(): ID {
