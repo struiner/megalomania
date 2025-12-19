@@ -33,7 +33,7 @@ export class HudIconComponent {
   forceEmoji = false; // For development/testing fallback
 
   protected get pixelSize(): number {
-    return this.size === '2x' ? 32 : 16;
+    return this.size === '2x' ? 24 : 16;
   }
 
   /**
@@ -50,7 +50,7 @@ export class HudIconComponent {
     if (this.forceEmoji || !this.iconDefinition) {
       return '';
     }
-    const sizeKey = this.size === '2x' ? '32' : '16';
+    const sizeKey = this.size === '2x' ? '24' : '16';
     return getIconSpriteUrl(this.iconId, sizeKey);
   }
 
@@ -62,6 +62,10 @@ export class HudIconComponent {
       return null;
     }
     return getIconCoordinates(this.iconId);
+  }
+
+  protected get hasSpriteCoordinates(): boolean {
+    return !!this.spriteCoordinates;
   }
 
   /**
@@ -84,7 +88,7 @@ export class HudIconComponent {
    */
   protected get backgroundPosition(): string {
     const coords = this.spriteCoordinates;
-    if (!coords) return '0 0';
+    if (!coords) return 'center center';
     return `-${coords.x}px -${coords.y}px`;
   }
 }

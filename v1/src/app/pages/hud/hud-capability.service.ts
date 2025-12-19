@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { HudCapabilityProvider } from './hud-capability.provider';
-import { HudCapabilityResolution, HudCapabilitySnapshot } from './hud-capability.models';
+import { HudCapabilityProvider, HudCapabilityProviderConfig } from './hud-capability.provider';
+import { HudCapabilityResolution, HudCapabilitySnapshot, LedgerCapabilityPipelinePayload } from './hud-capability.models';
 
 export interface HudPanelCapabilityRequirement {
   featureFlag?: string;
@@ -17,7 +17,13 @@ export const HUD_PANEL_CAPABILITY_REGISTRY: Record<string, HudPanelCapabilityReq
   quests: { featureFlag: 'quests', requiresInit: true },
 };
 
-function createDefaultFeatureFlags(): Record<string, boolean> {
+type CapabilityFeedSnapshot = HudCapabilitySnapshot | LedgerCapabilityPipelinePayload | undefined;
+
+function createDefaultFeatureFlags(snapshot?: CapabilityFeedSnapshot, forceDefaults = false): Record<string, boolean> {
+  if (!forceDefaults && snapshot?.featureFlags && Object.keys(snapshot.featureFlags).length) {
+    return { ...snapshot.featureFlags };
+  }
+
   return Object.values(HUD_PANEL_CAPABILITY_REGISTRY).reduce((flags, requirement) => {
     if (requirement.featureFlag) {
       flags[requirement.featureFlag] = true;
@@ -27,61 +33,125 @@ function createDefaultFeatureFlags(): Record<string, boolean> {
   }, {} as Record<string, boolean>);
 }
 
+function createInitializedPanels(snapshot?: CapabilityFeedSnapshot, forceDefaults = false): Set<string> {
+  if (!forceDefaults) {
+    if (snapshot?.initializedPanels instanceof Set) {
+      return new Set<string>(snapshot.initializedPanels);
+    }
+
+    if (Array.isArray(snapshot?.initializedPanels)) {
+      return new Set<string>(snapshot.initializedPanels);
+    }
+  }
+
+  return new Set<string>(['inventory']);
+}
+
 @Injectable({ providedIn: 'root' })
 export class HudCapabilityService {
   private readonly resolution$: BehaviorSubject<HudCapabilityResolution>;
   private readonly loading$ = new BehaviorSubject<boolean>(true);
   private readonly error$ = new BehaviorSubject<string | null>(null);
-  // TODO: Replace hardcoded defaults with authoritative capability feed (ledger/config backed).
-  private snapshot: HudCapabilitySnapshot = {
-    featureFlags: createDefaultFeatureFlags(),
-    initializedPanels: new Set<string>(['inventory', 'ledger', 'map']),
-  };
+  private snapshot: HudCapabilitySnapshot;
+  private capabilityEndpoint = 'ledger/config/hud-capabilities';
 
   constructor(private readonly provider: HudCapabilityProvider) {
-    this.resolution$ = new BehaviorSubject<HudCapabilityResolution>(
-      this.provider.getFallbackResolution(),
-    );
+    const fallbackResolution = this.provider.getFallbackResolution();
+    this.snapshot = this.buildSnapshot(fallbackResolution.snapshot);
+
+    this.resolution$ = new BehaviorSubject<HudCapabilityResolution>({
+      ...fallbackResolution,
+      snapshot: this.snapshot,
+    });
+
     this.bootstrap();
   }
 
-  private bootstrap(): void {
+  configureProvider(config?: HudCapabilityProviderConfig): void {
+    if (!config) {
+      return;
+    }
+
+    if (config.capabilityEndpoint) {
+      this.capabilityEndpoint = config.capabilityEndpoint;
+    }
+
+    this.provider.configure(config);
+    this.refreshCapabilities();
+  }
+
+  refreshCapabilities(endpoint = this.capabilityEndpoint): void {
+    this.capabilityEndpoint = endpoint;
+    this.provider.invalidateCache();
+    this.bootstrap(endpoint);
+  }
+
+  private bootstrap(endpoint = this.capabilityEndpoint): void {
     this.loading$.next(true);
 
-    this.provider.loadCapabilities().subscribe({
+    this.provider.loadCapabilities({ capabilityEndpoint: endpoint }).subscribe({
       next: (resolution) => {
-        this.resolution$.next(resolution);
+        const forceDefaults = resolution.fallback && !!resolution.error;
+        this.applyResolution(resolution, forceDefaults);
         this.error$.next(resolution.error ?? null);
         this.loading$.next(false);
       },
       error: (error) => {
-        this.resolution$.next(this.provider.getFallbackResolution('provider-error'));
-        this.error$.next('Failed to load HUD capabilities from ledger/config pipeline.');
-        this.loading$.next(false);
-        console.error('HUD capability provider error', error);
+        this.handleProviderError(error, endpoint);
       },
     });
   }
 
+  private applyResolution(resolution: HudCapabilityResolution, forceDefaults = false): void {
+    this.snapshot = this.buildSnapshot(resolution.snapshot, forceDefaults);
+
+    this.resolution$.next({
+      ...resolution,
+      snapshot: this.snapshot,
+    });
+  }
+
+  private handleProviderError(error: unknown, endpoint: string): void {
+    const fallbackResolution = this.provider.getFallbackResolution('provider-error');
+    this.applyResolution(fallbackResolution, true);
+    this.error$.next('Failed to load HUD capabilities from ledger/config pipeline. Using default HUD capability flags.');
+    this.loading$.next(false);
+    console.error(`HUD capability provider error for endpoint "${endpoint}"`, error);
+  }
+
+  private buildSnapshot(snapshot?: CapabilityFeedSnapshot, forceDefaults = false): HudCapabilitySnapshot {
+    return {
+      featureFlags: createDefaultFeatureFlags(snapshot, forceDefaults),
+      initializedPanels: createInitializedPanels(snapshot, forceDefaults),
+    };
+  }
+
   getFeatureFlag(flag: string): boolean {
-    return !!this.resolution$.value.snapshot.featureFlags[flag];
+    return !!this.snapshot.featureFlags[flag];
   }
 
   isPanelInitialized(panelId: string): boolean {
-    return this.resolution$.value.snapshot.initializedPanels.has(panelId);
+    return this.snapshot.initializedPanels.has(panelId);
   }
 
   updateSnapshot(partial: Partial<HudCapabilitySnapshot>): void {
     this.snapshot = {
       featureFlags: partial.featureFlags ? { ...this.snapshot.featureFlags, ...partial.featureFlags } : this.snapshot.featureFlags,
-      initializedPanels: partial.initializedPanels ?? this.snapshot.initializedPanels,
+      initializedPanels: partial.initializedPanels
+        ? new Set(partial.initializedPanels)
+        : new Set(this.snapshot.initializedPanels),
     };
+
+    this.resolution$.next({
+      ...this.resolution$.value,
+      snapshot: this.snapshot,
+    });
   }
 
   getSnapshot(): HudCapabilitySnapshot {
     return {
-      featureFlags: { ...this.resolution$.value.snapshot.featureFlags },
-      initializedPanels: new Set(this.resolution$.value.snapshot.initializedPanels),
+      featureFlags: { ...this.snapshot.featureFlags },
+      initializedPanels: new Set(this.snapshot.initializedPanels),
     };
   }
 

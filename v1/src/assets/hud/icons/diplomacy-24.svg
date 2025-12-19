@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .fill { fill: #d79a59; stroke: #c08a3b; stroke-width: 2; }
+      .shadow { fill: #1b2433; stroke: #c08a3b; stroke-width: 2; }
+    </style>
+  </defs>
+  <polygon points="5,13 9,8 12,11 8,16" class="fill" />
+  <polygon points="19,13 15,8 12,11 16,16" class="fill" />
+  <rect x="9" y="13" width="6" height="6" class="shadow" />
+</svg>

@@ -4,6 +4,7 @@
  */
 
 import { GoodsType } from "../enums/GoodsType";
+import { EraSuffixGenerator } from "./era-suffix.generator";
 
 /////////////////////////////
 // ENUMS
@@ -129,7 +130,7 @@ export enum Era {
   Hybridic = "Hybridic",          // Example: Mixed-species or blended-technology societies
   Otherworldly = "Otherworldly"   // Example: Weird, alien-intuition settlements
 
-  //TODO: Implement randomized nicely alliterating suffixes, for uniqueness between cultures/species.
+  // Alliterating suffix generation is handled by the EraSuffixGenerator helper.
 }
 
 export enum GoodCategory {
@@ -322,4 +323,17 @@ export function evolveGood(good: Good, context: WorldContext, rules: GoodEvoluti
     }
   }
   return evolved;
+}
+
+/////////////////////////////
+// ERA SUFFIX HELPER
+/////////////////////////////
+
+/**
+ * Deterministically build an alliterative suffix for a given era and culture.
+ * Provide a stable seed (and optional culture label) to ensure repeatable output
+ * across simulations or catalog exports.
+ */
+export function getEraSuffixForCulture(era: Era, seed: string, culture?: string): string {
+  return EraSuffixGenerator.generateSuffix({ era, seed, culture });
 }
