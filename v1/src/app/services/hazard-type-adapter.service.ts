@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 
+import { BiomeType } from '../enums/BiomeType';
+import { HazardSeverity } from '../enums/HazardSeverity';
+import { HazardDefinition, HazardType, HAZARD_DEFINITIONS } from '../enums/HazardType';
 import { HazardType } from '../enums/HazardType';
 import { HazardSeverity } from '../enums/HazardSeverity';
 
 export interface HazardOption {
   id: HazardType;
   label: string;
-  category: 'environmental' | 'structural' | 'biological' | 'security';
+  category: HazardDefinition['category'];
   tags: string[];
-  severity?: HazardSeverity;
+  severity: HazardSeverity;
+  biomes: BiomeType[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -144,13 +148,28 @@ export class HazardTypeAdapterService {
   }
 
   private toOption(id: HazardType): HazardOption {
+    const definition = this.definitionFor(id);
     return {
       id,
-      label: this.formatLabel(id),
-      category: this.categoryMap[id] ?? 'environmental',
-      tags: this.tags[id] ?? [],
-      severity: this.severityMap[id],
+      label: definition.label,
+      category: definition.category,
+      tags: definition.tags,
+      severity: definition.severity,
+      biomes: definition.biomes,
     };
+  }
+
+  private definitionFor(id: HazardType): HazardDefinition {
+    return (
+      HAZARD_DEFINITIONS[id] ?? {
+        type: id,
+        label: this.formatLabel(id),
+        category: 'environmental',
+        severity: HazardSeverity.Moderate,
+        biomes: [],
+        tags: [],
+      }
+    );
   }
 
   private formatLabel(raw: string): string {
