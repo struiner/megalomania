@@ -6,7 +6,7 @@
   [style.--hud-icon-size.px]="pixelSize"
   [style.background-image]="useSprite ? 'url(' + spriteUrl + ')' : null"
   [style.background-position]="useSprite ? backgroundPosition : null"
-  [style.background-size]="useSprite ? 'auto' : null"
+  [style.background-size]="useSprite && hasSpriteCoordinates ? 'auto' : 'contain'"
   [style.image-rendering]="useSprite ? 'pixelated' : null"
 >
   <span class="hud-icon__frame" *ngIf="framed" aria-hidden="true"></span>

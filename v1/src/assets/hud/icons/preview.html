@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HUD Icon Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f0a1f;
+      --ink: #f8f5e6;
+    }
+    body {
+      margin: 24px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .cell {
+      border: 1px solid rgba(248, 245, 230, 0.25);
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(27, 36, 51, 0.35);
+    }
+    .cell h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      letter-spacing: 0.01em;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .row img {
+      image-rendering: pixelated;
+      width: 16px;
+      height: 16px;
+    }
+    .row img.size-24 {
+      width: 24px;
+      height: 24px;
+    }
+    .label {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <h1>HUD brass/copper icon pilot</h1>
+  <div class="grid">
+    <div class="cell" data-icon="inventory">
+      <h3>Inventory</h3>
+      <div class="row"><img src="inventory-16.svg" alt="Inventory 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="inventory-24.svg" alt="Inventory 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="ledger">
+      <h3>Ledger</h3>
+      <div class="row"><img src="ledger-16.svg" alt="Ledger 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="ledger-24.svg" alt="Ledger 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="map">
+      <h3>Map</h3>
+      <div class="row"><img src="map-16.svg" alt="Map 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="map-24.svg" alt="Map 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="trade">
+      <h3>Trade</h3>
+      <div class="row"><img src="trade-16.svg" alt="Trade 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="trade-24.svg" alt="Trade 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="crew">
+      <h3>Crew</h3>
+      <div class="row"><img src="crew-16.svg" alt="Crew 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="crew-24.svg" alt="Crew 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="quests">
+      <h3>Quests</h3>
+      <div class="row"><img src="quests-16.svg" alt="Quests 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="quests-24.svg" alt="Quests 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="settings">
+      <h3>Settings</h3>
+      <div class="row"><img src="settings-16.svg" alt="Settings 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="settings-24.svg" alt="Settings 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="help">
+      <h3>Help</h3>
+      <div class="row"><img src="help-16.svg" alt="Help 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="help-24.svg" alt="Help 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="status">
+      <h3>Status</h3>
+      <div class="row"><img src="status-16.svg" alt="Status 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="status-24.svg" alt="Status 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="notifications">
+      <h3>Notifications</h3>
+      <div class="row"><img src="notifications-16.svg" alt="Notifications 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="notifications-24.svg" alt="Notifications 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="helm">
+      <h3>Helm</h3>
+      <div class="row"><img src="helm-16.svg" alt="Helm 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="helm-24.svg" alt="Helm 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="cargo">
+      <h3>Cargo</h3>
+      <div class="row"><img src="cargo-16.svg" alt="Cargo 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="cargo-24.svg" alt="Cargo 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="diplomacy">
+      <h3>Diplomacy</h3>
+      <div class="row"><img src="diplomacy-16.svg" alt="Diplomacy 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="diplomacy-24.svg" alt="Diplomacy 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="harbor">
+      <h3>Harbor</h3>
+      <div class="row"><img src="harbor-16.svg" alt="Harbor 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="harbor-24.svg" alt="Harbor 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="scouting">
+      <h3>Scouting</h3>
+      <div class="row"><img src="scouting-16.svg" alt="Scouting 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="scouting-24.svg" alt="Scouting 24" /><span class="label">24px</span></div>
+    </div>
+    <div class="cell" data-icon="craft">
+      <h3>Craft</h3>
+      <div class="row"><img src="craft-16.svg" alt="Craft 16" /><span class="label">16px</span></div>
+      <div class="row"><img class="size-24" src="craft-24.svg" alt="Craft 24" /><span class="label">24px</span></div>
+    </div>
+  </div>
+</body>
+</html>
