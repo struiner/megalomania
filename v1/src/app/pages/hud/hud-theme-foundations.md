@@ -41,9 +41,13 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Fill**: Minimal flat fills; prefer negative space with brass/copper strokes and limited parchment fill.
 - **Framing**: Square or shield outlines sized to 16px/24px; align icon baselines with button grid slots.
 - **States**: Hover = `Highlight Copper` stroke with `Cool Shadow` inset; Active = thicker 2px brass stroke.
-- **Asset base**: Kenney “Game Icons” (CC0) recolored to brass/ink is the canonical pack for the HUD; Game-Icons.net (CC BY 3.0) may supplement gaps with attribution. 0x72 Dungeon Tileset II sprites can backfill minimap markers.
+- **Asset base**: Kenney “Game Icons” (CC0) recolored to brass/ink is the canonical pack for the HUD; Game-Icons.net (CC BY 3.0) may supplement gaps with attribution. 0x72 Dungeon Tileset II sprites can backfill minimap markers. The custom brass/copper pilot set below follows the same palette and grid rules.
 
-> TODO: Produce a 12–16 icon pilot set for button grid and info pane headers to validate stroke/spacing rules (follow-up task).
+### Brass/copper HUD icon pilot (delivered)
+- **Stroke discipline**: 1px outlines at 16px, 2px at 24px; no anti-aliasing or fractional coordinates. Palette locked to brass (`#c08a3b`), copper fill (`#d79a59`), ink shadow (`#1b2433`), and sparing highlight (`#f8f5e6`).
+- **Grid + spacing**: Every glyph sits on a 16×16 or 24×24 canvas with integer padding; shapes stick to rectangles, straight segments, and crisp circles to avoid off-grid diagonals.
+- **Coverage**: Inventory, ledger, map, trade, crew, quests, settings, help, status, notifications, helm, cargo, diplomacy, harbor, scouting, and craft. Assets live in `v1/src/assets/hud/icons/` with CSS variables in `theme/hud-theme.tokens.scss` and IDs in `assets/icons/hud-icon-manifest.ts`.
+- **Preview**: `v1/src/assets/hud/icons/hud-icons-preview.svg` (generated alongside `preview.html`) shows both sizes for quick regressions and PR reviews.
 
 ## Application Notes
 - Bottom HUD uses Secondary Background with brass edge; minimap frame can use copper corners plus inner shadow.

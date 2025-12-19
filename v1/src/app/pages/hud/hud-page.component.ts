@@ -38,14 +38,14 @@ type AuxiliaryActionTarget =
 })
 export class HudPageComponent implements OnInit, OnDestroy {
   protected actions: HudAction[] = [
-    { id: 'inventory', label: 'Inventory', icon: '📦' },
-    { id: 'ledger', label: 'Ledger', icon: '📜' },
-    { id: 'map', label: 'Maps', icon: '🗺️' },
-    { id: 'crew', label: 'Crew', icon: '👥' },
-    { id: 'trade', label: 'Trade', icon: '⚖️' },
-    { id: 'quests', label: 'Quests', icon: '⭐' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { id: 'help', label: 'Help', icon: '❔' },
+    { id: 'inventory', label: 'Inventory', icon: 'inventory' },
+    { id: 'ledger', label: 'Ledger', icon: 'ledger' },
+    { id: 'map', label: 'Maps', icon: 'map' },
+    { id: 'crew', label: 'Crew', icon: 'crew' },
+    { id: 'trade', label: 'Trade', icon: 'trade' },
+    { id: 'quests', label: 'Quests', icon: 'quests' },
+    { id: 'settings', label: 'Settings', icon: 'settings' },
+    { id: 'help', label: 'Help', icon: 'help' },
   ];
 
   protected overlayPanels: HudPanelDefinition[] = HUD_OVERLAY_PANELS;
@@ -83,14 +83,14 @@ export class HudPageComponent implements OnInit, OnDestroy {
   protected leftPane: HudInfoPaneContent = {
     heading: 'Status',
     subtitle: 'Ship + crew health',
-    icon: '⚓',
+    icon: 'status',
     items: ['Calm seas', 'Stores steady', 'Ledger balanced'],
   };
 
   protected rightPane: HudInfoPaneContent = {
     heading: 'Notifications',
     subtitle: 'Operational signals',
-    icon: '🔔',
+    icon: 'notifications',
     badge: '0',
     items: ['No active advisories', 'Next report: TBD'],
   };

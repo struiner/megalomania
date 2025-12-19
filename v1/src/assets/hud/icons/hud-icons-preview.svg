@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="400" viewBox="0 0 720 400" style="background:#0f0a1f;" font-family="Inter, system-ui, sans-serif" fill="#f8f5e6">
+<style>text{font-size:14px;} .label{font-size:12px; opacity:0.82;}</style>
+<g transform="translate(20,20)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Inventory</text>
+  <image href="inventory-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="inventory-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(190,20)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Ledger</text>
+  <image href="ledger-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="ledger-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(360,20)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Map</text>
+  <image href="map-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="map-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(530,20)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Trade</text>
+  <image href="trade-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="trade-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(20,110)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Crew</text>
+  <image href="crew-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="crew-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(190,110)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Quests</text>
+  <image href="quests-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="quests-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(360,110)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Settings</text>
+  <image href="settings-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="settings-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(530,110)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Help</text>
+  <image href="help-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="help-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(20,200)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Status</text>
+  <image href="status-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="status-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(190,200)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Notifications</text>
+  <image href="notifications-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="notifications-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(360,200)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Helm</text>
+  <image href="helm-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="helm-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(530,200)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Cargo</text>
+  <image href="cargo-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="cargo-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(20,290)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Diplomacy</text>
+  <image href="diplomacy-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="diplomacy-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(190,290)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Harbor</text>
+  <image href="harbor-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="harbor-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(360,290)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Scouting</text>
+  <image href="scouting-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="scouting-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+<g transform="translate(530,290)">
+  <rect x="0" y="0" width="154" height="74" rx="10" ry="10" fill="rgba(27,36,51,0.45)" stroke="rgba(248,245,230,0.25)" />
+  <text x="12" y="18" fill="#f8f5e6">Craft</text>
+  <image href="craft-16.svg" x="12" y="36" width="16" height="16" />
+  <text class="label" x="34" y="49" fill="#f8f5e6">16px</text>
+  <image href="craft-24.svg" x="80" y="32" width="24" height="24" />
+  <text class="label" x="110" y="49" fill="#f8f5e6">24px</text>
+</g>
+</svg>

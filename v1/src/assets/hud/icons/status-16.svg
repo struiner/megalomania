@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 1; fill: none; }
+      .shadow { fill: #1b2433; stroke: #c08a3b; stroke-width: 1; }
+    </style>
+  </defs>
+  <line x1="8" y1="3" x2="8" y2="12" class="stroke" />
+  <line x1="5" y1="8" x2="11" y2="8" class="stroke" />
+  <line x1="6" y1="9" x2="4" y2="13" class="stroke" />
+  <line x1="10" y1="9" x2="12" y2="13" class="stroke" />
+  <circle cx="8" cy="4" r="2" class="shadow" />
+  <path d="M4 12c0 2 8 2 8 0" class="stroke" />
+</svg>
