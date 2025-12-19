@@ -17,6 +17,11 @@ This folder contains the Phase 2 structural HUD implementation scoped by the Gam
 - [ ] Verify `/game/design-doc` is reachable from the HUD help primer and that HUD does not accumulate help/tutorial state.
 - [ ] Keep overlay + auxiliary dialog stacks to two layers max; close stray dialogs after navigation fires.
 
+## Capability feed configuration
+- HUD capability gating uses `HudCapabilityService` to request ledger-backed feature flags and initialization hints from the configurable `HudCapabilityProvider` endpoint (defaults to `ledger/config/hud-capabilities`).
+- The provider maintains a short-lived cache (default 60 s) that can be invalidated via `refreshCapabilities` or by reconfiguring the endpoint/TTL; cache invalidation forces a new feed read before resolving panel gates.
+- If the ledger/config feed is unavailable, the service logs the failure and deterministically falls back to HUD defaults so availability decisions remain predictable.
+
 ## Notes
 - Placeholder data is intentionally static; no gameplay truth is derived here.
 - Spacing follows 16px multiples with 4px/8px gutters for pixel integrity.

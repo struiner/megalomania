@@ -1,3 +1,4 @@
+import { of } from 'rxjs';
 import { HUD_OVERLAY_PANELS } from './hud-panel-registry';
 import { HudAvailabilityService } from './hud-availability.service';
 import { HudCapabilityProvider } from './hud-capability.provider';
@@ -9,6 +10,7 @@ describe('HudAvailabilityService capability gating', () => {
 
   beforeEach(() => {
     const provider = new HudCapabilityProvider();
+    spyOn(provider, 'loadCapabilities').and.returnValue(of(provider.getFallbackResolution()));
     capabilityService = new HudCapabilityService(provider);
     service = new HudAvailabilityService(capabilityService);
   });
