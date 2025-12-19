@@ -1,0 +1,106 @@
+<!-- Goods Manager Example - Shows how to use SDK Shell components -->
+<app-sdk-shell
+  [eyebrowText]="'SDK / Economy'"
+  [title]="'Goods Manager'"
+  [ledeText]="'Prototype new trade goods, keep tabs on tiers, and sanity-check category coverage.'"
+  [summaryStats]="tierStats"
+  [bottomActions]="bottomActions"
+>
+  <!-- Main content using SDK Panel components -->
+  <div class="sdk-example-layout">
+    <div class="sdk-example-column">
+      <app-sdk-panel title="Create good">
+        <form [formGroup]="form" (ngSubmit)="addGood()">
+          <label class="sdk-form-field">
+            <span>Good</span>
+            <select class="sdk-form-input" formControlName="type">
+              <option *ngFor="let type of goodsTypeOptions" [ngValue]="type">{{ readableGoods(type) }}</option>
+            </select>
+          </label>
+
+          <label class="sdk-form-field">
+            <span>Title</span>
+            <input class="sdk-form-input" type="text" formControlName="title" placeholder="Skyfruit" />
+          </label>
+
+          <label class="sdk-form-field">
+            <span>Description</span>
+            <textarea class="sdk-form-input" rows="3" formControlName="description" placeholder="Flavor text or quick notes"></textarea>
+          </label>
+
+          <label class="sdk-form-field">
+            <span>Category</span>
+            <select class="sdk-form-input" formControlName="category">
+              <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+            </select>
+          </label>
+
+          <label class="sdk-form-field">
+            <span>Tier</span>
+            <select class="sdk-form-input" formControlName="tier">
+              <option value="Common">Common</option>
+              <option value="Uncommon">Uncommon</option>
+              <option value="Rare">Rare</option>
+              <option value="Legendary">Legendary</option>
+            </select>
+          </label>
+
+          <div class="sdk-form-grid">
+            <label class="sdk-form-field">
+              <span>Rarity (1-5)</span>
+              <input class="sdk-form-input" type="number" min="1" max="5" formControlName="rarity" />
+            </label>
+
+            <label class="sdk-form-field">
+              <span>Complexity (1-5)</span>
+              <input class="sdk-form-input" type="number" min="1" max="5" formControlName="complexity" />
+            </label>
+
+            <label class="sdk-form-field">
+              <span>Base price</span>
+              <input class="sdk-form-input" type="number" min="0" formControlName="basePrice" />
+            </label>
+          </div>
+
+          <app-sdk-action-group 
+            [actions]="[{ label: 'Add good', type: 'submit', variant: 'primary' }]"
+            direction="horizontal"
+          ></app-sdk-action-group>
+        </form>
+      </app-sdk-panel>
+    </div>
+
+    <div class="sdk-example-column">
+      <app-sdk-panel title="Catalog">
+        <div slot="actions">
+          <input class="sdk-form-input" type="search" placeholder="Filter by name, tag, or category" [formControl]="filter" />
+          <app-sdk-action-group 
+            [actions]="[{ label: 'Export JSON', variant: 'secondary' }]"
+            direction="horizontal"
+          ></app-sdk-action-group>
+        </div>
+
+        <ul class="sdk-list">
+          <li class="sdk-list-item" *ngFor="let good of filteredGoods(); let i = index">
+            <div>
+              <p class="sdk-eyebrow">{{ good.category }} · {{ readableGoods(good.type) }}</p>
+              <h4>{{ good.title }}</h4>
+              <p class="sdk-lede">Rarity {{ good.rarity }} · Complexity {{ good.complexity }} · {{ good.basePrice | number:'1.0-0' }} coins</p>
+              <p class="sdk-description" *ngIf="good.description">{{ good.description }}</p>
+              <div class="sdk-tags">
+                <span class="sdk-tag" *ngFor="let tag of good.tags">{{ tag }}</span>
+              </div>
+            </div>
+            <div class="sdk-meta">
+              <span class="sdk-tier" [class]="'sdk-tier--' + good.tier.toLowerCase()">{{ good.tier }}</span>
+              <app-sdk-action-group 
+                [actions]="[{ label: 'Remove', variant: 'danger', onClick: () => removeGood(i) }]"
+                direction="vertical"
+              ></app-sdk-action-group>
+            </div>
+          </li>
+        </ul>
+      </app-sdk-panel>
+    </div>
+  </div>
+</app-sdk-shell>

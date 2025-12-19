@@ -1,0 +1,18 @@
+<!-- Validation Badge Component - Compact per-row indicator for validation issues -->
+<div 
+  class="validation-badge"
+  [class]="badgeClasses.join(' ')"
+  [attr.aria-label]="ariaLabel"
+  [attr.role]="displaySeverity === 'error' ? 'alert' : 'status'"
+  [class.clickable]="clickable"
+  (click)="handleClick()"
+  tabindex="clickable ? 0 : -1"
+  (keydown.enter)="clickable && handleClick()"
+  (keydown.space)="clickable && handleClick()"
+>
+  <span 
+    class="validation-badge__icon" 
+    *ngIf="showIcon"
+    [attr.aria-hidden]="true"
+  >{{ displayIcon }}</span>
+</div>

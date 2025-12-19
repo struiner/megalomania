@@ -1,0 +1,20 @@
+<!-- SDK Panel Component - Reusable panel framing for consistent content organization -->
+<div class="sdk-panel" [class.sdk-panel--compact]="compact" [class.sdk-panel--padded]="!compact">
+  <header class="sdk-panel__header" *ngIf="title || hasHeaderContent">
+    <div class="sdk-panel__title">
+      <h3 class="sdk-panel__heading" *ngIf="title">{{ title }}</h3>
+      <slot name="header"></slot>
+    </div>
+    <div class="sdk-panel__actions" *ngIf="hasActionsContent">
+      <slot name="actions"></slot>
+    </div>
+  </header>
+  
+  <div class="sdk-panel__content">
+    <slot></slot>
+  </div>
+  
+  <footer class="sdk-panel__footer" *ngIf="hasFooterContent">
+    <slot name="footer"></slot>
+  </footer>
+</div>

@@ -1,0 +1,44 @@
+<!-- Collapsible Validation Notice Component - Summary with expandable details -->
+<div 
+  class="validation-collapsible"
+  [class]="'validation-collapsible--' + getHighestSeverity()"
+  [attr.aria-label]="getAriaLabel()"
+  [attr.role]="getAriaRole()"
+>
+  <!-- Summary header - always visible -->
+  <button 
+    class="validation-collapsible__header"
+    type="button"
+    (click)="toggleExpanded()"
+    [attr.aria-expanded]="expanded"
+    [attr.aria-controls]="getContentId()"
+  >
+    <span class="validation-collapsible__icon" [class]="'validation-collapsible__icon--' + getHighestSeverity()"></span>
+    <span class="validation-collapsible__summary">
+      {{ getSummaryText() }}
+    </span>
+    <span class="validation-collapsible__count" *ngIf="noticeCount > 1">
+      ({{ noticeCount }})
+    </span>
+    <span class="validation-collapsible__chevron" [class.expanded]="expanded">▼</span>
+  </button>
+
+  <!-- Expandable content -->
+  <div 
+    class="validation-collapsible__content"
+    [id]="getContentId()"
+    [class.expanded]="expanded"
+    role="region"
+    [attr.aria-labelledby]="getHeaderId()"
+  >
+    <div class="validation-collapsible__notices">
+      <app-validation-notice
+        *ngFor="let notice of notices; trackBy: trackByNotice"
+        [notice]="notice"
+        [showPath]="showPaths"
+        [actionable]="actionable"
+        [onAction]="onNoticeAction"
+      ></app-validation-notice>
+    </div>
+  </div>
+</div>

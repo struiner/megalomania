@@ -1,0 +1,138 @@
+<!-- Tech Editor Example - Shows tabbed shell usage -->
+<app-sdk-shell
+  [eyebrowText]="'SDK / Technology'"
+  [title]="'Tech Editor'"
+  [ledeText]="'Manage technology trees, dependencies, and unlock conditions.'"
+  [summaryStats]="techStats"
+  [tabs]="techTabs"
+  [(activeTabId)]="activeTab"
+  [bottomActions]="bottomActions"
+>
+  <!-- Tab content is handled by the tab system in the shell component -->
+  <ng-template #editorTab>
+    <div class="tech-editor-layout">
+      <app-sdk-panel title="Technology Tree" compact>
+        <div slot="actions">
+          <app-sdk-action-group 
+            [actions]="[{ label: 'Add Node', variant: 'primary' }]"
+            direction="horizontal"
+          ></app-sdk-action-group>
+        </div>
+        
+        <div class="tech-tree-visual">
+          <p class="tech-placeholder">Technology tree visualization would go here</p>
+        </div>
+      </app-sdk-panel>
+
+      <app-sdk-panel title="Node Properties">
+        <form class="tech-form">
+          <label class="sdk-form-field">
+            <span>Technology Name</span>
+            <input class="sdk-form-input" type="text" placeholder="Advanced Metallurgy" />
+          </label>
+
+          <label class="sdk-form-field">
+            <span>Description</span>
+            <textarea class="sdk-form-input" rows="3" placeholder="Unlock advanced metalworking techniques"></textarea>
+          </label>
+
+          <div class="sdk-form-grid">
+            <label class="sdk-form-field">
+              <span>Tier Level</span>
+              <select class="sdk-form-input">
+                <option value="1">Tier 1</option>
+                <option value="2">Tier 2</option>
+                <option value="3">Tier 3</option>
+              </select>
+            </label>
+
+            <label class="sdk-form-field">
+              <span>Cost</span>
+              <input class="sdk-form-input" type="number" placeholder="100" />
+            </label>
+          </div>
+
+          <label class="sdk-form-field">
+            <span>Prerequisites</span>
+            <select class="sdk-form-input" multiple>
+              <option>Basic Metallurgy</option>
+              <option>Fire Control</option>
+            </select>
+          </label>
+        </form>
+      </app-sdk-panel>
+    </div>
+  </ng-template>
+
+  <ng-template #dependenciesTab>
+    <div class="dependencies-layout">
+      <app-sdk-panel title="Dependency Graph">
+        <p class="sdk-lede">Visual representation of technology dependencies</p>
+        
+        <div class="dependency-visual">
+          <p class="tech-placeholder">Dependency visualization would go here</p>
+        </div>
+      </app-sdk-panel>
+
+      <app-sdk-panel title="Dependency Analysis">
+        <ul class="sdk-list">
+          <li class="sdk-list-item" *ngFor="let tech of mockTechs">
+            <div>
+              <h4>{{ tech.name }}</h4>
+              <p class="sdk-lede">{{ tech.description }}</p>
+              <div class="sdk-tags">
+                <span class="sdk-tag">Tier {{ tech.tier }}</span>
+                <span class="sdk-tag">{{ tech.dependencies.length }} deps</span>
+              </div>
+            </div>
+            <div class="sdk-meta">
+              <span class="sdk-tier" [class]="'sdk-tier--tier-' + tech.tier">T{{ tech.tier }}</span>
+            </div>
+          </li>
+        </ul>
+      </app-sdk-panel>
+    </div>
+  </ng-template>
+
+  <ng-template #validationTab>
+    <div class="validation-layout">
+      <app-sdk-panel title="Validation Results">
+        <div class="validation-results">
+          <div class="validation-item validation-item--success">
+            <span class="validation-icon">✓</span>
+            <span>All technology tiers are properly sequenced</span>
+          </div>
+          <div class="validation-item validation-item--warning">
+            <span class="validation-icon">⚠</span>
+            <span>3 technologies have circular dependencies</span>
+          </div>
+          <div class="validation-item validation-item--error">
+            <span class="validation-icon">✗</span>
+            <span>Missing prerequisites for Advanced Shipbuilding</span>
+          </div>
+        </div>
+      </app-sdk-panel>
+
+      <app-sdk-panel title="Statistics">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h4>Total Technologies</h4>
+            <p class="stat-value">24</p>
+          </div>
+          <div class="stat-card">
+            <h4>Max Tier</h4>
+            <p class="stat-value">5</p>
+          </div>
+          <div class="stat-card">
+            <h4>Avg Dependencies</h4>
+            <p class="stat-value">2.3</p>
+          </div>
+          <div class="stat-card">
+            <h4>Critical Path</h4>
+            <p class="stat-value">12 steps</p>
+          </div>
+        </div>
+      </app-sdk-panel>
+    </div>
+  </ng-template>
+</app-sdk-shell>

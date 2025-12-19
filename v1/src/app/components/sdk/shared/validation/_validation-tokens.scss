@@ -1,0 +1,243 @@
+// Validation Notice Design Tokens
+// Severity-specific styling that respects UI charter and Hanseatic aesthetic
+
+// ============================================================================
+// SEVERITY COLOR TOKENS
+// ============================================================================
+
+$validation-error-bg: rgba(255, 146, 146, 0.15);
+$validation-error-border: rgba(255, 146, 146, 0.3);
+$validation-error-text: #ff9292;
+$validation-error-hover: rgba(255, 146, 146, 0.25);
+
+$validation-warning-bg: rgba(255, 207, 121, 0.15);
+$validation-warning-border: rgba(255, 207, 121, 0.3);
+$validation-warning-text: #ffcf79;
+$validation-warning-hover: rgba(255, 207, 121, 0.25);
+
+$validation-info-bg: rgba(138, 189, 255, 0.15);
+$validation-info-border: rgba(138, 189, 255, 0.3);
+$validation-info-text: #8abdf7;
+$validation-info-hover: rgba(138, 189, 255, 0.25);
+
+// CSS Custom Properties
+:root {
+  --validation-error-bg: #{$validation-error-bg};
+  --validation-error-border: #{$validation-error-border};
+  --validation-error-text: #{$validation-error-text};
+  --validation-error-hover: #{$validation-error-hover};
+
+  --validation-warning-bg: #{$validation-warning-bg};
+  --validation-warning-border: #{$validation-warning-border};
+  --validation-warning-text: #{$validation-warning-text};
+  --validation-warning-hover: #{$validation-warning-hover};
+
+  --validation-info-bg: #{$validation-info-bg};
+  --validation-info-border: #{$validation-info-border};
+  --validation-info-text: #{$validation-info-text};
+  --validation-info-hover: #{$validation-info-hover};
+}
+
+// ============================================================================
+// SEVERITY ICON TOKENS
+// Each severity has a distinct icon that respects retro aesthetic
+// ============================================================================
+
+$validation-error-icon: '✗'; // Cross - clear error indication
+$validation-warning-icon: '⚠'; // Warning triangle
+$validation-info-icon: 'ℹ'; // Information symbol
+
+:root {
+  --validation-error-icon: '#{$validation-error-icon}';
+  --validation-warning-icon: '#{$validation-warning-icon}';
+  --validation-info-icon: '#{$validation-info-icon}';
+}
+
+// ============================================================================
+// SPACING AND LAYOUT TOKENS
+// ============================================================================
+
+$validation-notice-padding: 8px 12px;
+$validation-notice-margin: 4px 0;
+$validation-notice-radius: 6px;
+$validation-badge-size: 18px;
+$validation-badge-radius: 50%;
+
+:root {
+  --validation-notice-padding: #{$validation-notice-padding};
+  --validation-notice-margin: #{$validation-notice-margin};
+  --validation-notice-radius: #{$validation-notice-radius};
+  --validation-badge-size: #{$validation-badge-size};
+  --validation-badge-radius: #{$validation-badge-radius};
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+// Severity-specific styling mixin
+@mixin validation-severity($severity) {
+  @if $severity == 'error' {
+    background: var(--validation-error-bg);
+    border: 1px solid var(--validation-error-border);
+    color: var(--validation-error-text);
+    
+    &:hover {
+      background: var(--validation-error-hover);
+    }
+    
+    &::before {
+      content: var(--validation-error-icon);
+    }
+  } @else if $severity == 'warning' {
+    background: var(--validation-warning-bg);
+    border: 1px solid var(--validation-warning-border);
+    color: var(--validation-warning-text);
+    
+    &:hover {
+      background: var(--validation-warning-hover);
+    }
+    
+    &::before {
+      content: var(--validation-warning-icon);
+    }
+  } @else if $severity == 'info' {
+    background: var(--validation-info-bg);
+    border: 1px solid var(--validation-info-border);
+    color: var(--validation-info-text);
+    
+    &:hover {
+      background: var(--validation-info-hover);
+    }
+    
+    &::before {
+      content: var(--validation-info-icon);
+    }
+  }
+}
+
+// Charter-compliant notice styling
+@mixin validation-notice-base {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sdk-spacing-xs, 6px);
+  padding: var(--validation-notice-padding);
+  margin: var(--validation-notice-margin);
+  border-radius: var(--validation-notice-radius);
+  font-size: var(--sdk-font-size-sm, 14px);
+  line-height: 1.3;
+  transition: background-color var(--sdk-transition-fast, 0.15s) ease;
+  
+  // Icon styling
+  &::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  
+  // Content styling
+  .validation-notice__content {
+    flex: 1 1 auto;
+    min-width: 0; // Allow text truncation
+  }
+  
+  .validation-notice__message {
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .validation-notice__suggestion {
+    margin: 2px 0 0;
+    opacity: 0.8;
+    font-size: var(--sdk-font-size-xs, 12px);
+  }
+  
+  .validation-notice__path {
+    margin: 0;
+    opacity: 0.6;
+    font-size: var(--sdk-font-size-xs, 12px);
+    font-family: monospace;
+  }
+}
+
+// Badge styling for list items
+@mixin validation-badge-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--validation-badge-size);
+  height: var(--validation-badge-size);
+  border-radius: var(--validation-badge-radius);
+  font-size: 10px;
+  font-weight: bold;
+  flex-shrink: 0;
+  
+  &::before {
+    line-height: 1;
+  }
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// These provide consistent styling patterns
+// ============================================================================
+
+%validation-notice-error {
+  @include validation-severity('error');
+}
+
+%validation-notice-warning {
+  @include validation-severity('warning');
+}
+
+%validation-notice-info {
+  @include validation-severity('info');
+}
+
+%validation-badge-error {
+  @include validation-severity('error');
+  @include validation-badge-base;
+}
+
+%validation-badge-warning {
+  @include validation-severity('warning');
+  @include validation-badge-base;
+}
+
+%validation-badge-info {
+  @include validation-severity('info');
+  @include validation-badge-base;
+}
+
+%validation-notice-base {
+  @include validation-notice-base;
+}
+
+// ============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// ============================================================================
+
+// High contrast support
+@media (prefers-contrast: high) {
+  :root {
+    --validation-error-bg: rgba(255, 0, 0, 0.2);
+    --validation-error-border: rgba(255, 0, 0, 0.5);
+    --validation-warning-bg: rgba(255, 165, 0, 0.2);
+    --validation-warning-border: rgba(255, 165, 0, 0.5);
+    --validation-info-bg: rgba(0, 0, 255, 0.2);
+    --validation-info-border: rgba(0, 0, 255, 0.5);
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .validation-notice {
+    transition: none;
+  }
+}

@@ -1,0 +1,276 @@
+// SDK Shell Design Tokens
+// Consistent spacing, typography, and pixel-aligned grid tokens
+// for the SDK UI consistency framework
+
+// ============================================================================
+// SPACING TOKENS
+// ============================================================================
+
+$spacing-xs: 6px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// CSS Custom Properties for runtime customization
+:root {
+  --sdk-spacing-xs: #{$spacing-xs};
+  --sdk-spacing-sm: #{$spacing-sm};
+  --sdk-spacing-md: #{$spacing-md};
+  --sdk-spacing-lg: #{$spacing-lg};
+  --sdk-spacing-xl: #{$spacing-xl};
+}
+
+// ============================================================================
+// TYPOGRAPHY TOKENS
+// ============================================================================
+
+$font-size-xs: 10px;
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-xxl: 22px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+:root {
+  --sdk-font-size-xs: #{$font-size-xs};
+  --sdk-font-size-sm: #{$font-size-sm};
+  --sdk-font-size-md: #{$font-size-md};
+  --sdk-font-size-lg: #{$font-size-lg};
+  --sdk-font-size-xl: #{$font-size-xl};
+  --sdk-font-size-xxl: #{$font-size-xxl};
+  
+  --sdk-font-weight-normal: #{$font-weight-normal};
+  --sdk-font-weight-medium: #{$font-weight-medium};
+  --sdk-font-weight-semibold: #{$font-weight-semibold};
+  --sdk-font-weight-bold: #{$font-weight-bold};
+}
+
+// ============================================================================
+// COLOR TOKENS (Hanseatic/Retro Theme)
+// ============================================================================
+
+$color-primary: #8abdf7;
+$color-secondary: #9fface;
+$color-accent: #ffcf79;
+$color-danger: #ff9292;
+$color-success: #a3f7bf;
+
+$color-bg-primary: transparent;
+$color-bg-secondary: rgba(255, 255, 255, 0.03);
+$color-bg-subtle: rgba(255, 255, 255, 0.02);
+$color-bg-elevated: rgba(255, 255, 255, 0.05);
+
+$color-bg-button-primary: rgba(138, 189, 255, 0.15);
+$color-bg-button-primary-hover: rgba(138, 189, 255, 0.25);
+$color-bg-button-secondary: rgba(255, 255, 255, 0.05);
+$color-bg-button-secondary-hover: rgba(255, 255, 255, 0.08);
+$color-bg-button-danger: rgba(255, 146, 146, 0.15);
+$color-bg-button-danger-hover: rgba(255, 146, 146, 0.25);
+
+$color-text-primary: #e8e0ff;
+$color-text-secondary: rgba(232, 224, 255, 0.85);
+$color-text-muted: rgba(232, 224, 255, 0.65);
+
+$color-border-subtle: rgba(255, 255, 255, 0.08);
+$color-border-medium: rgba(255, 255, 255, 0.12);
+$color-border-strong: rgba(255, 255, 255, 0.18);
+$color-border-primary: rgba(138, 189, 255, 0.3);
+$color-border-danger: rgba(255, 146, 146, 0.3);
+
+:root {
+  --sdk-accent-primary: #{$color-primary};
+  --sdk-accent-secondary: #{$color-secondary};
+  --sdk-accent-accent: #{$color-accent};
+  --sdk-accent-danger: #{$color-danger};
+  --sdk-accent-success: #{$color-success};
+  
+  --sdk-bg-primary: #{$color-bg-primary};
+  --sdk-bg-secondary: #{$color-bg-secondary};
+  --sdk-bg-subtle: #{$color-bg-subtle};
+  --sdk-bg-elevated: #{$color-bg-elevated};
+  
+  --sdk-bg-button-primary: #{$color-bg-button-primary};
+  --sdk-bg-button-primary-hover: #{$color-bg-button-primary-hover};
+  --sdk-bg-button-secondary: #{$color-bg-button-secondary};
+  --sdk-bg-button-secondary-hover: #{$color-bg-button-secondary-hover};
+  --sdk-bg-button-danger: #{$color-bg-button-danger};
+  --sdk-bg-button-danger-hover: #{$color-bg-button-danger-hover};
+  
+  --sdk-text-primary: #{$color-text-primary};
+  --sdk-text-secondary: #{$color-text-secondary};
+  --sdk-text-muted: #{$color-text-muted};
+  
+  --sdk-border-subtle: #{$color-border-subtle};
+  --sdk-border-medium: #{$color-border-medium};
+  --sdk-border-strong: #{$color-border-strong};
+  --sdk-border-primary: #{$color-border-primary};
+  --sdk-border-danger: #{$color-border-danger};
+}
+
+// ============================================================================
+// LAYOUT TOKENS
+// ============================================================================
+
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+$border-radius-pill: 999px;
+
+$transition-fast: 0.15s;
+$transition-normal: 0.25s;
+$transition-slow: 0.4s;
+
+:root {
+  --sdk-border-radius-sm: #{$border-radius-sm};
+  --sdk-border-radius-md: #{$border-radius-md};
+  --sdk-border-radius-lg: #{$border-radius-lg};
+  --sdk-border-radius-pill: #{$border-radius-pill};
+  
+  --sdk-transition-fast: #{$transition-fast};
+  --sdk-transition-normal: #{$transition-normal};
+  --sdk-transition-slow: #{$transition-slow};
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+// Pixel grid alignment - ensures UI elements align to pixel boundaries
+@mixin sdk-pixel-align {
+  transform: translateZ(0); // Force hardware acceleration
+  backface-visibility: hidden;
+}
+
+// Retro panel styling
+@mixin sdk-panel {
+  background: var(--sdk-bg-secondary, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--sdk-border-radius-md, 12px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+// Focus states that respect the retro aesthetic
+@mixin sdk-focus-state {
+  &:focus {
+    outline: 2px solid var(--sdk-accent-primary, #8abdf7);
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// These are used as shared styling patterns across SDK components
+// ============================================================================
+
+%sdk-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  margin: 0;
+  font-size: var(--sdk-font-size-sm, 12px);
+  font-weight: var(--sdk-font-weight-medium, 500);
+}
+
+%sdk-heading {
+  margin: 0;
+  color: var(--sdk-text-primary, #e8e0ff);
+  font-weight: var(--sdk-font-weight-semibold, 600);
+  line-height: 1.2;
+}
+
+%sdk-lede {
+  margin: 0;
+  color: var(--sdk-text-secondary, rgba(232, 224, 255, 0.85));
+  font-size: var(--sdk-font-size-md, 14px);
+  line-height: 1.4;
+}
+
+%sdk-pill {
+  @include sdk-pixel-align;
+  background: var(--sdk-bg-secondary, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.12));
+  border-radius: var(--sdk-border-radius-pill, 999px);
+  padding: var(--sdk-spacing-sm, 8px) var(--sdk-spacing-md, 12px);
+  display: flex;
+  gap: var(--sdk-spacing-xs, 8px);
+  align-items: center;
+  font-size: var(--sdk-font-size-sm, 12px);
+}
+
+%sdk-tab {
+  @include sdk-pixel-align;
+  @include sdk-focus-state;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--sdk-font-size-sm, 14px);
+  font-weight: var(--sdk-font-weight-medium, 500);
+  white-space: nowrap;
+}
+
+%sdk-button-base {
+  @include sdk-pixel-align;
+  @include sdk-focus-state;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: var(--sdk-font-weight-semibold, 600);
+  line-height: 1.2;
+}
+
+%sdk-list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sdk-spacing-md, 12px);
+  background: var(--sdk-bg-subtle, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.08));
+  padding: var(--sdk-spacing-md, 10px);
+  border-radius: var(--sdk-border-radius-sm, 10px);
+}
+
+%sdk-tag {
+  background: var(--sdk-bg-secondary, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.12));
+  padding: 4px var(--sdk-spacing-sm, 8px);
+  border-radius: var(--sdk-border-radius-pill, 999px);
+  font-size: var(--sdk-font-size-xs, 12px);
+  font-weight: var(--sdk-font-weight-medium, 500);
+}
+
+%sdk-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sdk-spacing-xs, 4px);
+  font-size: var(--sdk-font-size-sm, 14px);
+  
+  > span {
+    font-weight: var(--sdk-font-weight-medium, 500);
+    color: var(--sdk-text-secondary, rgba(232, 224, 255, 0.85));
+  }
+}
+
+%sdk-form-input {
+  @include sdk-pixel-align;
+  @include sdk-focus-state;
+  background: var(--sdk-bg-button-secondary, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--sdk-border-medium, rgba(255, 255, 255, 0.12));
+  color: var(--sdk-text-primary, #e8e0ff);
+  border-radius: var(--sdk-border-radius-sm, 8px);
+  padding: var(--sdk-spacing-sm, 8px) var(--sdk-spacing-md, 10px);
+  font-size: var(--sdk-font-size-sm, 14px);
+  font-family: inherit;
+  
+  &::placeholder {
+    color: var(--sdk-text-muted, rgba(232, 224, 255, 0.65));
+  }
+}

@@ -1,0 +1,165 @@
+@import '../../sdk-shell/sdk-shell-tokens';
+
+// Goods Manager Validation Integration Example Styles
+// Demonstrates proper placement and usage of validation components
+
+.goods-validation-example {
+  padding: var(--sdk-spacing-lg, 24px);
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--sdk-font-family, system-ui);
+
+  h3 {
+    color: var(--sdk-color-text-primary, #ffffff);
+    margin-bottom: var(--sdk-spacing-md, 16px);
+    font-size: var(--sdk-font-size-xl, 20px);
+    font-weight: var(--sdk-font-weight-semibold, 600);
+  }
+
+  h4 {
+    color: var(--sdk-color-text-secondary, #cccccc);
+    margin: var(--sdk-spacing-lg, 24px) 0 var(--sdk-spacing-sm, 12px);
+    font-size: var(--sdk-font-size-lg, 16px);
+    font-weight: var(--sdk-font-weight-medium, 500);
+  }
+}
+
+// Validation Section Styling
+.validation-section {
+  margin-bottom: var(--sdk-spacing-xl, 32px);
+  padding: var(--sdk-spacing-md, 16px);
+  background: var(--sdk-bg-panel, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--sdk-border-light, rgba(255, 255, 255, 0.08));
+  border-radius: var(--sdk-border-radius-md, 8px);
+}
+
+// Goods List Section
+.goods-list-section {
+  margin-bottom: var(--sdk-spacing-xl, 32px);
+}
+
+.goods-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sdk-spacing-sm, 12px);
+}
+
+// Individual Goods Item
+.goods-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sdk-spacing-sm, 12px);
+  padding: var(--sdk-spacing-md, 16px);
+  background: var(--sdk-bg-surface, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--sdk-border-light, rgba(255, 255, 255, 0.08));
+  border-radius: var(--sdk-border-radius-sm, 6px);
+  transition: all var(--sdk-transition-fast, 0.15s) ease;
+
+  &:hover {
+    background: var(--sdk-bg-surface-hover, rgba(255, 255, 255, 0.05));
+    border-color: var(--sdk-border-medium, rgba(255, 255, 255, 0.12));
+  }
+
+  // Status-based styling
+  &--error {
+    border-left: 4px solid var(--validation-error-border);
+  }
+
+  &--warning {
+    border-left: 4px solid var(--validation-warning-border);
+  }
+
+  &--info {
+    border-left: 4px solid var(--validation-info-border);
+  }
+
+  // Content area
+  &__content {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0 0 var(--sdk-spacing-xs, 6px);
+    color: var(--sdk-color-text-primary, #ffffff);
+    font-size: var(--sdk-font-size-md, 14px);
+    font-weight: var(--sdk-font-weight-medium, 500);
+  }
+
+  &__id {
+    margin: 0 0 var(--sdk-spacing-sm, 12px);
+    color: var(--sdk-color-text-secondary, #cccccc);
+    font-size: var(--sdk-font-size-sm, 12px);
+    font-family: 'Courier New', monospace;
+    opacity: 0.8;
+  }
+}
+
+// Guidelines Section
+.guidelines-section {
+  padding: var(--sdk-spacing-md, 16px);
+  background: var(--sdk-bg-panel, rgba(138, 189, 255, 0.05));
+  border: 1px solid var(--validation-info-border);
+  border-radius: var(--sdk-border-radius-sm, 6px);
+
+  ul {
+    margin: var(--sdk-spacing-sm, 12px) 0 0;
+    padding-left: var(--sdk-spacing-lg, 24px);
+  }
+
+  li {
+    margin-bottom: var(--sdk-spacing-xs, 6px);
+    color: var(--sdk-color-text-secondary, #cccccc);
+    font-size: var(--sdk-font-size-sm, 14px);
+    line-height: 1.4;
+
+    strong {
+      color: var(--sdk-color-text-primary, #ffffff);
+      font-weight: var(--sdk-font-weight-medium, 500);
+    }
+
+    code {
+      background: var(--sdk-bg-code, rgba(255, 255, 255, 0.1));
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: var(--sdk-font-size-xs, 12px);
+      font-family: 'Courier New', monospace;
+      color: var(--validation-info-text);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .goods-validation-example {
+    padding: var(--sdk-spacing-md, 16px);
+  }
+
+  .goods-item {
+    flex-direction: column;
+    align-items: stretch;
+    
+    app-validation-badge {
+      align-self: flex-start;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .goods-item {
+    border-width: 2px;
+    
+    &--error {
+      border-left-width: 6px;
+    }
+    
+    &--warning {
+      border-left-width: 6px;
+    }
+    
+    &--info {
+      border-left-width: 6px;
+    }
+  }
+}

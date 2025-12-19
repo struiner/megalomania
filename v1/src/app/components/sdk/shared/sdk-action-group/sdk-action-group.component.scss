@@ -1,0 +1,99 @@
+@import '../sdk-shell/sdk-shell-tokens';
+
+.sdk-action-group {
+  display: flex;
+  gap: var(--sdk-spacing-xs, 6px);
+  align-items: center;
+
+  // Direction variants
+  &--horizontal {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  // Action button styles
+  &__btn {
+    @extend %sdk-button-base;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sdk-spacing-xs, 4px);
+    padding: var(--sdk-spacing-sm, 8px) var(--sdk-spacing-md, 12px);
+    font-size: var(--sdk-font-size-sm, 14px);
+    border-radius: var(--sdk-border-radius-sm, 8px);
+    border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.12));
+    background: var(--sdk-bg-button-secondary, rgba(255, 255, 255, 0.05));
+    color: inherit;
+    cursor: pointer;
+    transition: all var(--sdk-transition-fast, 0.15s) ease;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: var(--sdk-bg-button-secondary-hover, rgba(255, 255, 255, 0.08));
+      border-color: var(--sdk-border-medium, rgba(255, 255, 255, 0.18));
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    // Size variants
+    &--sm {
+      padding: var(--sdk-spacing-xs, 4px) var(--sdk-spacing-sm, 8px);
+      font-size: var(--sdk-font-size-xs, 12px);
+    }
+
+    &--lg {
+      padding: var(--sdk-spacing-md, 12px) var(--sdk-spacing-lg, 16px);
+      font-size: var(--sdk-font-size-md, 16px);
+    }
+
+    // Variant styles
+    &--primary {
+      background: var(--sdk-bg-button-primary, rgba(138, 189, 255, 0.15));
+      border-color: var(--sdk-border-primary, rgba(138, 189, 255, 0.3));
+      
+      &:hover:not(:disabled) {
+        background: var(--sdk-bg-button-primary-hover, rgba(138, 189, 255, 0.25));
+      }
+    }
+
+    &--danger {
+      background: var(--sdk-bg-button-danger, rgba(255, 146, 146, 0.15));
+      border-color: var(--sdk-border-danger, rgba(255, 146, 146, 0.3));
+      
+      &:hover:not(:disabled) {
+        background: var(--sdk-bg-button-danger-hover, rgba(255, 146, 146, 0.25));
+      }
+    }
+
+    // Icon-only variant
+    &--icon-only {
+      padding: var(--sdk-spacing-sm, 8px);
+      aspect-ratio: 1;
+      min-width: var(--sdk-spacing-xl, 32px);
+      
+      .sdk-action-group__label {
+        display: none;
+      }
+    }
+  }
+
+  &__icon {
+    font-size: var(--sdk-font-size-sm, 14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__label {
+    font-weight: inherit;
+  }
+}

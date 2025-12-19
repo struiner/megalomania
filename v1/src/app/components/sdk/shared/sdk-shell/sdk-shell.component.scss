@@ -1,0 +1,188 @@
+// SDK Shell Component Styles
+//遵循 UI & Ergonomics Charter - structural fidelity focused
+
+.sdk-shell {
+  color: #e8e0ff;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sdk-spacing-md, 16px);
+  min-height: 100vh;
+  background: var(--sdk-bg-primary, transparent);
+
+  // Header Section
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sdk-spacing-md, 16px);
+    padding-bottom: var(--sdk-spacing-sm, 8px);
+    border-bottom: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.08));
+  }
+
+  &__title {
+    flex: 1 1 auto;
+  }
+
+  &__eyebrow {
+    @extend %sdk-eyebrow;
+  }
+
+  &__heading {
+    @extend %sdk-heading;
+    margin: 2px 0 4px;
+    font-size: var(--sdk-font-size-xl, 22px);
+  }
+
+  &__lede {
+    @extend %sdk-lede;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--sdk-spacing-xs, 8px);
+    align-items: center;
+  }
+
+  // Summary Stats
+  &__summary {
+    display: flex;
+    gap: var(--sdk-spacing-xs, 10px);
+    flex-wrap: wrap;
+  }
+
+  &__stat-pill {
+    @extend %sdk-pill;
+    
+    .sdk-shell__stat-label {
+      opacity: 0.8;
+    }
+    
+    .sdk-shell__stat-value {
+      font-weight: 700;
+    }
+  }
+
+  // Tab Navigation
+  &__tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.08));
+    margin-bottom: var(--sdk-spacing-md, 16px);
+  }
+
+  &__tab {
+    @extend %sdk-tab;
+    padding: var(--sdk-spacing-sm, 8px) var(--sdk-spacing-md, 16px);
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: var(--sdk-font-size-sm, 14px);
+    border-bottom: 2px solid transparent;
+    transition: all var(--sdk-transition-fast, 0.15s) ease;
+
+    &:hover {
+      background: var(--sdk-bg-subtle, rgba(255, 255, 255, 0.03));
+    }
+
+    &--active {
+      color: var(--sdk-accent-primary, #8abdf7);
+      border-bottom-color: var(--sdk-accent-primary, #8abdf7);
+      background: var(--sdk-bg-subtle, rgba(255, 255, 255, 0.03));
+    }
+  }
+
+  // Main Content Area
+  &__main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; // Allow flex child to shrink
+  }
+
+  &__pane {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__tab-content {
+    display: none;
+    
+    &--active {
+      display: block;
+    }
+  }
+
+  // Bottom Action Bar - Charter compliant: bottom heavy and stable
+  &__actions-bar {
+    margin-top: auto;
+    padding-top: var(--sdk-spacing-md, 16px);
+    border-top: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.08));
+    background: var(--sdk-bg-elevated, rgba(255, 255, 255, 0.02));
+  }
+
+  &__actions-group {
+    display: flex;
+    gap: var(--sdk-spacing-sm, 8px);
+    justify-content: flex-end; // Right-aligned per charter symmetry
+  }
+
+  // Action Buttons
+  &__action-btn {
+    @extend %sdk-button-base;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sdk-spacing-xs, 6px);
+    padding: var(--sdk-spacing-sm, 8px) var(--sdk-spacing-md, 12px);
+    font-size: var(--sdk-font-size-sm, 14px);
+    border-radius: var(--sdk-border-radius-sm, 8px);
+    border: 1px solid var(--sdk-border-subtle, rgba(255, 255, 255, 0.12));
+    background: var(--sdk-bg-button-secondary, rgba(255, 255, 255, 0.05));
+    color: inherit;
+    cursor: pointer;
+    transition: all var(--sdk-transition-fast, 0.15s) ease;
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      background: var(--sdk-bg-button-secondary-hover, rgba(255, 255, 255, 0.08));
+      border-color: var(--sdk-border-medium, rgba(255, 255, 255, 0.18));
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    // Primary variant
+    &--primary {
+      background: var(--sdk-bg-button-primary, rgba(138, 189, 255, 0.15));
+      border-color: var(--sdk-border-primary, rgba(138, 189, 255, 0.3));
+      
+      &:hover:not(:disabled) {
+        background: var(--sdk-bg-button-primary-hover, rgba(138, 189, 255, 0.25));
+      }
+    }
+
+    // Danger variant
+    &--danger {
+      background: var(--sdk-bg-button-danger, rgba(255, 146, 146, 0.15));
+      border-color: var(--sdk-border-danger, rgba(255, 146, 146, 0.3));
+      
+      &:hover:not(:disabled) {
+        background: var(--sdk-bg-button-danger-hover, rgba(255, 146, 146, 0.25));
+      }
+    }
+  }
+
+  &__action-icon {
+    font-size: var(--sdk-font-size-sm, 14px);
+  }
+
+  // Tabbed shell modifier
+  &--tabbed {
+    .sdk-shell__main {
+      padding-top: 0;
+    }
+  }
+}

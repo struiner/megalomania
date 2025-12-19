@@ -1,0 +1,62 @@
+<!-- Goods Manager Validation Integration Example -->
+<div class="goods-validation-example">
+  <h3>Goods Manager Validation Integration</h3>
+  
+  <!-- Validation Summary Section -->
+  <div class="validation-section">
+    <h4>Validation Summary</h4>
+    <app-validation-collapsible
+      [notices]="allNotices"
+      [showPaths]="true"
+      [actionable]="true"
+      [onNoticeAction]="onNoticeAction"
+      title="Goods Validation Issues"
+    ></app-validation-collapsible>
+  </div>
+
+  <!-- Goods List with Validation Badges -->
+  <div class="goods-list-section">
+    <h4>Goods Items with Validation Indicators</h4>
+    <div class="goods-list">
+      <div 
+        *ngFor="let item of goodsItems" 
+        class="goods-item"
+        [class]="'goods-item--' + item.status"
+      >
+        <!-- Validation Badge (per-row indicator) -->
+        <app-validation-badge
+          [notice]="item.notice"
+          [clickable]="true"
+          [showIcon]="true"
+          (onClick)="onBadgeClick(item)"
+        ></app-validation-badge>
+        
+        <!-- Goods Item Details -->
+        <div class="goods-item__content">
+          <h5 class="goods-item__name">{{ item.name }}</h5>
+          <p class="goods-item__id">ID: {{ item.id }}</p>
+          
+          <!-- Detailed Validation Notice (expandable) -->
+          <app-validation-notice
+            [notice]="item.notice"
+            [showPath]="true"
+            [actionable]="true"
+            [onAction]="() => onNoticeAction(item.notice)"
+          ></app-validation-notice>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Usage Guidelines -->
+  <div class="guidelines-section">
+    <h4>Integration Guidelines</h4>
+    <ul>
+      <li><strong>Summary Bar:</strong> Use <code>validation-collapsible</code> for overall validation status</li>
+      <li><strong>Per-Row Badges:</strong> Use <code>validation-badge</code> for list items with validation issues</li>
+      <li><strong>Detailed Notices:</strong> Use <code>validation-notice</code> for comprehensive error information</li>
+      <li><strong>Placement:</strong> Keep validation UI in secondary attention zones, never center screen</li>
+      <li><strong>Accessibility:</strong> All components include proper ARIA roles and keyboard navigation</li>
+    </ul>
+  </div>
+</div>

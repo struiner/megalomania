@@ -20,13 +20,11 @@ import {
 import {
   RoomBlueprint,
   RoomBlueprintIdentifier,
-} from './room-blueprint.models';
-  RoomBlueprintApplicationTarget,
   RoomBlueprintReference,
   RoomBlueprintValidationHook,
+  RoomBlueprintApplicationTarget,
   RoomConstructionSite,
 } from './room-blueprint.models';
-import { CultureTagId, TechResearchPointer } from './tech-tree.models';
 
 export enum TimeSpeed {
   SLOW = 3000,
@@ -203,7 +201,7 @@ export interface RoomBlueprintExportedPayload extends RoomBlueprintEventBase {
 }
 
 export interface RoomBlueprintDeprecatedPayload extends RoomBlueprintEventBase {
-  reason: 'superseded' | 'invalidated' | 'retired';
+  reason: 'superseded' | 'invalidated' | 'withdrawn';
   replacementBlueprintId?: string;
   deprecationNotes?: string;
 }

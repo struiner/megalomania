@@ -1,0 +1,82 @@
+<!-- SDK Shell Component - Provides consistent layout structure for all SDK tools -->
+<section class="sdk-shell" [class.sdk-shell--tabbed]="hasTabs">
+  <!-- Header Section -->
+  <header class="sdk-shell__header">
+    <div class="sdk-shell__title">
+      <p class="sdk-shell__eyebrow">{{ eyebrowText }}</p>
+      <h2 class="sdk-shell__heading">{{ title }}</h2>
+      <p class="sdk-shell__lede" *ngIf="ledeText">{{ ledeText }}</p>
+    </div>
+    
+    <div class="sdk-shell__actions" *ngIf="headerActions?.length">
+      <button 
+        *ngFor="let action of headerActions" 
+        [class]="getActionButtonClass(action)"
+        [type]="action.type || 'button'"
+        (click)="action.onClick?.()"
+        [disabled]="action.disabled"
+      >
+        <span class="sdk-shell__action-icon" *ngIf="action.icon">{{ action.icon }}</span>
+        {{ action.label }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Summary Stats Section (optional) -->
+  <div class="sdk-shell__summary" *ngIf="summaryStats?.length">
+    <div class="sdk-shell__stat-pill" *ngFor="let stat of summaryStats">
+      <span class="sdk-shell__stat-label">{{ stat.label }}</span>
+      <span class="sdk-shell__stat-value">{{ stat.value }}</span>
+    </div>
+  </div>
+
+  <!-- Tab Navigation (when tabs are present) -->
+  <nav class="sdk-shell__tabs" *ngIf="hasTabs && tabs?.length">
+    <button
+      *ngFor="let tab of tabs; trackBy: trackByTab"
+      class="sdk-shell__tab"
+      [class.sdk-shell__tab--active]="tab.id === activeTabId"
+      (click)="selectTab(tab.id)"
+      type="button"
+    >
+      {{ tab.label }}
+    </button>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="sdk-shell__main">
+    <!-- Single Pane Mode -->
+    <div class="sdk-shell__pane" *ngIf="!hasTabs">
+      <ng-content></ng-content>
+    </div>
+
+    <!-- Tabbed Pane Mode -->
+    <div class="sdk-shell__pane" *ngIf="hasTabs">
+      <ng-container *ngFor="let tab of tabs; trackBy: trackByTab">
+        <div 
+          class="sdk-shell__tab-content" 
+          [class.sdk-shell__tab-content--active]="tab.id === activeTabId"
+          *ngIf="tab.id === activeTabId"
+        >
+          <ng-container [ngTemplateOutlet]="tab.content"></ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </main>
+
+  <!-- Bottom Action Bar -->
+  <footer class="sdk-shell__actions-bar" *ngIf="bottomActions?.length">
+    <div class="sdk-shell__actions-group">
+      <button
+        *ngFor="let action of bottomActions; trackBy: trackByAction"
+        [class]="getActionButtonClass(action)"
+        [type]="action.type || 'button'"
+        (click)="action.onClick?.()"
+        [disabled]="action.disabled"
+      >
+        <span class="sdk-shell__action-icon" *ngIf="action.icon">{{ action.icon }}</span>
+        {{ action.label }}
+      </button>
+    </div>
+  </footer>
+</section>

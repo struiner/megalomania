@@ -1,0 +1,14 @@
+<!-- SDK Action Group Component - Consistent action button grouping -->
+<div class="sdk-action-group" [class.sdk-action-group--horizontal]="direction === 'horizontal'" [class.sdk-action-group--vertical]="direction === 'vertical'">
+  <button
+    *ngFor="let action of actions; trackBy: trackByAction"
+    [class]="getActionButtonClass(action)"
+    [type]="action.type || 'button'"
+    (click)="action.onClick?.()"
+    [disabled]="action.disabled"
+    [title]="action.title || action.label"
+  >
+    <span class="sdk-action-group__icon" *ngIf="action.icon">{{ action.icon }}</span>
+    <span class="sdk-action-group__label">{{ action.label }}</span>
+  </button>
+</div>

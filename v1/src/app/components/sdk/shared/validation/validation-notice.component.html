@@ -1,0 +1,24 @@
+<!-- Validation Notice Component - Individual validation message display -->
+<div 
+  class="validation-notice"
+  [class]="'validation-notice--' + notice.severity"
+  [attr.aria-label]="getAriaLabel()"
+  [attr.role]="getAriaRole()"
+>
+  <div class="validation-notice__content">
+    <p class="validation-notice__message">{{ notice.message }}</p>
+    <p class="validation-notice__suggestion" *ngIf="notice.suggestion">{{ notice.suggestion }}</p>
+    <p class="validation-notice__path" *ngIf="showPath && notice.path">{{ notice.path }}</p>
+  </div>
+  
+  <!-- Optional action button -->
+  <button 
+    *ngIf="actionable"
+    class="validation-notice__action"
+    type="button"
+    (click)="onAction?.()"
+    [attr.aria-label]="getActionAriaLabel()"
+  >
+    <span class="validation-notice__action-icon">→</span>
+  </button>
+</div>
