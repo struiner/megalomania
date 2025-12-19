@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { BiomeType } from '../enums/BiomeType';
 import { HazardSeverity } from '../enums/HazardSeverity';
 import { HazardDefinition, HazardType, HAZARD_DEFINITIONS } from '../enums/HazardType';
-import { HazardType } from '../enums/HazardType';
-import { HazardSeverity } from '../enums/HazardSeverity';
 
 export interface HazardOption {
   id: HazardType;
