@@ -1,19 +1,28 @@
 import { Injectable } from '@angular/core';
 
 import { HazardType } from '../enums/HazardType';
+import { HazardSeverity } from '../enums/HazardSeverity';
 
 export interface HazardOption {
   id: HazardType;
   label: string;
   category: 'environmental' | 'structural' | 'biological' | 'security';
   tags: string[];
+  severity?: HazardSeverity;
 }
 
 @Injectable({ providedIn: 'root' })
 export class HazardTypeAdapterService {
   private readonly locale = 'en';
 
-  // TODO: Extend with explicit severity categories once validation service consumes them.
+  /**
+   * Adapter responsible for translating `HazardType` enum values into UI-ready option objects.
+   *
+   * Categories and tags remain stable for compatibility with existing picker flows and validation
+   * logic. The optional `severity` field provides a normalized signal for UI overlays (e.g., hazard
+   * badges) without forcing consumers to rework existing category/tag handling. Consumers MAY ignore
+   * severity until hazard simulation/validation layers explicitly require it.
+   */
 
   private readonly categoryMap: Record<HazardType, HazardOption['category']> = {
     [HazardType.Fire]: 'environmental',
@@ -49,6 +58,42 @@ export class HazardTypeAdapterService {
     [HazardType.Vacuum]: 'environmental',
     [HazardType.Fauna]: 'biological',
     [HazardType.PressureLoss]: 'environmental',
+  };
+
+  private readonly severityMap: Record<HazardType, HazardSeverity> = {
+    [HazardType.Fire]: HazardSeverity.Critical,
+    [HazardType.Flood]: HazardSeverity.Warning,
+    [HazardType.Earthquake]: HazardSeverity.Fatal,
+    [HazardType.Storm]: HazardSeverity.Warning,
+    [HazardType.HarshWinter]: HazardSeverity.Warning,
+    [HazardType.BuildingCollapse]: HazardSeverity.Fatal,
+    [HazardType.StructuralFailure]: HazardSeverity.Critical,
+    [HazardType.Plague]: HazardSeverity.Fatal,
+    [HazardType.Epidemic]: HazardSeverity.Critical,
+    [HazardType.LivestockDisease]: HazardSeverity.Warning,
+    [HazardType.CropFailure]: HazardSeverity.Warning,
+    [HazardType.Famine]: HazardSeverity.Fatal,
+    [HazardType.Radiation]: HazardSeverity.Fatal,
+    [HazardType.ToxicSpill]: HazardSeverity.Critical,
+    [HazardType.VentilationFailure]: HazardSeverity.Critical,
+    [HazardType.VacuumBreach]: HazardSeverity.Fatal,
+    [HazardType.War]: HazardSeverity.Fatal,
+    [HazardType.Raid]: HazardSeverity.Critical,
+    [HazardType.Intrusion]: HazardSeverity.Warning,
+    [HazardType.ContainmentBreach]: HazardSeverity.Critical,
+    [HazardType.SocialUnrest]: HazardSeverity.Warning,
+    [HazardType.WitchHunt]: HazardSeverity.Warning,
+    [HazardType.Electrical]: HazardSeverity.Warning,
+    [HazardType.MagicalBacklash]: HazardSeverity.Critical,
+    [HazardType.Flooding]: HazardSeverity.Warning,
+    [HazardType.VacuumExposure]: HazardSeverity.Fatal,
+    [HazardType.HostileFauna]: HazardSeverity.Warning,
+    [HazardType.Biohazard]: HazardSeverity.Critical,
+    [HazardType.Chemical]: HazardSeverity.Warning,
+    [HazardType.ToxicGas]: HazardSeverity.Fatal,
+    [HazardType.Vacuum]: HazardSeverity.Fatal,
+    [HazardType.Fauna]: HazardSeverity.Warning,
+    [HazardType.PressureLoss]: HazardSeverity.Fatal,
   };
 
   private readonly tags: Record<HazardType, string[]> = {
@@ -104,6 +149,7 @@ export class HazardTypeAdapterService {
       label: this.formatLabel(id),
       category: this.categoryMap[id] ?? 'environmental',
       tags: this.tags[id] ?? [],
+      severity: this.severityMap[id],
     };
   }
 
