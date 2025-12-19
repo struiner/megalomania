@@ -4,7 +4,7 @@ import { BiomeType } from '../enums/BiomeType';
 import { HazardType } from '../enums/HazardType';
 import { SettlementType } from '../enums/SettlementType';
 import { StructureType } from '../enums/StructureType';
-import { RoomBlueprint } from '../models/room-blueprint.model';
+import { RoomBlueprint } from '../models/room-blueprint.models';
 
 type RoomContextNoticeSeverity = 'info' | 'warning';
 
@@ -153,7 +153,12 @@ export class RoomWorldContextValidationService {
   validatePlacement(blueprint: RoomBlueprint, context: RoomWorldContext): RoomWorldValidationResult {
     const notices: RoomContextNotice[] = [];
     const biome = this.normalizeBiome(context.biome);
-    const hazardSet = new Set(blueprint.hazards);
+    // Convert string hazards to HazardType enum values, filtering out invalid ones
+    const hazardSet = new Set<HazardType>(
+      blueprint.hazards
+        .map(h => typeof h === 'string' ? h as HazardType : h)
+        .filter(h => Object.values(HazardType).includes(h as HazardType))
+    );
 
     this.guardStructureBiome(biome, context.structureType, notices);
     this.guardHazardsAgainstBiome(hazardSet, biome, context, notices);

@@ -1,6 +1,14 @@
 import { ID } from '../types/ID';
 import { Position } from '../types/Position';
 import { ValidationNotice } from './validation.models';
+import { StructureType } from '../enums/StructureType';
+import { RoomHazardType } from '../enums/RoomHazardType';
+import { GoodsType } from '../enums/GoodsType';
+import { HazardType } from '../enums/HazardType';
+import { ChunkCoord, Hash128, PlayerID } from './anna-readme.models';
+
+// Re-export HazardType for convenience to match usage patterns
+export { HazardType };
 
 export type RoomHazard = string;
 
@@ -19,89 +27,6 @@ export interface RoomBlueprintPrerequisite {
   requiresSockets?: ID[];
   description?: string;
 }
-//TODO: Consolidate code
-
-import { Position } from '../types/Position';
-import { ID } from '../types/ID';
-import { StructureType } from '../enums/StructureType';
-import { RoomHazardType } from '../enums/RoomHazardType';
-
-export interface RoomBlueprint {
-  id: ID;
-  name: string;
-  purpose: string;
-  width: number;
-  height: number;
-  hazards: RoomHazard[];
-  sockets?: RoomSocket[];
-  prerequisites?: RoomBlueprintPrerequisite[];
-  features: string[];
-  notes?: string;
-}
-
-export interface RoomBlueprintValidationResult {
-  blueprintId: ID;
-  blueprintName: string;
-  notices: ValidationNotice[];
-}
-
-export interface RoomBlueprintValidationOptions {
-  hazardVocabulary?: RoomHazard[];
-  socketKinds?: RoomSocketKind[];
-  knownBlueprintIds?: ReadonlySet<ID> | ID[];
-  enforceUniqueBlueprintIds?: boolean;
-  width: number;
-  height: number;
-  purpose: string;
-  hazards: RoomHazardType[];
-  features: string[];
-  structureType?: StructureType;
-  anchor?: Position;
-  metadata?: Record<string, unknown>;
-  version: number;
-}
-
-export interface RoomBlueprintImportOptions {
-  /**
-   * Deduplicate hazards during normalization. Defaults to `true` to keep deterministic exports.
-   */
-  deduplicateHazards?: boolean;
-}
-
-export interface RoomBlueprintValidationIssue {
-  path: string;
-  message: string;
-  severity: 'warning' | 'error';
-}
-
-export interface RoomBlueprintValidationSummary {
-  hasErrors: boolean;
-  issues: RoomBlueprintValidationIssue[];
-  issuesByPath: Record<string, RoomBlueprintValidationIssue[]>;
-}
-
-export interface RoomBlueprintImportResult {
-  blueprint: RoomBlueprint;
-  orderedBlueprint: RoomBlueprint;
-  validation: RoomBlueprintValidationSummary;
-  normalizedFrom: unknown;
-}
-
-export interface RoomBlueprintExportResult {
-  json: string;
-  orderedBlueprint: RoomBlueprint;
-  validation: RoomBlueprintValidationSummary;
-}
-
-export class RoomBlueprintValidationError extends Error {
-  constructor(readonly summary: RoomBlueprintValidationSummary) {
-    super(summary.issues.map((issue) => `${issue.path}: ${issue.message}`).join('; ') || 'Room blueprint validation failed.');
-  }
-import { GoodsType } from '../enums/GoodsType';
-import { HazardType } from '../enums/HazardType';
-import { StructureType } from '../enums/StructureType';
-import { ID } from '../types/ID';
-import { Position } from '../types/Position';
 
 export interface RoomBlueprintIdentifier {
   /** Lower_snake_case, stable across imports; used as ledger entity key. */
@@ -140,7 +65,7 @@ export type SocketOrientation =
   | 'ceiling'
   | 'floor';
 
-export interface RoomSocket {
+export interface AdvancedRoomSocket {
   socketId: ID;
   type: RoomSocketType;
   position: Position;
@@ -183,24 +108,112 @@ export interface RoomBlueprintMetadata {
   createdAtIso?: string;
   lastUpdatedAtIso?: string;
   checksum128?: string;
+  [key: string]: unknown; // Allow arbitrary metadata properties
 }
 
+/**
+ * Unified RoomBlueprint interface that supports multiple usage patterns:
+ * - Simple pattern: id, width, height, features as string[]
+ * - Advanced pattern: blueprintId, dimensions object, features as complex objects
+ * - Legacy pattern: direct width/height properties with various hazard types
+ */
 export interface RoomBlueprint {
-  blueprintId: RoomBlueprintIdentifier;
+  // Core identity - supports both simple string id and complex identifier
+  id: ID;
+  blueprintId?: RoomBlueprintIdentifier; // Optional for advanced usage
+  
+  // Basic properties
   name: string;
-  purpose: string; // freeform per task guidance
-  structureType?: StructureType;
-  dimensions: RoomDimensions;
-  hazards: HazardType[];
+  purpose: string;
+  
+  // Dimensions - support both direct properties and nested object
+  width: number;
+  height: number;
+  dimensions?: RoomDimensions; // Optional for advanced usage
+  
+  // Hazards - support multiple hazard type patterns
+  hazards: (HazardType | RoomHazardType | RoomHazard)[];
+  
+  // Features - support both string array and complex objects
   features: string[];
-  sockets: RoomSocket[];
+  
+  // Optional advanced properties
+  sockets?: (RoomSocket | AdvancedRoomSocket)[];
+  prerequisites?: RoomBlueprintPrerequisite[];
+  notes?: string;
+  structureType?: StructureType;
+  anchor?: Position;
+  metadata?: RoomBlueprintMetadata;
+  version?: number | string;
+  tags?: string[];
   costs?: RoomCost[];
   constraints?: RoomConstraint[];
-  tags?: string[];
-  metadata?: RoomBlueprintMetadata;
+  depth?: number;
+  gridUnit?: number;
+  origin?: Position;
 }
 
 export type RoomTemplate = RoomBlueprint;
+
+export interface RoomBlueprintValidationResult {
+  blueprintId: ID;
+  blueprintName: string;
+  notices: ValidationNotice[];
+}
+
+export interface RoomBlueprintValidationOptions {
+  hazardVocabulary?: RoomHazard[];
+  socketKinds?: RoomSocketKind[];
+  knownBlueprintIds?: ReadonlySet<ID> | ID[];
+  enforceUniqueBlueprintIds?: boolean;
+  width?: number;
+  height?: number;
+  purpose?: string;
+  hazards?: RoomHazardType[];
+  features?: string[];
+  structureType?: StructureType;
+  anchor?: Position;
+  metadata?: Record<string, unknown>;
+  version?: number;
+}
+
+export interface RoomBlueprintImportOptions {
+  /**
+   * Deduplicate hazards during normalization. Defaults to `true` to keep deterministic exports.
+   */
+  deduplicateHazards?: boolean;
+}
+
+export interface RoomBlueprintValidationIssue {
+  path: string;
+  message: string;
+  severity: 'warning' | 'error';
+}
+
+export interface RoomBlueprintValidationSummary {
+  hasErrors: boolean;
+  issues: RoomBlueprintValidationIssue[];
+  issuesByPath: Record<string, RoomBlueprintValidationIssue[]>;
+}
+
+export interface RoomBlueprintImportResult {
+  blueprint: RoomBlueprint;
+  orderedBlueprint: RoomBlueprint;
+  validation: RoomBlueprintValidationSummary;
+  normalizedFrom: unknown;
+}
+
+export interface RoomBlueprintExportResult {
+  json: string;
+  orderedBlueprint: RoomBlueprint;
+  validation: RoomBlueprintValidationSummary;
+}
+
+export class RoomBlueprintValidationError extends Error {
+  constructor(readonly summary: RoomBlueprintValidationSummary) {
+    super(summary.issues.map((issue) => `${issue.path}: ${issue.message}`).join('; ') || 'Room blueprint validation failed.');
+  }
+}
 
 export interface RoomBlueprintOrderingRules {
   hazards: string;
@@ -265,26 +278,27 @@ export const ROOM_BLUEPRINT_SERIALIZATION_RULES: RoomBlueprintSerializationRules
 
 export const ROOM_BLUEPRINT_FIXTURES: RoomBlueprint[] = [
   {
-    blueprintId: { id: 'crew_quarters_mk1', version: '1.0.0', namespace: 'core' },
+    id: 'crew_quarters_mk1',
     name: 'Crew Quarters Mk I',
     purpose: 'Crew rest and rotation',
-    structureType: StructureType.Barracks,
-    dimensions: { width: 8, height: 6, origin: { x: 0, y: 0 } },
+    width: 8,
+    height: 6,
     hazards: [HazardType.Fire, HazardType.Intrusion],
     features: ['Sleeping pods', 'Lockers', 'Emergency mask cache'],
+    structureType: StructureType.Barracks,
     sockets: [
       {
-        socketId: 'door_north',
-        type: RoomSocketType.Door,
+        id: 'door_north',
+        kind: 'structural',
         position: { x: 3, y: 0 },
-        orientation: 'north',
-        required: true
+        label: 'Main entrance'
       },
       {
         socketId: 'vent_stack',
         type: RoomSocketType.Ventilation,
         position: { x: 7, y: 2 },
-        orientation: 'ceiling'
+        orientation: 'ceiling',
+        label: 'Air circulation'
       }
     ],
     costs: [
@@ -300,23 +314,24 @@ export const ROOM_BLUEPRINT_FIXTURES: RoomBlueprint[] = [
       author: 'sdk-sample',
       source: 'sdk',
       checksum128: 'crew_quarters_mk1_v1'
-    }
+    },
+    version: '1.0.0'
   },
   {
-    blueprintId: { id: 'reactor_control', version: '1.0.0', namespace: 'core' },
+    id: 'reactor_control',
     name: 'Reactor Control',
     purpose: 'Monitoring and emergency shutdown',
-    structureType: StructureType.Tower,
-    dimensions: { width: 6, height: 6, origin: { x: 0, y: 0 } },
+    width: 6,
+    height: 6,
     hazards: [HazardType.Electrical, HazardType.Radiation, HazardType.ToxicSpill],
     features: ['Reinforced console dais', 'Shielded cabling trench', 'Emergency coolant purge lever'],
+    structureType: StructureType.Tower,
     sockets: [
       {
-        socketId: 'access_hatch',
-        type: RoomSocketType.Door,
+        id: 'access_hatch',
+        kind: 'structural',
         position: { x: 0, y: 3 },
-        orientation: 'west',
-        required: true
+        label: 'Access point'
       },
       {
         socketId: 'data_bus',
@@ -355,13 +370,12 @@ export const ROOM_BLUEPRINT_FIXTURES: RoomBlueprint[] = [
       author: 'sdk-sample',
       source: 'sdk',
       checksum128: 'reactor_control_v1'
-    }
+    },
+    version: '1.0.0'
   }
 ];
-import { HazardType } from '../enums/HazardType';
-import { StructureType } from '../enums/StructureType';
-import { ChunkCoord, Hash128, PlayerID } from './anna-readme.models';
 
+// Legacy interfaces for backward compatibility with ledger and other systems
 export interface RoomBlueprintFootprint {
   width: number;
   height: number;

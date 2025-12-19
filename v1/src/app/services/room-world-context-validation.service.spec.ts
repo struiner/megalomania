@@ -3,16 +3,17 @@ import { Biome } from '../enums/Biome';
 import { HazardType } from '../enums/HazardType';
 import { SettlementType } from '../enums/SettlementType';
 import { StructureType } from '../enums/StructureType';
-import { RoomBlueprint } from '../models/room-blueprint.model';
+import { RoomBlueprint } from '../models/room-blueprint.models';
 import { RoomWorldContextValidationService } from './room-world-context-validation.service';
 
 const buildBlueprint = (overrides: Partial<RoomBlueprint> = {}): RoomBlueprint => ({
+  id: overrides.id || 'test_room',
   name: 'Test room',
   width: 10,
   height: 10,
   purpose: 'Crew space',
   hazards: [HazardType.Fire],
-  features: 'Test fixtures',
+  features: ['Test fixtures'],
   ...overrides,
 });
 

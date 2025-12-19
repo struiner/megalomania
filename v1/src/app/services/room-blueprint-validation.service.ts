@@ -4,6 +4,7 @@ import {
   RoomBlueprintValidationOptions,
   RoomBlueprintValidationResult,
   RoomSocket,
+  AdvancedRoomSocket,
   RoomSocketKind,
 } from '../models/room-blueprint.models';
 import { ValidationNotice } from '../models/validation.models';
@@ -262,33 +263,37 @@ export class RoomBlueprintValidationService {
     const width = blueprint.width;
     const height = blueprint.height;
 
-    sockets.forEach((socket: RoomSocket, index: number) => {
+    sockets.forEach((socket: RoomSocket | AdvancedRoomSocket, index: number) => {
       const path = `sockets[${index}]`;
+      
+      // Handle both socket types - RoomSocket uses 'id' and 'kind', AdvancedRoomSocket uses 'socketId' and 'type'
+      const socketId = 'id' in socket ? socket.id : socket.socketId;
+      const socketKind = 'kind' in socket ? socket.kind : socket.type;
 
-      if (!socket.id || !socket.id.trim()) {
+      if (!socketId || !socketId.trim()) {
         notices.push(this.buildNotice(`${path}.id`, 'Socket id is required.', 'error', 'Assign a unique socket id.'));
-      } else if (seenIds.has(socket.id)) {
+      } else if (seenIds.has(socketId)) {
         notices.push(
           this.buildNotice(
             `${path}.id`,
-            `Socket id "${socket.id}" is duplicated.`,
+            `Socket id "${socketId}" is duplicated.`,
             'error',
             'Use unique socket identifiers.',
           ),
         );
       } else {
-        seenIds.add(socket.id);
+        seenIds.add(socketId);
       }
 
-      if (!socket.kind || !socket.kind.toString().trim()) {
+      if (!socketKind || !socketKind.toString().trim()) {
         notices.push(
           this.buildNotice(`${path}.kind`, 'Socket kind is missing.', 'error', 'Pick a socket category.'),
         );
-      } else if (supportedKinds && !supportedKinds.has(socket.kind)) {
+      } else if (supportedKinds && !supportedKinds.has(socketKind)) {
         notices.push(
           this.buildNotice(
             `${path}.kind`,
-            `Socket kind "${socket.kind}" is not in the allowed set.`,
+            `Socket kind "${socketKind}" is not in the allowed set.`,
             'warning',
             `Use one of: ${Array.from(supportedKinds).join(', ')}.`,
           ),
@@ -309,7 +314,7 @@ export class RoomBlueprintValidationService {
           notices.push(
             this.buildNotice(
               `${path}.position.x`,
-              `Socket "${socket.id}" lies outside the width bounds (0-${width - 1}).`,
+              `Socket "${socketId}" lies outside the width bounds (0-${width - 1}).`,
               'error',
               'Place the socket within room bounds.',
             ),
@@ -319,7 +324,7 @@ export class RoomBlueprintValidationService {
           notices.push(
             this.buildNotice(
               `${path}.position.y`,
-              `Socket "${socket.id}" lies outside the height bounds (0-${height - 1}).`,
+              `Socket "${socketId}" lies outside the height bounds (0-${height - 1}).`,
               'error',
               'Place the socket within room bounds.',
             ),
@@ -336,7 +341,7 @@ export class RoomBlueprintValidationService {
   ): void {
     const prerequisites = Array.isArray(blueprint.prerequisites) ? blueprint.prerequisites : [];
     const knownBlueprintIds = this.buildVocabulary(options.knownBlueprintIds);
-    const socketIds = new Set((blueprint.sockets || []).map((socket) => socket.id));
+    const socketIds = new Set((blueprint.sockets || []).map((socket) => 'id' in socket ? socket.id : socket.socketId));
     const seenPrerequisites = new Set<string>();
 
     prerequisites.forEach((prerequisite, index) => {

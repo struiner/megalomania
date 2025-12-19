@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { RoomBlueprint } from '../models/room-blueprint.model';
+import { RoomBlueprint } from '../models/room-blueprint.models';
 import { RoomBlueprintValidationService } from './room-blueprint-validation.service';
 import { HazardType } from '../enums/HazardType';
 
@@ -10,11 +10,9 @@ describe('RoomBlueprintValidationService', () => {
     id: 'crew_quarters',
     name: 'Crew Quarters',
     purpose: 'Rest space',
+    width: 32,
+    height: 24,
     hazards: [HazardType.Fire],
-    dimensions: {
-      width: 32,
-      height: 24
-    },
     features: [],
     notes: 'Bunks, Lockers'
   };
@@ -34,10 +32,8 @@ describe('RoomBlueprintValidationService', () => {
       purpose: '',
       hazards: [HazardType.Fire, HazardType.Fire],
       notes: '   ',
-      dimensions: {
-        width: 8,
-        height: 4
-      }
+      width: 8,
+      height: 4
     };
 
     const result = service.validateBlueprint(blueprint);
@@ -57,10 +53,8 @@ describe('RoomBlueprintValidationService', () => {
   it('validates sockets stay in bounds and use supported kinds', () => {
     const blueprint: RoomBlueprint = {
       ...baseBlueprint,
-      dimensions: {
-        width: 20,
-        height: 20
-      },
+      width: 20,
+      height: 20,
       features: []
     };
 
