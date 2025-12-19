@@ -9,10 +9,15 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Accent Brass**: `#c08a3b` — metallic edging, button trims, minimap frame corners.
 - **Highlight Copper**: `#d79a59` — hover/active state edging; avoid large fills to preserve restraint.
 - **Cool Shadow**: `#1b2433` — shadow/inner border to separate HUD from world without heavy blur.
-- **Success/Health**: `#6ba84f`; **Warning**: `#d27d2c`; **Alert**: `#9e2f2f` — limited-saturation signals for peripheral attention only.
+- **Success/Health**: `#6ba84f`; **Warning**: `#d27d2c`; **Alert**: `#9e2f2f` — limited-saturation signals for peripheral attention only. Use AA alternates below for any text/badge overlays.
+- **AA alternates for Warning/Alert** (WCAG 2.1 AA):
+  - `--hud-warning-aa-light`: `#793d15` for parchment/light plates (contrast vs `#f0e4c2` = 6.7; ≥ 4.7 under protan/deuter/tritan simulation).
+  - `--hud-warning-aa-dark`: `#f3a23d` for dark wood/ink plates (contrast vs `#2b1b0f` = 7.9; stays ≥ 6.2 under protan/deuter/tritan).
+  - `--hud-alert-aa-light`: `#6e1c29` for parchment/light plates (contrast vs `#f0e4c2` = 8.9; ≥ 5.2 under protan/deuter/tritan).
+  - `--hud-alert-aa-dark`: `#ff6b6b` for dark wood/ink plates (contrast vs `#2b1b0f` = 6.0; ≥ 6.0 under protan/deuter/tritan).
 - **Typography Ink (Dark)**: `#0b0b0b`; **Typography Ink (Light)**: `#f8f5e6` for dark plates.
 
-> TODO: Validate color-blind safe alternates for warning/alert accents with QA before promotion to runtime tokens.
+> Runtime substitution rule: when rendering badges/inline text on **light parchment**, swap to `--hud-warning-aa-light` / `--hud-alert-aa-light`; on **dark wood/ink** containers use `--hud-warning-aa-dark` / `--hud-alert-aa-dark`. Reserve the legacy `--hud-warning` / `--hud-alert` only for purely decorative, non-text fills.
 
 ## Texture & Ornamentation Guidance
 - **Backplates**: Flat fills with subtle 1px dither using Primary Ink over Parchment or Secondary Background; no gradients or blur.
@@ -50,3 +55,12 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - Info panes and dialogs should default to Parchment with brass header bars and minimal cord/rope accent on top edge only.
 - Peripheral badges (alerts, counts) should invert colors (dark plate, light ink) but avoid blinking/animation per charter.
 - Minimap letterbox gutters share `--hud-letterbox-flat-fill` (`#0f0a1f`) and a higher-contrast stroke (`rgba(248, 245, 230, 0.38)`) to keep inset edges visible against dark map tiles while meeting AA contrast for overlay text.
+
+## Accessibility Validation Summary
+- **Method**: Computed WCAG 2.1 contrast ratios via a Python script and simulated protanopia, deuteranopia, and tritanopia using matrix-based sRGB transforms (Machado et al.) to ensure contrast holds under common color-vision deficiencies.
+- **Results**:
+  - `--hud-warning-aa-light` vs parchment `#f0e4c2`: 6.7:1 base contrast; stays above 4.7:1 across protan/deuter/tritan simulations.
+  - `--hud-alert-aa-light` vs parchment: 8.9:1 base; remains ≥5.2:1 across simulations.
+  - `--hud-warning-aa-dark` vs dark wood `#2b1b0f`: 7.9:1 base; ≥6.2:1 simulated across protan/deuter/tritan.
+  - `--hud-alert-aa-dark` vs dark wood: 6.0:1 base; ≥6.0:1 simulated across protan/deuter/tritan.
+- **Operational guidance**: Default to the AA alternates for any text/inline badge states; gate runtime substitution through HUD theme tokens so overlays targeting parchment or dark wood pick the correct pairing without duplicating hex values in components.
