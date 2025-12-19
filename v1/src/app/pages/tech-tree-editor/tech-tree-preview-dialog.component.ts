@@ -36,12 +36,12 @@ import { TechTreeConnectionOverlayComponent } from './tech-tree-connection-overl
         </header>
 
         <div class="dialog-body">
-          <div class="preview-grid" [style.--tier-count]="tierBands?.length || 1">
+          <div class="preview-grid" [style.--tier-count]="tierBands.length || 1">
             <app-tech-tree-connection-overlay
               class="connection-overlay"
               [nodes]="overlayNodes"
               [edges]="overlayEdges"
-              [columns]="tierBands?.length || 1"
+              [columns]="tierBands.length || 1"
             ></app-tech-tree-connection-overlay>
             <div class="tier-column" *ngFor="let tier of tierBands; trackBy: trackTier">
               <p class="tier-label">Tier {{ tier }}</p>

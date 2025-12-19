@@ -21,13 +21,13 @@ import { TechIconOption } from '../../services/tech-icon-registry.service';
       </select>
 
       <div class="icon-preview" *ngIf="selectedIcon">
-        <p class="name">{{ selectedIcon?.label }}</p>
-        <p class="meta">Category: {{ toCategoryLabel(selectedIcon?.category || '') }}</p>
-        <p class="meta">Frame: {{ selectedIcon?.frame || 'shared' }}</p>
-        <p class="meta" *ngIf="selectedIcon?.overlays?.length">
-          Overlays: {{ selectedIcon?.overlays?.join(', ') }}
+        <p class="name">{{ selectedIcon.label }}</p>
+        <p class="meta">Category: {{ toCategoryLabel(selectedIcon.category || '') }}</p>
+        <p class="meta">Frame: {{ selectedIcon.frame || 'shared' }}</p>
+        <p class="meta" *ngIf="selectedIcon.overlays && selectedIcon.overlays.length">
+          Overlays: {{ selectedIcon.overlays.join(', ') }}
         </p>
-        <p class="meta" *ngIf="selectedIcon?.notes">{{ selectedIcon?.notes }}</p>
+        <p class="meta" *ngIf="selectedIcon.notes">{{ selectedIcon.notes }}</p>
       </div>
     </div>
   `,
