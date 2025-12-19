@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .fill { fill: #d79a59; stroke: #c08a3b; stroke-width: 2; }
+      .glow { fill: #f8f5e6; stroke: #c08a3b; stroke-width: 2; }
+      .shadow { stroke: #1b2433; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+  <polygon points="5,18 15,8 17,10 7,20" class="fill" />
+  <rect x="15" y="5" width="4" height="4" class="glow" />
+  <line x1="8" y1="16" x2="11" y2="13" class="shadow" />
+</svg>

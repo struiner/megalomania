@@ -17,6 +17,11 @@ This folder contains the Phase 2 structural HUD implementation scoped by the Gam
 - [ ] Verify `/game/design-doc` is reachable from the HUD help primer and that HUD does not accumulate help/tutorial state.
 - [ ] Keep overlay + auxiliary dialog stacks to two layers max; close stray dialogs after navigation fires.
 
+## Capability feed configuration
+- HUD capability gating uses `HudCapabilityService` to request ledger-backed feature flags and initialization hints from the configurable `HudCapabilityProvider` endpoint (defaults to `ledger/config/hud-capabilities`).
+- The provider maintains a short-lived cache (default 60 s) that can be invalidated via `refreshCapabilities` or by reconfiguring the endpoint/TTL; cache invalidation forces a new feed read before resolving panel gates.
+- If the ledger/config feed is unavailable, the service logs the failure and deterministically falls back to HUD defaults so availability decisions remain predictable.
+
 ## Notes
 - Placeholder data is intentionally static; no gameplay truth is derived here.
 - Spacing follows 16px multiples with 4px/8px gutters for pixel integrity.
@@ -26,4 +31,5 @@ This folder contains the Phase 2 structural HUD implementation scoped by the Gam
 - Route guarding for `/game/interface/:panel` now evaluates feature-flag/init predicates through `HudAvailabilityService`, which consumes a dedicated capability snapshot service and emits HUD-native block notices.
 - HUD block notices surface as a compact bottom-left banner, with safe-area inset handling mirrored across overlay shells and dialogs.
 - The overlay shell is draggable (snap-to-4px grid) to keep dialogs from occluding the world viewport; bottom HUD uses fixed anchoring with padding reserves baked into the page layout and supports `env(safe-area-inset-bottom)`.
+- ESC handling stays **local to dialog shells**: the newest `HudStandaloneDialogComponent` instance consumes Escape, prevents propagation, and emits `closeRequested` so parents decide whether to dismiss or route. This keeps stacked dialogs from double-closing while leaving routing logic outside the shell.
 - Theme tokens live in `hud-theme-foundations.md` and the retrofit/audit plan lives in `hud-theme-retrofit-checklist.md`; follow-up asset/accessibility tasks are tracked under `tasks/2025-12-18_*`.

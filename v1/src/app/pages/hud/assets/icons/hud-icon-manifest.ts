@@ -2,9 +2,7 @@
  * HUD Icon Manifest
  * 
  * Maps HUD actions to sprite sheet coordinates and provides metadata
- * for the Kenney Game Icons-based HUD icon system.
- * 
- * Generated for Hanseatic HUD theme with brass/ink recoloring.
+ * for the brass/copper HUD icon system.
  */
 
 // Sprite sheet configuration
@@ -18,28 +16,30 @@ export interface SpriteSheetConfig {
 export interface HudIconDefinition {
   id: string;
   name: string;
-  kenneyFilename: string;
-  spriteSheet: 'hud-icons-16' | 'hud-icons-32';
-  coordinates: {
+  kenneyFilename?: string;
+  spriteSheet?: 'hud-icons-16' | 'hud-icons-24';
+  coordinates?: {
     x: number;
     y: number;
   };
+  url16?: string;
+  url24?: string;
   fallbackGlyph: string;
   license: 'CC0' | 'CC-BY-3.0';
   usage: 'primary' | 'supplemental';
 }
 
 // Sprite sheet configurations
-export const SPRITE_SHEETS: Record<'hud-icons-16' | 'hud-icons-32', SpriteSheetConfig> = {
+export const SPRITE_SHEETS: Record<'hud-icons-16' | 'hud-icons-24', SpriteSheetConfig> = {
   'hud-icons-16': {
     url: './assets/icons/sprites/hud-icons-16.png',
     tileSize: 16,
     scale: 1,
   },
-  'hud-icons-32': {
-    url: './assets/icons/sprites/hud-icons-32.png', 
-    tileSize: 32,
-    scale: 2,
+  'hud-icons-24': {
+    url: './assets/icons/sprites/hud-icons-24.png', 
+    tileSize: 24,
+    scale: 1.5,
   },
 };
 
@@ -49,9 +49,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   inventory: {
     id: 'inventory',
     name: 'Inventory',
-    kenneyFilename: 'backpack.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 0, y: 0 },
+    url16: '/assets/hud/icons/inventory-16.svg',
+    url24: '/assets/hud/icons/inventory-24.svg',
     fallbackGlyph: '🎒',
     license: 'CC0',
     usage: 'primary',
@@ -59,9 +58,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   ledger: {
     id: 'ledger',
     name: 'Ledger',
-    kenneyFilename: 'ledger.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 16, y: 0 },
+    url16: '/assets/hud/icons/ledger-16.svg',
+    url24: '/assets/hud/icons/ledger-24.svg',
     fallbackGlyph: '📋',
     license: 'CC0',
     usage: 'primary',
@@ -69,9 +67,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   map: {
     id: 'map',
     name: 'Map',
-    kenneyFilename: 'map.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 32, y: 0 },
+    url16: '/assets/hud/icons/map-16.svg',
+    url24: '/assets/hud/icons/map-24.svg',
     fallbackGlyph: '🗺️',
     license: 'CC0',
     usage: 'primary',
@@ -79,9 +76,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   crew: {
     id: 'crew',
     name: 'Crew',
-    kenneyFilename: 'group.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 48, y: 0 },
+    url16: '/assets/hud/icons/crew-16.svg',
+    url24: '/assets/hud/icons/crew-24.svg',
     fallbackGlyph: '👥',
     license: 'CC0',
     usage: 'primary',
@@ -89,9 +85,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   trade: {
     id: 'trade',
     name: 'Trade',
-    kenneyFilename: 'scales.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 64, y: 0 },
+    url16: '/assets/hud/icons/trade-16.svg',
+    url24: '/assets/hud/icons/trade-24.svg',
     fallbackGlyph: '⚖️',
     license: 'CC0',
     usage: 'primary',
@@ -99,9 +94,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   quests: {
     id: 'quests',
     name: 'Quests',
-    kenneyFilename: 'compass.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 80, y: 0 },
+    url16: '/assets/hud/icons/quests-16.svg',
+    url24: '/assets/hud/icons/quests-24.svg',
     fallbackGlyph: '🧭',
     license: 'CC0',
     usage: 'primary',
@@ -109,9 +103,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   settings: {
     id: 'settings',
     name: 'Settings',
-    kenneyFilename: 'cog.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 96, y: 0 },
+    url16: '/assets/hud/icons/settings-16.svg',
+    url24: '/assets/hud/icons/settings-24.svg',
     fallbackGlyph: '⚙️',
     license: 'CC0',
     usage: 'primary',
@@ -119,9 +112,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   help: {
     id: 'help',
     name: 'Help',
-    kenneyFilename: 'question.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 112, y: 0 },
+    url16: '/assets/hud/icons/help-16.svg',
+    url24: '/assets/hud/icons/help-24.svg',
     fallbackGlyph: '❓',
     license: 'CC0',
     usage: 'primary',
@@ -131,9 +123,8 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   status: {
     id: 'status',
     name: 'Status',
-    kenneyFilename: 'anchor.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 0, y: 16 },
+    url16: '/assets/hud/icons/status-16.svg',
+    url24: '/assets/hud/icons/status-24.svg',
     fallbackGlyph: '⚓',
     license: 'CC0',
     usage: 'primary',
@@ -141,34 +132,66 @@ export const HUD_ICON_MANIFEST: Record<string, HudIconDefinition> = {
   notifications: {
     id: 'notifications',
     name: 'Notifications',
-    kenneyFilename: 'bell.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 16, y: 16 },
+    url16: '/assets/hud/icons/notifications-16.svg',
+    url24: '/assets/hud/icons/notifications-24.svg',
     fallbackGlyph: '🔔',
     license: 'CC0',
     usage: 'primary',
   },
 
-  // Fallback icons (Game-Icons.net if Kenney lacks coverage)
-  questStar: {
-    id: 'quest-star',
-    name: 'Quest Achievement',
-    kenneyFilename: 'star.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 32, y: 16 },
-    fallbackGlyph: '⭐',
+  helm: {
+    id: 'helm',
+    name: 'Navigation Helm',
+    url16: '/assets/hud/icons/helm-16.svg',
+    url24: '/assets/hud/icons/helm-24.svg',
+    fallbackGlyph: '⛵',
     license: 'CC0',
-    usage: 'supplemental',
+    usage: 'primary',
   },
-  ledgerBook: {
-    id: 'ledger-book',
-    name: 'Ledger Book',
-    kenneyFilename: 'book.png',
-    spriteSheet: 'hud-icons-16',
-    coordinates: { x: 48, y: 16 },
-    fallbackGlyph: '📚',
+  cargo: {
+    id: 'cargo',
+    name: 'Cargo',
+    url16: '/assets/hud/icons/cargo-16.svg',
+    url24: '/assets/hud/icons/cargo-24.svg',
+    fallbackGlyph: '📦',
     license: 'CC0',
-    usage: 'supplemental',
+    usage: 'primary',
+  },
+  diplomacy: {
+    id: 'diplomacy',
+    name: 'Diplomacy',
+    url16: '/assets/hud/icons/diplomacy-16.svg',
+    url24: '/assets/hud/icons/diplomacy-24.svg',
+    fallbackGlyph: '🤝',
+    license: 'CC0',
+    usage: 'primary',
+  },
+  harbor: {
+    id: 'harbor',
+    name: 'Harbor',
+    url16: '/assets/hud/icons/harbor-16.svg',
+    url24: '/assets/hud/icons/harbor-24.svg',
+    fallbackGlyph: '🚢',
+    license: 'CC0',
+    usage: 'primary',
+  },
+  scouting: {
+    id: 'scouting',
+    name: 'Scouting',
+    url16: '/assets/hud/icons/scouting-16.svg',
+    url24: '/assets/hud/icons/scouting-24.svg',
+    fallbackGlyph: '🔭',
+    license: 'CC0',
+    usage: 'primary',
+  },
+  craft: {
+    id: 'craft',
+    name: 'Craft',
+    url16: '/assets/hud/icons/craft-16.svg',
+    url24: '/assets/hud/icons/craft-24.svg',
+    fallbackGlyph: '🔨',
+    license: 'CC0',
+    usage: 'primary',
   },
 };
 
@@ -177,17 +200,24 @@ export function getIconDefinition(iconId: string): HudIconDefinition | null {
   return HUD_ICON_MANIFEST[iconId] || null;
 }
 
-export function getIconSpriteUrl(iconId: string, size: '16' | '32' = '16'): string {
+export function getIconSpriteUrl(iconId: string, size: '16' | '24' = '16'): string {
   const icon = getIconDefinition(iconId);
   if (!icon) return '';
-  
-  const spriteSheet = size === '32' ? 'hud-icons-32' : 'hud-icons-16';
+
+  if (size === '24' && icon.url24) {
+    return icon.url24;
+  }
+  if (size === '16' && icon.url16) {
+    return icon.url16;
+  }
+
+  const spriteSheet = size === '24' ? 'hud-icons-24' : 'hud-icons-16';
   return SPRITE_SHEETS[spriteSheet].url;
 }
 
 export function getIconCoordinates(iconId: string): { x: number; y: number } | null {
   const icon = getIconDefinition(iconId);
-  return icon ? icon.coordinates : null;
+  return icon && icon.coordinates ? icon.coordinates : null;
 }
 
 export function getFallbackGlyph(iconId: string): string | null {

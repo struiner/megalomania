@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 2; fill: none; }
+      .shadow { fill: #1b2433; stroke: #c08a3b; stroke-width: 2; }
+      .glow { fill: #f8f5e6; stroke: #c08a3b; stroke-width: 2; }
+    </style>
+  </defs>
+  <circle cx="12" cy="12" r="5" class="shadow" />
+  <line x1="12" y1="3" x2="12" y2="7" class="stroke" />
+  <line x1="12" y1="17" x2="12" y2="21" class="stroke" />
+  <line x1="3" y1="12" x2="7" y2="12" class="stroke" />
+  <line x1="17" y1="12" x2="21" y2="12" class="stroke" />
+  <circle cx="12" cy="12" r="2" class="glow" />
+</svg>

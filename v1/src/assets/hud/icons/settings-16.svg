@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 1; fill: none; }
+      .shadow { fill: #1b2433; stroke: #c08a3b; stroke-width: 1; }
+    </style>
+  </defs>
+  <circle cx="8" cy="8" r="2" class="shadow" />
+  <path d="M8 3l1 2 2 1-2 1-1 2-1-2-2-1 2-1z" class="stroke" />
+</svg>

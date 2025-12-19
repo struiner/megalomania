@@ -9,10 +9,15 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Accent Brass**: `#c08a3b` — metallic edging, button trims, minimap frame corners.
 - **Highlight Copper**: `#d79a59` — hover/active state edging; avoid large fills to preserve restraint.
 - **Cool Shadow**: `#1b2433` — shadow/inner border to separate HUD from world without heavy blur.
-- **Success/Health**: `#6ba84f`; **Warning**: `#d27d2c`; **Alert**: `#9e2f2f` — limited-saturation signals for peripheral attention only.
+- **Success/Health**: `#6ba84f`; **Warning**: `#d27d2c`; **Alert**: `#9e2f2f` — limited-saturation signals for peripheral attention only. Use AA alternates below for any text/badge overlays.
+- **AA alternates for Warning/Alert** (WCAG 2.1 AA):
+  - `--hud-warning-aa-light`: `#793d15` for parchment/light plates (contrast vs `#f0e4c2` = 6.7; ≥ 4.7 under protan/deuter/tritan simulation).
+  - `--hud-warning-aa-dark`: `#f3a23d` for dark wood/ink plates (contrast vs `#2b1b0f` = 7.9; stays ≥ 6.2 under protan/deuter/tritan).
+  - `--hud-alert-aa-light`: `#6e1c29` for parchment/light plates (contrast vs `#f0e4c2` = 8.9; ≥ 5.2 under protan/deuter/tritan).
+  - `--hud-alert-aa-dark`: `#ff6b6b` for dark wood/ink plates (contrast vs `#2b1b0f` = 6.0; ≥ 6.0 under protan/deuter/tritan).
 - **Typography Ink (Dark)**: `#0b0b0b`; **Typography Ink (Light)**: `#f8f5e6` for dark plates.
 
-> TODO: Validate color-blind safe alternates for warning/alert accents with QA before promotion to runtime tokens.
+> Runtime substitution rule: when rendering badges/inline text on **light parchment**, swap to `--hud-warning-aa-light` / `--hud-alert-aa-light`; on **dark wood/ink** containers use `--hud-warning-aa-dark` / `--hud-alert-aa-dark`. Reserve the legacy `--hud-warning` / `--hud-alert` only for purely decorative, non-text fills.
 
 ## Texture & Ornamentation Guidance
 - **Backplates**: Flat fills with subtle 1px dither using Primary Ink over Parchment or Secondary Background; no gradients or blur.
@@ -41,12 +46,25 @@ This document codifies the Structural-fidelity theme tokens referenced by `tasks
 - **Fill**: Minimal flat fills; prefer negative space with brass/copper strokes and limited parchment fill.
 - **Framing**: Square or shield outlines sized to 16px/24px; align icon baselines with button grid slots.
 - **States**: Hover = `Highlight Copper` stroke with `Cool Shadow` inset; Active = thicker 2px brass stroke.
-- **Asset base**: Kenney “Game Icons” (CC0) recolored to brass/ink is the canonical pack for the HUD; Game-Icons.net (CC BY 3.0) may supplement gaps with attribution. 0x72 Dungeon Tileset II sprites can backfill minimap markers.
+- **Asset base**: Kenney “Game Icons” (CC0) recolored to brass/ink is the canonical pack for the HUD; Game-Icons.net (CC BY 3.0) may supplement gaps with attribution. 0x72 Dungeon Tileset II sprites can backfill minimap markers. The custom brass/copper pilot set below follows the same palette and grid rules.
 
-> TODO: Produce a 12–16 icon pilot set for button grid and info pane headers to validate stroke/spacing rules (follow-up task).
+### Brass/copper HUD icon pilot (delivered)
+- **Stroke discipline**: 1px outlines at 16px, 2px at 24px; no anti-aliasing or fractional coordinates. Palette locked to brass (`#c08a3b`), copper fill (`#d79a59`), ink shadow (`#1b2433`), and sparing highlight (`#f8f5e6`).
+- **Grid + spacing**: Every glyph sits on a 16×16 or 24×24 canvas with integer padding; shapes stick to rectangles, straight segments, and crisp circles to avoid off-grid diagonals.
+- **Coverage**: Inventory, ledger, map, trade, crew, quests, settings, help, status, notifications, helm, cargo, diplomacy, harbor, scouting, and craft. Assets live in `v1/src/assets/hud/icons/` with CSS variables in `theme/hud-theme.tokens.scss` and IDs in `assets/icons/hud-icon-manifest.ts`.
+- **Preview**: `v1/src/assets/hud/icons/hud-icons-preview.svg` (generated alongside `preview.html`) shows both sizes for quick regressions and PR reviews.
 
 ## Application Notes
 - Bottom HUD uses Secondary Background with brass edge; minimap frame can use copper corners plus inner shadow.
 - Info panes and dialogs should default to Parchment with brass header bars and minimal cord/rope accent on top edge only.
 - Peripheral badges (alerts, counts) should invert colors (dark plate, light ink) but avoid blinking/animation per charter.
 - Minimap letterbox gutters share `--hud-letterbox-flat-fill` (`#0f0a1f`) and a higher-contrast stroke (`rgba(248, 245, 230, 0.38)`) to keep inset edges visible against dark map tiles while meeting AA contrast for overlay text.
+
+## Accessibility Validation Summary
+- **Method**: Computed WCAG 2.1 contrast ratios via a Python script and simulated protanopia, deuteranopia, and tritanopia using matrix-based sRGB transforms (Machado et al.) to ensure contrast holds under common color-vision deficiencies.
+- **Results**:
+  - `--hud-warning-aa-light` vs parchment `#f0e4c2`: 6.7:1 base contrast; stays above 4.7:1 across protan/deuter/tritan simulations.
+  - `--hud-alert-aa-light` vs parchment: 8.9:1 base; remains ≥5.2:1 across simulations.
+  - `--hud-warning-aa-dark` vs dark wood `#2b1b0f`: 7.9:1 base; ≥6.2:1 simulated across protan/deuter/tritan.
+  - `--hud-alert-aa-dark` vs dark wood: 6.0:1 base; ≥6.0:1 simulated across protan/deuter/tritan.
+- **Operational guidance**: Default to the AA alternates for any text/inline badge states; gate runtime substitution through HUD theme tokens so overlays targeting parchment or dark wood pick the correct pairing without duplicating hex values in components.

@@ -4,22 +4,27 @@
 
 .hud-icon {
   --hud-icon-size: 16px;
+  --hud-icon-frame-stroke: var(--hud-ink, #0f0a1f);
+  --hud-icon-frame-fill: rgba(27, 36, 51, 0.7);
   position: relative;
   display: inline-grid;
   place-items: center;
   width: var(--hud-icon-size);
   height: var(--hud-icon-size);
-  color: #f3e9ff;
+  color: var(--hud-ink-contrast, #f8f5e6);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-  image-rendering: pixelated;
+  image-rendering: var(--hud-icon-rendering, pixelated);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 .hud-icon__frame {
   position: absolute;
   inset: 0;
-  border: 2px solid #3c2b59;
+  border: 2px solid var(--hud-icon-frame-stroke);
   border-radius: 4px;
-  background: linear-gradient(145deg, #1e1434, #24193b);
+  background: linear-gradient(145deg, var(--hud-icon-frame-fill), #24193b);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 

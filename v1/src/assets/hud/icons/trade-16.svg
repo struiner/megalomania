@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 1; fill: none; }
+      .fill { fill: #d79a59; stroke: #c08a3b; stroke-width: 1; }
+    </style>
+  </defs>
+  <line x1="8" y1="3" x2="8" y2="13" class="stroke" />
+  <line x1="3" y1="6" x2="13" y2="6" class="stroke" />
+  <rect x="4" y="8" width="3" height="4" class="fill" />
+  <rect x="9" y="8" width="3" height="4" class="fill" />
+  <line x1="5" y1="6" x2="5" y2="8" class="stroke" />
+  <line x1="11" y1="6" x2="11" y2="8" class="stroke" />
+</svg>

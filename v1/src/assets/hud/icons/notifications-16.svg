@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 1; fill: none; }
+      .fill { fill: #d79a59; stroke: #c08a3b; stroke-width: 1; }
+      .glow { fill: #f8f5e6; stroke: #c08a3b; stroke-width: 1; }
+    </style>
+  </defs>
+  <path d="M6 5h4l1 6H5z" class="fill" />
+  <rect x="6" y="4" width="4" height="1" class="stroke" />
+  <rect x="7" y="11" width="2" height="2" class="glow" />
+  <line x1="6" y1="12" x2="10" y2="12" class="stroke" />
+</svg>

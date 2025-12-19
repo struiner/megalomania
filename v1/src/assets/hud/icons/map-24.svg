@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges">
+  <defs>
+    <style>
+      .stroke { stroke: #c08a3b; stroke-width: 2; fill: none; }
+      .glow { fill: #f8f5e6; stroke: #c08a3b; stroke-width: 2; }
+    </style>
+  </defs>
+  <polyline points="6,6 11,4 15,7 19,6 19,18 15,19 11,16 6,18 6,6" class="stroke" />
+  <polyline points="9,13 11,11 14,15 17,10" class="stroke" />
+  <rect x="14" y="9" width="3" height="3" class="glow" />
+</svg>
