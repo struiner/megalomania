@@ -1,6 +1,6 @@
 # Task Specification — Goods Icon Mapping & Validator (SDK)
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETED ✅ (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Design a DRY, deterministic icon mapping and validation flow for goods, using `GoodsType` as the single source of truth and enabling SDK tooling to surface missing or incorrect icon assignments in a designer-friendly way.
