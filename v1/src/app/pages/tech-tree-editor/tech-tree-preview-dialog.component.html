@@ -1,0 +1,85 @@
+<section class="preview-backdrop" role="presentation" (click)="requestClose()">
+  <div
+    class="preview-dialog"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+    role="dialog"
+    aria-modal="true"
+    aria-label="Tech tree preview"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="dialog-header">
+      <div>
+        <p class="ds-label">Preview</p>
+        <h2 class="ds-heading-md">{{ document?.tech_tree_id }} · v{{ document?.version }}</h2>
+        <p class="ds-muted">Tier-banded, read-only view with deterministic ordering.</p>
+      </div>
+      <button #closeButton type="button" class="close-button ds-focus-ring-strong" (click)="requestClose()" aria-label="Close preview dialog">
+        Close
+      </button>
+    </header>
+
+    <div class="dialog-body" role="grid" aria-label="Tech tree preview grid">
+      <div class="preview-grid" [style.--tier-count]="tierBands.length || 1">
+        <app-tech-tree-connection-overlay
+          class="connection-overlay"
+          [nodes]="overlayNodes"
+          [edges]="overlayEdges"
+          [columns]="tierBands.length || 1"
+          [selectedId]="activeNodeId()"
+        ></app-tech-tree-connection-overlay>
+        <div class="tier-column" *ngFor="let tier of tierBands; trackBy: trackTier">
+          <p class="tier-label">Tier {{ tier }}</p>
+          <div
+            class="node-card"
+            *ngFor="let node of bandedNodes.get(tier) || []; trackBy: trackNode"
+            tabindex="0"
+            role="gridcell"
+            [attr.aria-describedby]="'prereq-' + node.id"
+            [class.active]="node.id === activeNodeId()"
+            (focus)="setActiveNode(node.id)"
+            (mouseenter)="setActiveNode(node.id)"
+            (mouseleave)="clearActiveNode()"
+          >
+            <div class="node-header">
+              <div class="marker" [class.has-icon]="node.metadata?.icon_id" aria-hidden="true"></div>
+              <div>
+                <p class="name">{{ node.title }}</p>
+                <p class="meta">{{ node.category || 'Unsorted' }}</p>
+              </div>
+            </div>
+            <p class="summary">{{ node.summary }}</p>
+            <p class="tags" *ngIf="node.culture_tags?.length">
+              {{ describeTags(node.culture_tags) }}
+            </p>
+            <ul class="effect-list" *ngIf="effectLines(node).length">
+              <li *ngFor="let line of effectLines(node); trackBy: trackEffect">{{ line }}</li>
+            </ul>
+            <p class="ds-sr-only" [id]="'prereq-' + node.id">
+              Requires: {{ describePrerequisites(node) }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="legend">
+        <div class="legend-block">
+          <p class="ds-label">Prerequisites</p>
+          <div class="legend-row">
+            <span class="swatch requires"></span>
+            <span class="legend-text">Requires</span>
+            <span class="legend-note">Highlighted for focused node</span>
+          </div>
+        </div>
+        <div class="legend-block">
+          <p class="ds-label">Culture tags</p>
+          <div class="tag-row">
+            <span class="tag" *ngFor="let tag of cultureTagOptions; trackBy: trackTag">{{ tag.label }}</span>
+          </div>
+        </div>
+        <p class="note">Use Tab/Shift+Tab to move between cards. Esc or Close exits and restores focus.</p>
+      </footer>
+    </div>
+  </div>
+  <p class="ds-sr-only" aria-live="polite">{{ liveAnnouncement() }}</p>
+</section>
