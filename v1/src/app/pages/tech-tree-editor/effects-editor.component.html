@@ -1,0 +1,69 @@
+<section class="effects-card ds-panel" *ngIf="node; else effectsPlaceholder">
+  <header class="card-header">
+    <div>
+      <p class="ds-label">Effects</p>
+      <h3 class="ds-heading-md">Enum-aligned unlocks</h3>
+      <p class="ds-muted">Options are sourced from the enum adapter for determinism.</p>
+    </div>
+  </header>
+
+  <div class="effect-grid">
+    <label class="field">
+      <span class="field-label">Unlock structures</span>
+      <select
+        multiple
+        [ngModel]="node.effects?.unlock_structures || []"
+        (ngModelChange)="onListChange('unlock_structures', $event || [])"
+      >
+        <option *ngFor="let option of effectOptions?.structures || []; trackBy: trackOption" [ngValue]="option.value" [title]="option.label">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Unlock goods</span>
+      <select
+        multiple
+        [ngModel]="node.effects?.unlock_goods || []"
+        (ngModelChange)="onListChange('unlock_goods', $event || [])"
+      >
+        <option *ngFor="let option of effectOptions?.goods || []; trackBy: trackOption" [ngValue]="option.value" [title]="option.label">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Unlock settlements</span>
+      <select
+        multiple
+        [ngModel]="node.effects?.unlock_settlements || []"
+        (ngModelChange)="onListChange('unlock_settlements', $event || [])"
+      >
+        <option *ngFor="let option of effectOptions?.settlements || []; trackBy: trackOption" [ngValue]="option.value" [title]="option.label">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Unlock guilds</span>
+      <select
+        multiple
+        [ngModel]="node.effects?.unlock_guilds || []"
+        (ngModelChange)="onListChange('unlock_guilds', $event || [])"
+      >
+        <option *ngFor="let option of effectOptions?.guilds || []; trackBy: trackOption" [ngValue]="option.value" [title]="option.label">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+  </div>
+</section>
+
+<ng-template #effectsPlaceholder>
+  <section class="effects-card ds-panel placeholder">
+    <p class="ds-muted">Select a node to edit its effects.</p>
+  </section>
+</ng-template>

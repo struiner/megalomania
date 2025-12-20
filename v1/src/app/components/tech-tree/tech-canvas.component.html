@@ -1,0 +1,88 @@
+<section
+  class="tech-canvas ds-card"
+  #viewportRef
+  role="grid"
+  aria-label="Technology tree canvas"
+  tabindex="0"
+>
+  <header class="canvas-toolbar">
+    <div class="ds-inline">
+      <p class="ds-label">Viewport</p>
+      <p class="ds-muted">Pan {{ pan().x | number:'1.0-0' }}, {{ pan().y | number:'1.0-0' }} · Zoom {{ (scale() * 100) | number:'1.0-0' }}%</p>
+    </div>
+    <div class="ds-inline">
+      <span class="pill" aria-live="polite">{{ activeDragId() ? 'Dragging ' + activeDragId() : 'Navigate with arrow keys; Ctrl+Arrow moves nodes.' }}</span>
+    </div>
+  </header>
+
+  <app-virtualized-grid
+    [nodes]="nodes"
+    [viewportWidth]="viewportSize().width"
+    [viewportHeight]="viewportSize().height"
+    [panX]="pan().x"
+    [panY]="pan().y"
+    [scale]="scale()"
+    [columnWidth]="220"
+    [rowHeight]="96"
+    (visibleNodesChange)="onVisibleNodesChange($event)"
+    (windowChange)="onWindowChange($event)"
+  ></app-virtualized-grid>
+
+  <div
+    class="grid-shell"
+    [style.--column-count]="visibleColumns().length"
+    [style.--column-offset]="visibleWindow()?.startColumn || 0"
+    [style.--row-offset]="visibleWindow()?.startRow || 0"
+    [style.transform]="'translate(' + pan().x + 'px, ' + pan().y + 'px) scale(' + scale() + ') translateZ(0)'"
+  >
+    <div class="column-row" role="presentation">
+      <div class="column-label spacer">Tiers ▼ / Order →</div>
+      <div class="column-label" *ngFor="let column of visibleColumns()">Order {{ column }}</div>
+    </div>
+
+    <div class="tier-row" *ngFor="let tier of visibleTiers(); trackBy: trackTier">
+      <div class="row-label">Tier {{ tier }}</div>
+      <div
+        class="grid-cell"
+        *ngFor="let column of visibleColumns(); trackBy: trackColumn"
+        [class.drop-target]="activeDragId() && allowDrop(tier, column)"
+        [appDragDropBehavior]="{ tier, column, nodeId: nodeAt(tier, column)?.id, columnLabel: column }"
+        [activeDragId]="activeDragId()"
+        [allowDrop]="allowDrop(tier, column)"
+        [active]="isActiveCell(tier, column)"
+        [focusVersion]="focusVersion()"
+        (drop)="onDrop($event)"
+        (requestMove)="onRequestMove($event)"
+        (requestGrab)="onGrab($event)"
+        (focusCell)="onFocusCell($event)"
+        (announce)="announce($event)"
+      >
+        <button
+          class="node-chip ds-focus-target"
+          type="button"
+          *ngIf="nodeAt(tier, column) as node"
+          draggable="true"
+          [attr.aria-grabbed]="activeDragId() === node.id"
+          [class.active]="node.id === selectedId"
+          (dragstart)="onPointerGrab(node.id, $event)"
+          (dragend)="activeDragId.set(null)"
+          (click)="onSelect(node.id)"
+        >
+          <span class="name">{{ node.title }}</span>
+          <span class="meta">Tier {{ node.tier }} · {{ node.category || 'Unsorted' }}</span>
+          <span class="meta tags">{{ node.summary }}</span>
+        </button>
+      </div>
+    </div>
+
+    <app-tech-tree-connection-overlay
+      class="connection-overlay"
+      [nodes]="overlayNodes()"
+      [edges]="overlayEdges()"
+      [columns]="columnLabels.length || 1"
+      [selectedId]="selectedId"
+    ></app-tech-tree-connection-overlay>
+  </div>
+
+  <p class="ds-sr-only" aria-live="polite">{{ announcer.message() }}</p>
+</section>
