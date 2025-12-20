@@ -49,7 +49,7 @@ interface OverlayPath {
 
     .connection-path {
       fill: none;
-      stroke: var(--ds-color-accent-ice-400);
+      stroke: var(--ds-color-connector-weak);
       stroke-width: 2;
       stroke-linejoin: round;
       stroke-linecap: round;
@@ -57,12 +57,12 @@ interface OverlayPath {
     }
 
     .connection-path.active {
-      stroke: var(--ds-color-accent-amber-400);
+      stroke: var(--ds-color-connector-highlight);
       stroke-width: 2.5;
     }
 
     .connection-node {
-      fill: var(--ds-color-accent-amber-400);
+      fill: var(--ds-color-connector-highlight);
       stroke: var(--ds-color-border-strong);
       stroke-width: 1;
     }

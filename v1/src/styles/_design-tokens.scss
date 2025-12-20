@@ -7,10 +7,20 @@
   --ds-font-size-md: 16px;
   --ds-font-size-lg: 20px;
   --ds-font-size-xl: 24px;
+  --ds-font-size-2xl: 32px;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+  --ds-letter-spacing-tight: 0.01em;
+  --ds-letter-spacing-wide: 0.08em;
   --ds-line-height-tight: 1.25;
+  --ds-line-height-snug: 1.4;
   --ds-line-height-default: 1.5;
+  --ds-line-height-relaxed: 1.6;
 
   /* Spacing scale (4px base) */
+  --ds-space-0: 0px;
   --ds-space-1: 4px;
   --ds-space-2: 8px;
   --ds-space-3: 12px;
@@ -18,6 +28,12 @@
   --ds-space-5: 24px;
   --ds-space-6: 32px;
   --ds-space-7: 40px;
+  --ds-space-8: 48px;
+
+  /* Layout bounds */
+  --ds-layout-content-max: 1440px;
+  --ds-layout-column-gap: var(--ds-space-3);
+  --ds-layout-row-gap: var(--ds-space-3);
 
   /* Border radius */
   --ds-radius-xs: 4px;
@@ -56,17 +72,30 @@
   --ds-color-success-400: #8be4b2;
 
   /* Contrast-checked pairs */
+  --ds-color-surface-strong: rgba(255, 255, 255, 0.12);
   --ds-color-surface-card: rgba(255, 255, 255, 0.04);
   --ds-color-surface-card-strong: rgba(255, 255, 255, 0.08);
   --ds-color-surface-subtle: rgba(255, 255, 255, 0.02);
   --ds-color-surface-elevated: #161229;
   --ds-color-callout-error: rgba(255, 91, 91, 0.12);
   --ds-color-callout-warning: rgba(255, 218, 123, 0.14);
+  --ds-color-callout-info: rgba(157, 229, 255, 0.14);
+  --ds-color-disabled: rgba(255, 255, 255, 0.35);
+
+  /* Interaction + state */
+  --ds-color-state-hover: rgba(157, 229, 255, 0.08);
+  --ds-color-state-active: rgba(157, 229, 255, 0.14);
+  --ds-color-state-selected: rgba(157, 229, 255, 0.2);
+  --ds-color-state-pressed: rgba(255, 218, 123, 0.2);
+  --ds-color-connector-default: rgba(157, 229, 255, 0.8);
+  --ds-color-connector-weak: rgba(157, 229, 255, 0.48);
+  --ds-color-connector-highlight: rgba(255, 218, 123, 0.9);
 
   /* Focus + shadows */
   --ds-focus-ring: 0 0 0 2px #0b0913, 0 0 0 4px var(--ds-color-accent-ice-400);
   --ds-focus-ring-strong: 0 0 0 2px #0b0913, 0 0 0 4px var(--ds-color-accent-amber-400);
-  --ds-focus-ring-color: var(--ds-color-accent-ice-400);
+  --ds-focus-outline-color: var(--ds-color-accent-ice-400);
+  --ds-focus-outline-strong-color: var(--ds-color-accent-amber-400);
   --ds-focus-radius: var(--ds-radius-sm);
   --ds-focus-outline-offset: 2px;
 
