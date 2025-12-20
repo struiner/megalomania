@@ -5,10 +5,12 @@
 .tech-tree-editor {
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: var(--ds-space-3);
+  gap: var(--ds-layout-row-gap);
   padding: var(--ds-space-4);
   color: var(--ds-color-text-primary);
   background: linear-gradient(180deg, var(--ds-color-surface-900) 0%, #06040c 100%);
+  max-width: var(--ds-layout-content-max);
+  margin: 0 auto;
 }
 
 h1 {
@@ -60,7 +62,7 @@ h1 {
 .workspace {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
-  gap: var(--ds-space-3);
+  gap: var(--ds-space-4);
   align-items: start;
 }
 
@@ -88,9 +90,21 @@ h1 {
 .pill {
   border-radius: var(--ds-radius-full);
   border: 1px solid var(--ds-color-border);
-  padding: var(--ds-space-1) var(--ds-space-3);
+  padding: calc(var(--ds-space-1) + 2px) var(--ds-space-3);
   background: var(--ds-color-surface-subtle);
   color: inherit;
+  font-weight: var(--ds-font-weight-medium);
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.pill:hover {
+  background: var(--ds-color-state-hover);
+  border-color: var(--ds-color-border-strong);
+}
+
+.pill:focus-visible {
+  outline-color: var(--ds-focus-outline-strong-color);
+  box-shadow: var(--ds-focus-ring-strong);
 }
 
 .action-dock {
@@ -226,9 +240,9 @@ pre {
 }
 
 .tab-row button.active {
-  background: rgba(157, 229, 255, 0.12);
-  border-color: rgba(157, 229, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(157, 229, 255, 0.12);
+  background: var(--ds-color-state-selected);
+  border-color: var(--ds-color-connector-default);
+  box-shadow: 0 0 0 1px var(--ds-color-connector-weak);
 }
 
 .modal-body {

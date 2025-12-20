@@ -87,7 +87,7 @@
   padding: var(--ds-space-1);
   display: flex;
   align-items: stretch;
-  transition: border-color 120ms ease, background 120ms ease;
+  transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
 }
 
 .grid-cell:focus-visible {
@@ -96,8 +96,9 @@
 }
 
 .grid-cell.drop-target {
-  border-color: var(--ds-color-accent-ice-400);
-  background: rgba(157, 229, 255, 0.08);
+  border-color: var(--ds-color-connector-default);
+  background: var(--ds-color-state-hover);
+  box-shadow: 0 0 0 1px var(--ds-color-connector-weak);
 }
 
 .node-chip {
@@ -111,12 +112,24 @@
   color: inherit;
   text-align: left;
   cursor: grab;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
 }
 
 .node-chip.active {
   border-color: var(--ds-color-accent-ice-400);
   box-shadow: 0 0 0 1px rgba(157, 229, 255, 0.25);
   background: rgba(157, 229, 255, 0.12);
+}
+
+.node-chip:hover {
+  background: var(--ds-color-state-hover);
+  border-color: var(--ds-color-border-strong);
+}
+
+.node-chip:focus-visible {
+  border-color: var(--ds-color-accent-amber-400);
+  box-shadow: var(--ds-focus-ring-strong);
+  outline: none;
 }
 
 .node-chip .name {
