@@ -113,3 +113,181 @@ Examples:
 - “If treasury < Y, emit tax event”
 
 Policies must be expressible as:
+f(ledger_history, world_state_at_t) → event(s)
+
+
+No hidden state. No randomness.
+
+---
+
+## 5. Domain Ownership
+
+### Frontend Developer
+- Owns UI layout, flow, and ergonomics
+- Must comply with UI & Ergonomics Charter
+- Must not own NPC truth or persistence
+
+### World Generator
+- Owns world placement semantics
+- Defines valid spatial contexts
+
+### Economy Engineer
+- Owns economic roles, goods interaction semantics
+- Defines valid market participation rules
+
+### Ledger Engineer
+- Owns NPC-related game ledger event schemas
+- Veto authority over determinism and rebuildability
+
+Cross-domain assumptions MUST be documented and escalated.
+
+---
+
+## 6. NPC Creation Screen – Conceptual UI Shape
+
+### 6.1 Entry
+- Developer-only route
+- Explicit “NPC Authoring Mode” indicator
+
+---
+
+### 6.2 Panels (Conceptual)
+
+#### NPC Identity Panel
+- Deterministic ID (preview)
+- Display name / title
+- Primary role(s)
+
+#### Appearance Panel
+- Sprite selection (cosmetic only)
+- Palette / variation (deterministic)
+
+#### World Presence Panel
+- Starting region / settlement
+- Derived constraints and warnings
+
+#### Economic Role Panel
+- Market participation flags
+- Allowed goods categories
+- Initial affiliations
+
+#### Possessions Panel
+- Initial fleets / businesses / houses (references only)
+- No implicit ownership
+
+#### Conduct Policy Panel
+- Declarative rules (thresholds, schedules)
+- No scripting or code entry
+- Deterministic preview only
+
+#### Ledger Preview Panel
+- Human-readable event list
+- Deterministic serialization
+- Explicit irreversibility warning
+
+---
+
+### 6.3 Actions
+- **Validate** (domain constraint checks)
+- **Emit to Game Ledger** (irreversible)
+- **Discard Draft**
+
+No autosave. No hidden persistence.
+
+---
+
+## 7. Fidelity Plan
+
+### Phase 1: Conceptual
+Deliverables:
+- Screen layout definition
+- NPC data contracts (interfaces only)
+- Game-ledger event shapes (names + fields)
+- No logic, no simulation
+
+Exit conditions:
+- All panels named
+- Inputs and outputs explicit
+- No implicit behavior
+
+---
+
+### Phase 2: Structural
+Deliverables:
+- Angular component skeleton
+- Form wiring with mock data
+- Deterministic ledger preview rendering
+- Explicit extension points
+
+Exit conditions:
+- Data flow explicit
+- UI owns no truth
+- Event emission path clear
+
+Functional behavior requires explicit promotion approval.
+
+---
+
+## 8. Success Criteria
+
+This epic is successful when:
+- NPCs can be authored without touching code
+- NPC existence is fully reconstructible from ledger events
+- NPCs participate in the economy without hidden state
+- UI can be deleted without data loss
+- Domain owners agree the shape is correct
+
+---
+
+## 9. Escalation Triggers
+
+Escalate immediately if:
+- New game-ledger schemas are required
+- NPC attributes cross domain ownership
+- Persistent draft storage is requested
+- Simulation or AI logic is proposed
+- Randomness is introduced
+
+---
+
+## 10. Deliverables Summary
+
+- This epic specification
+- NPC creation task specs (Conceptual first)
+- Angular component skeleton
+- Game-ledger NPC event interfaces
+- agents.ledger entries for all major decisions
+
+Failure to record decisions in agents.ledger is BLOCKING.
+
+---
+
+## 11. agents.ledger Requirements
+
+The following MUST be recorded:
+- NPC model decisions
+- Policy design decisions
+- Ledger schema approvals
+- Rejected approaches and rationale
+
+Precedent MUST be checked before escalation.
+
+---
+
+## 12. Design Principle Reminder
+
+NPCs are **economic actors**, not minds.
+
+They exist to:
+- move goods
+- create competition
+- shape history
+
+They do not think.
+They emit events.
+
+When uncertain:
+- stop early
+- document assumptions
+- escalate
+- do not invent mechanics
