@@ -20,7 +20,17 @@
     </header>
 
     <div class="dialog-body" role="grid" aria-label="Tech tree preview grid">
-      <div class="preview-grid" [style.--tier-count]="tierBands.length || 1">
+      <!-- Performance metrics for large trees -->
+      <div class="preview-stats" *ngIf="totalNodeCount > 50">
+        <span class="stat">Nodes: {{ totalNodeCount }}</span>
+        <span class="stat">Tiers: {{ tierBands.length }}</span>
+        <span class="stat" *ngIf="maxNodesPerTier > 10">Max/Tier: {{ maxNodesPerTier }}</span>
+      </div>
+      
+      <div class="preview-grid" 
+           [style.--tier-count]="tierBands.length || 1"
+           [class.preview-grid--dense]="maxNodesPerTier > 15"
+           [class.preview-grid--ultra-dense]="maxNodesPerTier > 25">
         <app-tech-tree-connection-overlay
           class="connection-overlay"
           [nodes]="overlayNodes"
@@ -28,8 +38,29 @@
           [columns]="tierBands.length || 1"
           [selectedId]="activeNodeId()"
         ></app-tech-tree-connection-overlay>
-        <div class="tier-column" *ngFor="let tier of tierBands; trackBy: trackTier">
-          <p class="tier-label">Tier {{ tier }}</p>
+        
+        <div class="tier-column" 
+             *ngFor="let tier of tierBands; trackBy: trackTier"
+             [class.tier-column--empty]="isEmptyTier(tier)"
+             [class.tier-column--dense]="(bandedNodes.get(tier) || []).length > 15"
+             role="group"
+             [attr.aria-label]="'Tier ' + tier + (isEmptyTier(tier) ? ' (empty)' : '')">
+          
+          <p class="tier-label" 
+             [class.tier-label--empty]="isEmptyTier(tier)"
+             [class.tier-label--dense]="(bandedNodes.get(tier) || []).length > 15">
+            Tier {{ tier }}
+            <span class="tier-count" *ngIf="!isEmptyTier(tier)">({{ (bandedNodes.get(tier) || []).length }})</span>
+          </p>
+          
+          <!-- Empty tier placeholder -->
+          <div class="empty-tier-placeholder" *ngIf="isEmptyTier(tier)" aria-hidden="true">
+            <div class="empty-tier-indicator">
+              <span class="empty-tier-text">Empty Tier</span>
+            </div>
+          </div>
+          
+          <!-- Node cards -->
           <div
             class="node-card"
             *ngFor="let node of bandedNodes.get(tier) || []; trackBy: trackNode"
@@ -37,24 +68,34 @@
             role="gridcell"
             [attr.aria-describedby]="'prereq-' + node.id"
             [class.active]="node.id === activeNodeId()"
+            [class.node-card--dense]="(bandedNodes.get(tier) || []).length > 15"
             (focus)="setActiveNode(node.id)"
             (mouseenter)="setActiveNode(node.id)"
             (mouseleave)="clearActiveNode()"
           >
             <div class="node-header">
               <div class="marker" [class.has-icon]="node.metadata?.icon_id" aria-hidden="true"></div>
-              <div>
-                <p class="name">{{ node.title }}</p>
+              <div class="node-title-section">
+                <p class="name" [class.name--truncated]="(bandedNodes.get(tier) || []).length > 15">{{ node.title }}</p>
                 <p class="meta">{{ node.category || 'Unsorted' }}</p>
               </div>
             </div>
-            <p class="summary">{{ node.summary }}</p>
-            <p class="tags" *ngIf="node.culture_tags?.length">
-              {{ describeTags(node.culture_tags) }}
-            </p>
-            <ul class="effect-list" *ngIf="effectLines(node).length">
-              <li *ngFor="let line of effectLines(node); trackBy: trackEffect">{{ line }}</li>
-            </ul>
+            
+            <!-- Condensed display for dense layouts -->
+            <ng-container *ngIf="(bandedNodes.get(tier) || []).length <= 15; else condensedView">
+              <p class="summary">{{ node.summary }}</p>
+              <p class="tags" *ngIf="node.culture_tags?.length">
+                {{ describeTags(node.culture_tags) }}
+              </p>
+              <ul class="effect-list" *ngIf="effectLines(node).length">
+                <li *ngFor="let line of effectLines(node); trackBy: trackEffect">{{ line }}</li>
+              </ul>
+            </ng-container>
+            
+            <ng-template #condensedView>
+              <p class="summary summary--condensed">{{ node.summary }}</p>
+            </ng-template>
+            
             <p class="ds-sr-only" [id]="'prereq-' + node.id">
               Requires: {{ describePrerequisites(node) }}
             </p>

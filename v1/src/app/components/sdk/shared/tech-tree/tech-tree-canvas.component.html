@@ -1,0 +1,405 @@
+<!-- Tech Tree Canvas Component -->
+<div class="tech-tree-canvas" #canvasContainer role="application" 
+     [attr.aria-label]="'Technology tree with ' + nodes.length + ' nodes. Use arrow keys to navigate, Enter to select.'"
+     [attr.aria-describedby]="'tech-tree-instructions'"
+     [attr.aria-keyshortcuts]="getKeyboardShortcuts().map(s => s.key + (s.ctrlKey ? 'Ctrl+' : '') + (s.shiftKey ? 'Shift+' : '') + (s.altKey ? 'Alt+' : '')).join(' ')">
+  
+  <!-- Skip Links for Accessibility -->
+  <div class="tech-tree-skip-links" *ngIf="isSkipLinksEnabled()" role="navigation" aria-label="Skip links">
+    <a href="#tech-tree-nodes" class="tech-tree-skip-link">Skip to technology nodes</a>
+    <a href="#tech-tree-controls" class="tech-tree-skip-link">Skip to canvas controls</a>
+    <a href="#tech-tree-info" class="tech-tree-skip-link">Skip to information panel</a>
+  </div>
+  
+  <!-- Canvas Controls -->
+  <div class="tech-tree-controls" id="tech-tree-controls" role="toolbar" aria-label="Canvas controls">
+    <div class="tech-tree-controls__group">
+      <button 
+        class="tech-tree-button tech-tree-button--zoom-out"
+        (click)="zoomOut()"
+        [disabled]="zoomLevel <= config.zoomMin"
+        aria-label="Zoom out"
+        title="Zoom out (-)">
+        <span class="tech-tree-button__icon">−</span>
+      </button>
+      
+      <span class="tech-tree-zoom-indicator" [attr.aria-label]="'Current zoom level: ' + (zoomLevel * 100).toFixed(0) + '%'">
+        {{ (zoomLevel * 100).toFixed(0) }}%
+      </span>
+      
+      <button 
+        class="tech-tree-button tech-tree-button--zoom-in"
+        (click)="zoomIn()"
+        [disabled]="zoomLevel >= config.zoomMax"
+        aria-label="Zoom in"
+        title="Zoom in (+)">
+        <span class="tech-tree-button__icon">+</span>
+      </button>
+    </div>
+    
+    <div class="tech-tree-controls__group">
+      <button 
+        class="tech-tree-button tech-tree-button--reset"
+        (click)="resetZoom()"
+        aria-label="Reset zoom"
+        title="Reset zoom (0)">
+        <span class="tech-tree-button__icon">⌂</span>
+      </button>
+    </div>
+    
+    <div class="tech-tree-controls__group" *ngIf="canEnableStructuralEditing()">
+      <button 
+        class="tech-tree-button tech-tree-button--structural-edit"
+        [class.tech-tree-button--active]="isStructuralEditMode()"
+        (click)="toggleStructuralEditMode()"
+        [attr.aria-pressed]="isStructuralEditMode()"
+        [attr.aria-label]="getStructuralEditModeText()"
+        [title]="getStructuralEditModeText()">
+        <span class="tech-tree-button__icon">⚙</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas Viewport -->
+  <div 
+    class="tech-tree-viewport"
+    #canvasViewport
+    [style.cursor]="isPanning ? 'grabbing' : 'grab'"
+    tabindex="0"
+    role="application"
+    [attr.aria-label]="'Technology tree canvas. ' + (zoomLevel * 100).toFixed(0) + '% zoom. ' + nodes.length + ' nodes available.'"
+    [attr.aria-describedby]="'tech-tree-instructions'"
+    [attr.aria-keyshortcuts]="'Arrow keys, Enter, Space, Home, End, Page Up, Page Down, Ctrl+plus, Ctrl+minus, Ctrl+0, Ctrl+A, Ctrl+D, Ctrl+F, Ctrl+Space, Escape, F6'"
+    role="application">
+    
+    <!-- Grid Background -->
+    <div 
+      class="tech-tree-grid"
+      [style.background-image]="getGridPattern()"
+      aria-hidden="true">
+    </div>
+    
+    <!-- Canvas Content with Grid Semantics -->
+    <div 
+      class="tech-tree-content"
+      [style]="getCanvasStyle()"
+      role="grid"
+      [attr.aria-label]="'Technology tree grid with ' + nodes.length + ' nodes organized in ' + getUniqueTiers().length + ' tiers'"
+      [attr.aria-rowcount]="getUniqueTiers().length"
+      [attr.aria-colcount]="Math.max(...getUniqueTiers().map(tier => getNodesInTier(tier).length))"
+      id="tech-tree-nodes">
+      
+      <!-- Tier Bands Background -->
+      <div 
+        *ngFor="let tier of getUniqueTiers(); trackBy: trackByTier"
+        class="tech-tree-tier-band"
+        [style]="getTierBandStyle(tier)">
+        
+        <!-- Tier Label -->
+        <div class="tech-tree-tier-label">
+          Tier {{ tier }}
+        </div>
+        
+        <!-- Empty Tier Indicator -->
+        <div 
+          *ngIf="getNodesInTier(tier).length === 0" 
+          class="tech-tree-tier-empty">
+          Empty Tier
+        </div>
+      </div>
+      
+      <!-- Drag and Drop Visual Feedback -->
+      
+      <!-- Drop Zones -->
+      <div 
+        *ngFor="let zone of getDropZones(); trackBy: trackByZone"
+        [style]="getDropZoneStyle(zone)"
+        class="tech-tree-drop-zone">
+      </div>
+      
+      <!-- Snap Indicators -->
+      <div 
+        *ngIf="getDragState().isDragging"
+        [style]="getSnapIndicatorStyle()"
+        class="tech-tree-snap-indicator">
+      </div>
+      
+      <!-- Drag Preview -->
+      <div 
+        *ngIf="getDragState().isDragging && getDragState().draggedNode"
+        [style]="getDragPreviewStyle()"
+        class="tech-tree-drag-preview">
+        <app-tech-node
+          [node]="getDragState().draggedNode!"
+          [state]="getNodeState(getDragState().draggedNode!)"
+          [zoomLevel]="zoomLevel"
+          [compactMode]="zoomLevel < 0.5">
+        </app-tech-node>
+      </div>
+      
+      <!-- Tech Nodes -->
+      <div 
+        *ngFor="let node of nodes; trackBy: trackByNodeId"
+        class="tech-tree-node-container"
+        [style.left.px]="getNodePosition(node).x"
+        [style.top.px]="getNodePosition(node).y"
+        [class.tech-tree-node-container--dragging]="getDragState().draggedNode?.id === node.id"
+        draggable="{{ config.dragDrop.enableDragDrop }}"
+        (dragstart)="onNodeDragStart(node, $event)"
+        (drag)="onNodeDrag($event, node)"
+        (dragend)="onNodeDragEnd($event, node)"
+        role="gridcell"
+        [attr.aria-rowindex]="node.tier"
+        [attr.aria-colindex]="getNodesInTier(node.tier).indexOf(node) + 1"
+        [attr.aria-selected]="state.selected"
+        [attr.aria-label]="'Technology: ' + node.name + ', Tier ' + node.tier + (state.selected ? ', selected' : '') + (state.disabled ? ', disabled' : '')">
+        
+        <app-tech-node
+          [node]="node"
+          [state]="getNodeState(node)"
+          [zoomLevel]="zoomLevel"
+          [compactMode]="zoomLevel < 0.5"
+          (nodeClick)="onNodeClick($event)"
+          (nodeFocus)="onNodeFocus($event)"
+          (nodeSelect)="onNodeSelect($event)">
+        </app-tech-node>
+      </div>
+      
+      <!-- Connection Lines -->
+      <svg 
+        #connectionsSvg
+        class="tech-tree-connections"
+        [attr.width]="'100%'"
+        [attr.height]="'100%'"
+        style="position: absolute; top: 0; left: 0; pointer-events: none;"
+        *ngIf="config.enableConnections">
+        
+        <!-- SVG Definitions -->
+        <defs>
+          <!-- Arrow marker for full-detail connections -->
+          <marker 
+            id="arrowhead" 
+            markerWidth="10" 
+            markerHeight="7" 
+            refX="9" 
+            refY="3.5" 
+            orient="auto">
+            <polygon 
+              points="0 0, 10 3.5, 0 7" 
+              [attr.fill]="config.connectionColors.satisfied" />
+          </marker>
+          
+          <!-- Highlighted arrow marker -->
+          <marker 
+            id="arrowhead-highlighted" 
+            markerWidth="12" 
+            markerHeight="8" 
+            refX="10" 
+            refY="4" 
+            orient="auto">
+            <polygon 
+              points="0 0, 12 4, 0 8" 
+              [attr.fill]="config.connectionColors.highlighted" />
+          </marker>
+          
+          <!-- Active path arrow marker -->
+          <marker 
+            id="arrowhead-active" 
+            markerWidth="12" 
+            markerHeight="8" 
+            refX="10" 
+            refY="4" 
+            orient="auto">
+            <polygon 
+              points="0 0, 12 4, 0 8" 
+              [attr.fill]="config.connectionColors.active" />
+          </marker>
+        </defs>
+        
+        <!-- Render connections with different levels of detail based on zoom -->
+        <g class="tech-tree-connections-group">
+          <path
+            *ngFor="let connection of getVisibleConnections(); trackBy: trackConnectionId"
+            [attr.d]="connection.path"
+            [attr.class]="'tech-tree-connection tech-tree-connection--' + connection.complexity"
+            [attr.style]="getConnectionStyle(connection)"
+            (mouseenter)="onConnectionMouseEnter(connection)"
+            (mouseleave)="onConnectionMouseLeave()"
+            [attr.marker-end]="connection.complexity === 'full' && connection.id === highlightedConnectionId ? 'url(#arrowhead-highlighted)' : 
+                               connection.complexity === 'full' && connection.isActive ? 'url(#arrowhead-active)' :
+                               connection.complexity === 'full' ? 'url(#arrowhead)' : 'none'"
+            [attr.aria-label]="'Connection from ' + (nodes.find(n => n.id === connection.fromNodeId)?.name || 'unknown') + 
+                              ' to ' + (nodes.find(n => n.id === connection.toNodeId)?.name || 'unknown') + 
+                              (connection.isSatisfied ? ' (satisfied)' : ' (unsatisfied)')">
+          </path>
+        </g>
+        
+        <!-- Connection Statistics (only visible at high zoom) -->
+        <g class="tech-tree-connection-stats" *ngIf="zoomLevel >= 2.0 && config.enableConnections">
+          <text 
+            x="10" 
+            y="20" 
+            class="tech-tree-connection-stats__text"
+            [attr.fill]="config.connectionColors.satisfied">
+            Connections: {{ connections.length }}
+          </text>
+          <text 
+            x="10" 
+            y="35" 
+            class="tech-tree-connection-stats__text"
+            [attr.fill]="config.connectionColors.active">
+            Active: {{ connections.filter(c => c.isActive).length }}
+          </text>
+          <text 
+            x="10" 
+            y="50" 
+            class="tech-tree-connection-stats__text"
+            [attr.fill]="config.connectionColors.satisfied">
+            Satisfied: {{ connections.filter(c => c.isSatisfied).length }}
+          </text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Canvas Information Panel -->
+  <div class="tech-tree-info" id="tech-tree-info" role="complementary" aria-label="Canvas information panel">
+    <div class="tech-tree-info__item">
+      <span class="tech-tree-info__label">Nodes:</span>
+      <span class="tech-tree-info__value">{{ nodes.length }}</span>
+    </div>
+    <div class="tech-tree-info__item">
+      <span class="tech-tree-info__label">Zoom:</span>
+      <span class="tech-tree-info__value">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+    </div>
+    <div class="tech-tree-info__item" *ngIf="selectedNodeId">
+      <span class="tech-tree-info__label">Selected:</span>
+      <span class="tech-tree-info__value">
+        {{ nodes.find(n => n.id === selectedNodeId)?.name || 'Unknown' }}
+      </span>
+    </div>
+    <div class="tech-tree-info__item" *ngIf="isStructuralEditMode()">
+      <span class="tech-tree-info__label">Mode:</span>
+      <span class="tech-tree-info__value tech-tree-info__value--structural">Structural</span>
+    </div>
+  </div>
+  
+  <!-- Structural Change Confirmation Dialog -->
+  <div 
+    *ngIf="shouldShowStructuralChangeDialog()"
+    class="tech-tree-structural-dialog">
+    <div class="tech-tree-structural-dialog__header">
+      <h3 class="tech-tree-structural-dialog__title">Confirm Structural Changes</h3>
+      <p class="tech-tree-structural-dialog__description">
+        The following changes will modify the technology tree structure:
+      </p>
+    </div>
+    
+    <div class="tech-tree-structural-dialog__content">
+      <div 
+        *ngFor="let change of getPendingStructuralChanges(); let i = index"
+        class="tech-tree-structural-dialog__change">
+        <div class="tech-tree-structural-dialog__change-info">
+          <span class="tech-tree-structural-dialog__change-description">
+            {{ change.description }}
+          </span>
+        </div>
+        <div class="tech-tree-structural-dialog__change-actions">
+          <button 
+            class="tech-tree-button tech-tree-button--confirm"
+            (click)="confirmStructuralChange(i)"
+            aria-label="Confirm this change">
+            ✓
+          </button>
+          <button 
+            class="tech-tree-button tech-tree-button--reject"
+            (click)="rejectStructuralChange(i)"
+            aria-label="Reject this change">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tech-tree-structural-dialog__actions">
+      <button 
+        class="tech-tree-button tech-tree-button--primary"
+        (click)="confirmAllStructuralChanges()"
+        [disabled]="getPendingStructuralChanges().length === 0">
+        Confirm All ({{ getPendingStructuralChanges().length }})
+      </button>
+      <button 
+        class="tech-tree-button tech-tree-button--secondary"
+        (click)="rejectAllStructuralChanges()"
+        [disabled]="getPendingStructuralChanges().length === 0">
+        Reject All
+      </button>
+    </div>
+  </div>
+
+  <!-- Live Region Announcements for Screen Readers -->
+  <div class="tech-tree-live-regions" aria-live="polite" aria-atomic="false">
+    <div *ngFor="let announcement of getLiveRegionAnnouncements()" 
+         [attr.aria-live]="announcement.priority"
+         [attr.aria-label]="announcement.message"
+         class="sr-only">
+      {{ announcement.message }}
+    </div>
+  </div>
+  
+  <!-- Assertive Live Region for Critical Announcements -->
+  <div class="tech-tree-live-regions" aria-live="assertive" aria-atomic="true">
+    <div *ngFor="let announcement of getLiveRegionAnnouncements().filter(a => a.priority === 'assertive')" 
+         [attr.aria-label]="announcement.message"
+         class="sr-only">
+      {{ announcement.message }}
+    </div>
+  </div>
+
+  <!-- Enhanced Accessibility Instructions -->
+  <div class="tech-tree-accessibility" id="tech-tree-instructions" aria-live="polite" aria-atomic="true">
+    <h3 class="tech-tree-accessibility__title">Keyboard Navigation Guide</h3>
+    <div class="tech-tree-accessibility__content">
+      <div class="tech-tree-accessibility__section">
+        <h4 class="tech-tree-accessibility__section-title">Navigation</h4>
+        <ul class="tech-tree-accessibility__list">
+          <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> - Navigate between nodes</li>
+          <li><kbd>Arrow Keys</kbd> - Move between adjacent nodes</li>
+          <li><kbd>Home</kbd> - Jump to first node</li>
+          <li><kbd>End</kbd> - Jump to last node</li>
+          <li><kbd>Page Up</kbd> / <kbd>Page Down</kbd> - Navigate between tiers</li>
+        </ul>
+      </div>
+      
+      <div class="tech-tree-accessibility__section">
+        <h4 class="tech-tree-accessibility__section-title">Selection & Actions</h4>
+        <ul class="tech-tree-accessibility__list">
+          <li><kbd>Enter</kbd> / <kbd>Space</kbd> - Select focused node</li>
+          <li><kbd>Ctrl+A</kbd> - Select all nodes</li>
+          <li><kbd>Ctrl+D</kbd> - Deselect all nodes</li>
+        </ul>
+      </div>
+      
+      <div class="tech-tree-accessibility__section">
+        <h4 class="tech-tree-accessibility__section-title">Zoom & Pan</h4>
+        <ul class="tech-tree-accessibility__list">
+          <li><kbd>Ctrl++</kbd> / <kbd>Ctrl+-</kbd> - Zoom in/out</li>
+          <li><kbd>Ctrl+0</kbd> - Reset zoom</li>
+          <li>Mouse wheel - Zoom</li>
+          <li>Mouse drag - Pan canvas</li>
+        </ul>
+      </div>
+      
+      <div class="tech-tree-accessibility__section">
+        <h4 class="tech-tree-accessibility__section-title">Additional Features</h4>
+        <ul class="tech-tree-accessibility__list">
+          <li><kbd>Ctrl+F</kbd> - Focus search/filter</li>
+          <li><kbd>Ctrl+Space</kbd> - Toggle structural edit mode</li>
+          <li><kbd>Escape</kbd> - Cancel operations, close dialogs</li>
+          <li><kbd>F6</kbd> - Cycle through canvas regions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>

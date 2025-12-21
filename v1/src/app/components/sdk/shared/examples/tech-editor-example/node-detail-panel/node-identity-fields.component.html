@@ -1,0 +1,346 @@
+<!-- Node Identity Fields Component -->
+<div class="node-identity-fields">
+  <!-- Node ID Field with Guarded Editing -->
+  <div class="node-identity-fields__field-group">
+    <label class="node-identity-fields__label">
+      <span class="node-identity-fields__label-text">Node ID</span>
+      <span class="node-identity-fields__label-required">*</span>
+      <span 
+        *ngIf="hasValidationWarnings('id')"
+        class="node-identity-fields__label-warning"
+        title="This field has validation warnings">
+        ⚠
+      </span>
+    </label>
+    
+    <div class="node-identity-fields__field-container">
+      <!-- Display Mode -->
+      <div 
+        class="node-identity-fields__field-display"
+        [class.node-identity-fields__field-display--guarded]="idGuardedMode"
+        *ngIf="!idGuardedMode">
+        
+        <span class="node-identity-fields__field-value node-identity-fields__field-value--id">
+          {{ nodeData?.id || 'No ID assigned' }}
+        </span>
+        
+        <button 
+          type="button"
+          class="node-identity-fields__edit-button"
+          [disabled]="isReadOnly"
+          (click)="initiateIdEdit()"
+          [attr.aria-label]="'Edit Node ID for ' + (nodeData?.displayName || 'unnamed node')">
+          Edit ID
+        </button>
+      </div>
+
+      <!-- Guarded Editing Mode -->
+      <div 
+        class="node-identity-fields__guarded-editor"
+        *ngIf="idGuardedMode">
+        
+        <input
+          type="text"
+          class="node-identity-fields__input node-identity-fields__input--guarded"
+          [(ngModel)]="formModels.id"
+          [class.node-identity-fields__input--error]="hasValidationErrors('id')"
+          [class.node-identity-fields__input--warning]="hasValidationWarnings('id')"
+          placeholder="Enter new Node ID"
+          aria-describedby="id-validation-messages"
+          autocomplete="off">
+        
+        <!-- Confirmation Input -->
+        <div class="node-identity-fields__confirmation">
+          <label class="node-identity-fields__confirmation-label">
+            Type the new Node ID again to confirm:
+          </label>
+          <input
+            type="text"
+            class="node-identity-fields__input node-identity-fields__input--confirmation"
+            [(ngModel)]="idChangeConfirmation"
+            [placeholder]="formModels.id"
+            autocomplete="off">
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="node-identity-fields__guarded-actions">
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--confirm"
+            [disabled]="!idChangeConfirmation || idChangeConfirmation !== formModels.id"
+            (click)="confirmIdChange()">
+            Confirm Change
+          </button>
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--cancel"
+            (click)="cancelIdEdit()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ID Validation Messages -->
+    <div 
+      class="node-identity-fields__validation-messages"
+      id="id-validation-messages"
+      *ngIf="getFieldValidationMessages('id').length > 0"
+      role="alert"
+      aria-live="polite">
+      <div 
+        *ngFor="let validation of getFieldValidationMessages('id')"
+        class="node-identity-fields__validation-item"
+        [class.node-identity-fields__validation-item--error]="validation.type === 'error'"
+        [class.node-identity-fields__validation-item--warning]="validation.type === 'warning'"
+        [class.node-identity-fields__validation-item--downstream]="validation.downstreamImpact">
+        
+        <span 
+          class="node-identity-fields__validation-icon"
+          [attr.aria-label]="validation.type + ' message'">
+          {{ getValidationIcon(validation.type) }}
+        </span>
+        
+        <span class="node-identity-fields__validation-text">
+          {{ validation.message }}
+        </span>
+        
+        <!-- Downstream Impact Details -->
+        <div 
+          *ngIf="validation.downstreamImpact && validation.affectedNodes"
+          class="node-identity-fields__downstream-details">
+          <strong>Affected nodes:</strong>
+          <ul class="node-identity-fields__affected-nodes">
+            <li *ngFor="let nodeId of validation.affectedNodes">{{ nodeId }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Display Name Field with Inline Editing -->
+  <div class="node-identity-fields__field-group">
+    <label class="node-identity-fields__label">
+      <span class="node-identity-fields__label-text">Display Name</span>
+      <span class="node-identity-fields__label-required">*</span>
+      <span 
+        *ngIf="hasValidationWarnings('displayName')"
+        class="node-identity-fields__label-warning"
+        title="This field has validation warnings">
+        ⚠
+      </span>
+    </label>
+    
+    <div class="node-identity-fields__field-container">
+      <!-- Display Mode -->
+      <div 
+        class="node-identity-fields__field-display"
+        *ngIf="!editingStates.displayName">
+        
+        <span 
+          class="node-identity-fields__field-value"
+          [class.node-identity-fields__field-value--empty]="!nodeData?.displayName">
+          {{ nodeData?.displayName || 'No display name' }}
+        </span>
+        
+        <button 
+          type="button"
+          class="node-identity-fields__edit-button"
+          [disabled]="isReadOnly"
+          (click)="editingStates.displayName = true"
+          [attr.aria-label]="'Edit display name for ' + (nodeData?.displayName || 'node')">
+          Edit
+        </button>
+      </div>
+
+      <!-- Inline Editing Mode -->
+      <div 
+        class="node-identity-fields__inline-editor"
+        *ngIf="editingStates.displayName">
+        
+        <input
+          type="text"
+          class="node-identity-fields__input node-identity-fields__input--inline"
+          [(ngModel)]="formModels.displayName"
+          [class.node-identity-fields__input--error]="hasValidationErrors('displayName')"
+          [class.node-identity-fields__input--warning]="hasValidationWarnings('displayName')"
+          (focus)="onFieldFocus('displayName')"
+          (blur)="onFieldBlur('displayName')"
+          (keydown)="onFieldKeydown('displayName', $event)"
+          placeholder="Enter display name"
+          maxlength="100"
+          aria-describedby="displayname-validation-messages"
+          #displayNameInput>
+        
+        <!-- Inline Actions -->
+        <div class="node-identity-fields__inline-actions">
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--save"
+            (click)="onFieldBlur('displayName')"
+            aria-label="Save display name">
+            ✓
+          </button>
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--cancel"
+            (click)="editingStates.displayName = false; formModels.displayName = nodeData?.displayName || ''"
+            aria-label="Cancel editing display name">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Display Name Validation Messages -->
+    <div 
+      class="node-identity-fields__validation-messages"
+      id="displayname-validation-messages"
+      *ngIf="getFieldValidationMessages('displayName').length > 0"
+      role="alert"
+      aria-live="polite">
+      <div 
+        *ngFor="let validation of getFieldValidationMessages('displayName')"
+        class="node-identity-fields__validation-item"
+        [class.node-identity-fields__validation-item--error]="validation.type === 'error'"
+        [class.node-identity-fields__validation-item--warning]="validation.type === 'warning'">
+        
+        <span 
+          class="node-identity-fields__validation-icon"
+          [attr.aria-label]="validation.type + ' message'">
+          {{ getValidationIcon(validation.type) }}
+        </span>
+        
+        <span class="node-identity-fields__validation-text">
+          {{ validation.message }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description Field with Inline Editing -->
+  <div class="node-identity-fields__field-group">
+    <label class="node-identity-fields__label">
+      <span class="node-identity-fields__label-text">Description</span>
+      <span class="node-identity-fields__label-help">(Optional)</span>
+    </label>
+    
+    <div class="node-identity-fields__field-container">
+      <!-- Display Mode -->
+      <div 
+        class="node-identity-fields__field-display"
+        *ngIf="!editingStates.description">
+        
+        <div 
+          class="node-identity-fields__field-value node-identity-fields__field-value--description"
+          [class.node-identity-fields__field-value--empty]="!nodeData?.description">
+          {{ nodeData?.description || 'No description provided' }}
+        </div>
+        
+        <button 
+          type="button"
+          class="node-identity-fields__edit-button"
+          [disabled]="isReadOnly"
+          (click)="editingStates.description = true"
+          [attr.aria-label]="'Edit description for ' + (nodeData?.displayName || 'node')">
+          Edit
+        </button>
+      </div>
+
+      <!-- Inline Editing Mode -->
+      <div 
+        class="node-identity-fields__inline-editor"
+        *ngIf="editingStates.description">
+        
+        <textarea
+          class="node-identity-fields__textarea node-identity-fields__textarea--inline"
+          [(ngModel)]="formModels.description"
+          [class.node-identity-fields__textarea--error]="hasValidationErrors('description')"
+          [class.node-identity-fields__textarea--warning]="hasValidationWarnings('description')"
+          (focus)="onFieldFocus('description')"
+          (blur)="onFieldBlur('description')"
+          (keydown)="onFieldKeydown('description', $event)"
+          placeholder="Enter description"
+          maxlength="500"
+          rows="3"
+          aria-describedby="description-validation-messages"
+          #descriptionInput></textarea>
+        
+        <!-- Character Count -->
+        <div class="node-identity-fields__character-count">
+          {{ formModels.description.length }}/500
+        </div>
+        
+        <!-- Inline Actions -->
+        <div class="node-identity-fields__inline-actions">
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--save"
+            (click)="onFieldBlur('description')"
+            aria-label="Save description">
+            ✓
+          </button>
+          <button 
+            type="button"
+            class="node-identity-fields__button node-identity-fields__button--cancel"
+            (click)="editingStates.description = false; formModels.description = nodeData?.description || ''"
+            aria-label="Cancel editing description">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description Validation Messages -->
+    <div 
+      class="node-identity-fields__validation-messages"
+      id="description-validation-messages"
+      *ngIf="getFieldValidationMessages('description').length > 0"
+      role="alert"
+      aria-live="polite">
+      <div 
+        *ngFor="let validation of getFieldValidationMessages('description')"
+        class="node-identity-fields__validation-item"
+        [class.node-identity-fields__validation-item--error]="validation.type === 'error'"
+        [class.node-identity-fields__validation-item--warning]="validation.type === 'warning'">
+        
+        <span 
+          class="node-identity-fields__validation-icon"
+          [attr.aria-label]="validation.type + ' message'">
+          {{ getValidationIcon(validation.type) }}
+        </span>
+        
+        <span class="node-identity-fields__validation-text">
+          {{ validation.message }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Field Summary and Status -->
+  <div class="node-identity-fields__summary" *ngIf="hasValidationIssues()">
+    <h4 class="node-identity-fields__summary-title">Identity Field Status</h4>
+    
+    <div class="node-identity-fields__summary-stats">
+      <span 
+        *ngIf="getValidationCountByType('error') > 0"
+        class="node-identity-fields__stat node-identity-fields__stat--error">
+        {{ getValidationCountByType('error') }} error{{ getValidationCountByType('error') !== 1 ? 's' : '' }}
+      </span>
+      <span 
+        *ngIf="getValidationCountByType('warning') > 0"
+        class="node-identity-fields__stat node-identity-fields__stat--warning">
+        {{ getValidationCountByType('warning') }} warning{{ getValidationCountByType('warning') !== 1 ? 's' : '' }}
+      </span>
+    </div>
+
+    <div class="node-identity-fields__summary-actions">
+      <button 
+        type="button"
+        class="node-identity-fields__button node-identity-fields__button--fix-errors"
+        (click)="validationRequested.emit({ field: 'identity', value: 'validate' })">
+        Validate Identity
+      </button>
+    </div>
+  </div>
+</div>

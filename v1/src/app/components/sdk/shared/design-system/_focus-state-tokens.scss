@@ -1,0 +1,537 @@
+// Design System Focus State Tokens
+// Comprehensive focus state system for Tech Tree Editor
+// Complies with UI & Ergonomics Charter principles
+// Focus states as primary accessibility feature, not decorative elements
+
+// ============================================================================
+// FOCUS STATE FOUNDATION
+// ============================================================================
+
+// Import required design system modules
+@import 'color-tokens';
+@import 'spacing-tokens';
+@import 'typography-tokens';
+
+// Focus indicator styles following accessibility requirements
+// Multiple indicators to avoid color-only dependence
+
+// Primary focus ring (outline-based)
+$focus-ring-width: 2px;
+$focus-ring-offset: 2px;
+$focus-ring-style: solid;
+
+// Focus ring colors (building on existing color tokens)
+$focus-ring-color: $color-focus;
+$focus-ring-color-light: $color-focus-light;
+$focus-ring-color-dark: $color-focus-dark;
+
+// Alternative focus indicators (non-color-dependent)
+$focus-border-width: 1px;
+$focus-border-style: solid;
+$focus-shadow-blur: 0;
+$focus-shadow-spread: 2px;
+$focus-shadow-color: rgba($color-focus-rgb, 0.3);
+
+// Focus background indicators
+$focus-background-color: rgba($color-focus-rgb, 0.08);
+$focus-background-light: rgba($color-focus-rgb, 0.04);
+$focus-background-dark: rgba($color-focus-rgb, 0.12);
+
+// Focus animation timing (reduced motion compliant)
+$focus-transition-duration: 150ms;
+$focus-transition-timing: ease-out;
+$focus-transition-properties: outline, border, background-color, box-shadow;
+
+// Component-specific focus spacing
+$focus-button-padding-adjustment: 0px;
+$focus-input-padding-adjustment: 0px;
+$focus-node-padding-adjustment: 0px;
+
+// ============================================================================
+// FOCUS STATE TOKENS
+// ============================================================================
+
+// Standard focus states
+$focus-state-default: (
+  ring: (
+    width: $focus-ring-width,
+    style: $focus-ring-style,
+    color: $focus-ring-color,
+    offset: $focus-ring-offset
+  ),
+  border: (
+    width: $focus-border-width,
+    style: $focus-border-style,
+    color: $focus-ring-color
+  ),
+  shadow: (
+    blur: $focus-shadow-blur,
+    spread: $focus-shadow-spread,
+    color: $focus-shadow-color,
+    x: 0,
+    y: 0
+  ),
+  background: (
+    color: $focus-background-color
+  ),
+  animation: (
+    duration: $focus-transition-duration,
+    timing: $focus-transition-timing,
+    properties: $focus-transition-properties
+  )
+);
+
+// Enhanced focus state for high-priority elements
+$focus-state-enhanced: (
+  ring: (
+    width: $focus-ring-width + 1px,
+    style: $focus-ring-style,
+    color: $focus-ring-color-dark,
+    offset: $focus-ring-offset + 1px
+  ),
+  border: (
+    width: $focus-border-width + 1px,
+    style: $focus-border-style,
+    color: $focus-ring-color-dark
+  ),
+  shadow: (
+    blur: $focus-shadow-blur,
+    spread: $focus-shadow-spread + 1px,
+    color: rgba($color-focus-dark-rgb, 0.4),
+    x: 0,
+    y: 0
+  ),
+  background: (
+    color: $focus-background-dark
+  ),
+  animation: (
+    duration: $focus-transition-duration,
+    timing: $focus-transition-timing,
+    properties: $focus-transition-properties
+  )
+);
+
+// Subtle focus state for secondary elements
+$focus-state-subtle: (
+  ring: (
+    width: $focus-ring-width - 1px,
+    style: $focus-ring-style,
+    color: $focus-ring-color-light,
+    offset: $focus-ring-offset
+  ),
+  border: (
+    width: $focus-border-width,
+    style: $focus-border-style,
+    color: $focus-ring-color-light
+  ),
+  shadow: (
+    blur: $focus-shadow-blur,
+    spread: $focus-shadow-spread - 1px,
+    color: rgba($color-focus-light-rgb, 0.2),
+    x: 0,
+    y: 0
+  ),
+  background: (
+    color: $focus-background-light
+  ),
+  animation: (
+    duration: 100ms,
+    timing: $focus-transition-timing,
+    properties: $focus-transition-properties
+  )
+);
+
+// Error focus state for form validation
+$focus-state-error: (
+  ring: (
+    width: $focus-ring-width,
+    style: $focus-ring-style,
+    color: $color-error,
+    offset: $focus-ring-offset
+  ),
+  border: (
+    width: $focus-border-width + 1px,
+    style: $focus-border-style,
+    color: $color-error
+  ),
+  shadow: (
+    blur: 0,
+    spread: $focus-shadow-spread,
+    color: rgba($color-error-rgb, 0.3),
+    x: 0,
+    y: 0
+  ),
+  background: (
+    color: rgba($color-error-rgb, 0.08)
+  ),
+  animation: (
+    duration: $focus-transition-duration,
+    timing: $focus-transition-timing,
+    properties: $focus-transition-properties
+  )
+);
+
+// Success focus state for completed actions
+$focus-state-success: (
+  ring: (
+    width: $focus-ring-width,
+    style: $focus-ring-style,
+    color: $color-success,
+    offset: $focus-ring-offset
+  ),
+  border: (
+    width: $focus-border-width,
+    style: $focus-border-style,
+    color: $color-success
+  ),
+  shadow: (
+    blur: 0,
+    spread: $focus-shadow-spread,
+    color: rgba($color-success-rgb, 0.3),
+    x: 0,
+    y: 0
+  ),
+  background: (
+    color: rgba($color-success-rgb, 0.08)
+  ),
+  animation: (
+    duration: $focus-transition-duration,
+    timing: $focus-transition-timing,
+    properties: $focus-transition-properties
+  )
+);
+
+// ============================================================================
+// CSS CUSTOM PROPERTIES
+// ============================================================================
+
+:root {
+  // Focus ring tokens
+  --ds-focus-ring-width: #{$focus-ring-width};
+  --ds-focus-ring-offset: #{$focus-ring-offset};
+  --ds-focus-ring-color: #{$focus-ring-color};
+  --ds-focus-ring-color-light: #{$focus-ring-color-light};
+  --ds-focus-ring-color-dark: #{$focus-ring-color-dark};
+  
+  // Focus border tokens
+  --ds-focus-border-width: #{$focus-border-width};
+  --ds-focus-border-color: #{$focus-ring-color};
+  
+  // Focus shadow tokens
+  --ds-focus-shadow-blur: #{$focus-shadow-blur};
+  --ds-focus-shadow-spread: #{$focus-shadow-spread};
+  --ds-focus-shadow-color: #{$focus-shadow-color};
+  
+  // Focus background tokens
+  --ds-focus-background-color: #{$focus-background-color};
+  --ds-focus-background-light: #{$focus-background-light};
+  --ds-focus-background-dark: #{$focus-background-dark};
+  
+  // Focus animation tokens
+  --ds-focus-transition-duration: #{$focus-transition-duration};
+  --ds-focus-transition-timing: #{$focus-transition-timing};
+  --ds-focus-transition-properties: #{$focus-transition-properties};
+  
+  // Component-specific focus tokens
+  --ds-focus-button-padding-adjustment: #{$focus-button-padding-adjustment};
+  --ds-focus-input-padding-adjustment: #{$focus-input-padding-adjustment};
+  --ds-focus-node-padding-adjustment: #{$focus-node-padding-adjustment};
+}
+
+// Dark theme focus adjustments
+[data-theme="dark"] {
+  --ds-focus-ring-color: var(--ds-color-focus);
+  --ds-focus-ring-color-light: var(--ds-color-focus-light);
+  --ds-focus-ring-color-dark: var(--ds-color-focus-dark);
+  --ds-focus-border-color: var(--ds-color-focus);
+  --ds-focus-shadow-color: rgba(65, 105, 225, 0.4);
+}
+
+// ============================================================================
+// FOCUS UTILITY MIXINS
+// ============================================================================
+
+// Primary focus mixin
+@mixin ds-focus-ring($state: 'default') {
+  $focus-config: map-get((
+    'default': $focus-state-default,
+    'enhanced': $focus-state-enhanced,
+    'subtle': $focus-state-subtle,
+    'error': $focus-state-error,
+    'success': $focus-state-success
+  ), $state);
+  
+  &:focus {
+    outline: map-get(map-get($focus-config, 'ring'), width) 
+             map-get(map-get($focus-config, 'ring'), style) 
+             map-get(map-get($focus-config, 'ring'), color);
+    outline-offset: map-get(map-get($focus-config, 'ring'), offset);
+    transition: map-get(map-get($focus-config, 'animation'), properties) 
+                map-get(map-get($focus-config, 'animation'), duration) 
+                map-get(map-get($focus-config, 'animation'), timing);
+  }
+}
+
+// Enhanced focus mixin for interactive elements
+@mixin ds-focus-enhanced {
+  &:focus {
+    outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color-dark);
+    outline-offset: var(--ds-focus-ring-offset);
+    border: var(--ds-focus-border-width) solid var(--ds-focus-border-color);
+    box-shadow: 0 0 var(--ds-focus-shadow-blur) var(--ds-focus-shadow-spread) var(--ds-focus-shadow-color);
+    background-color: var(--ds-focus-background-dark);
+    transition: var(--ds-focus-transition-properties) var(--ds-focus-transition-duration) var(--ds-focus-transition-timing);
+  }
+}
+
+// Subtle focus mixin for secondary elements
+@mixin ds-focus-subtle {
+  &:focus {
+    outline: 1px solid var(--ds-focus-ring-color-light);
+    outline-offset: 1px;
+    border: 1px solid var(--ds-focus-ring-color-light);
+    background-color: var(--ds-focus-background-light);
+    transition: var(--ds-focus-transition-properties) 100ms var(--ds-focus-transition-timing);
+  }
+}
+
+// Button-specific focus mixin
+@mixin ds-focus-button {
+  &:focus {
+    @include ds-focus-enhanced;
+    // Ensure button focus doesn't break layout
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Input-specific focus mixin
+@mixin ds-focus-input {
+  &:focus {
+    @include ds-focus-enhanced;
+    border-color: var(--ds-focus-border-color);
+    background-color: var(--ds-focus-background-color);
+    // Input-specific focus behavior
+    box-shadow: inset 0 0 0 1px var(--ds-focus-border-color), 
+                0 0 var(--ds-focus-shadow-blur) var(--ds-focus-shadow-spread) var(--ds-focus-shadow-color);
+  }
+}
+
+// Node-specific focus mixin for tech tree nodes
+@mixin ds-focus-node {
+  &:focus {
+    @include ds-focus-enhanced;
+    // Node-specific focus treatment
+    transform: translateZ(0); // Create new stacking context
+    z-index: 10;
+  }
+  
+  &:focus-visible {
+    @include ds-focus-enhanced;
+  }
+}
+
+// Link-specific focus mixin
+@mixin ds-focus-link {
+  &:focus {
+    @include ds-focus-subtle;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+  }
+}
+
+// Modal/dialog focus mixin
+@mixin ds-focus-modal {
+  &:focus {
+    @include ds-focus-enhanced;
+    // Ensure modal elements are always visible when focused
+    box-shadow: 0 0 0 3px var(--ds-focus-ring-color),
+                0 0 var(--ds-focus-shadow-blur) var(--ds-focus-shadow-spread) var(--ds-focus-shadow-color);
+    z-index: 100;
+  }
+}
+
+// ============================================================================
+// FOCUS MANAGEMENT MIXINS
+// ============================================================================
+
+// Skip link focus for accessibility
+@mixin ds-focus-skip-link {
+  &:focus {
+    position: absolute;
+    top: var(--ds-spacing-sm);
+    left: var(--ds-spacing-sm);
+    z-index: 1000;
+    background: var(--ds-color-background-primary);
+    border: 2px solid var(--ds-focus-ring-color);
+    border-radius: var(--ds-spacing-xs);
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+    text-decoration: none;
+    color: var(--ds-color-text-primary);
+    font-weight: map-get($font-weights, 'medium');
+    outline-offset: 2px;
+  }
+}
+
+// Focus trap for modals
+@mixin ds-focus-trap {
+  &:focus {
+    outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color);
+    outline-offset: var(--ds-focus-ring-offset);
+  }
+  
+  // Prevent focus from escaping modal
+  &:focus-within {
+    outline: none;
+  }
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// ============================================================================
+
+// Universal focus class
+%ds-focusable {
+  @include ds-focus-ring('default');
+}
+
+// Enhanced focus class
+%ds-focus-enhanced {
+  @include ds-focus-enhanced;
+}
+
+// Subtle focus class
+%ds-focus-subtle {
+  @include ds-focus-subtle;
+}
+
+// Component-specific focus classes
+%ds-focus-button {
+  @include ds-focus-button;
+}
+
+%ds-focus-input {
+  @include ds-focus-input;
+}
+
+%ds-focus-node {
+  @include ds-focus-node;
+}
+
+%ds-focus-link {
+  @include ds-focus-link;
+}
+
+%ds-focus-modal {
+  @include ds-focus-modal;
+}
+
+// Accessibility classes
+%ds-focus-skip-link {
+  @include ds-focus-skip-link;
+}
+
+%ds-focus-trap {
+  @include ds-focus-trap;
+}
+
+// Focus within container
+%ds-focus-within {
+  &:focus-within {
+    outline: none;
+    
+    .ds-focusable,
+    [tabindex],
+    button,
+    input,
+    select,
+    textarea,
+    a {
+      @include ds-focus-subtle;
+    }
+  }
+}
+
+// ============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// ============================================================================
+
+// High contrast mode focus adjustments
+@media (prefers-contrast: high) {
+  :root {
+    --ds-focus-ring-width: 3px;
+    --ds-focus-ring-color: #0066ff;
+    --ds-focus-border-color: #0066ff;
+    --ds-focus-shadow-color: rgba(0, 102, 255, 0.5);
+  }
+  
+  %ds-focusable:focus {
+    outline-width: 3px;
+    outline-style: solid;
+    outline-color: #0066ff;
+    outline-offset: 1px;
+    border-color: #0066ff;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  %ds-focusable:focus {
+    transition: none;
+  }
+  
+  *:focus {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+// Force focus visible for better keyboard navigation
+@supports selector(:focus-visible) {
+  %ds-focusable:focus {
+    outline: none;
+  }
+  
+  %ds-focusable:focus-visible {
+    @include ds-focus-ring('default');
+  }
+  
+  %ds-focus-enhanced:focus-visible {
+    @include ds-focus-enhanced;
+  }
+  
+  %ds-focus-subtle:focus-visible {
+    @include ds-focus-subtle;
+  }
+}
+
+// Touch device optimizations
+@media (pointer: coarse) {
+  %ds-focus-enhanced:focus {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+  
+  %ds-focus-button:focus,
+  %ds-focus-input:focus,
+  %ds-focus-node:focus {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+// ============================================================================
+// PRINT STYLES
+// ============================================================================
+
+@media print {
+  %ds-focusable:focus {
+    outline: 2px solid #000;
+    outline-offset: 1px;
+  }
+  
+  %ds-focus-enhanced:focus {
+    border: 2px solid #000;
+  }
+}

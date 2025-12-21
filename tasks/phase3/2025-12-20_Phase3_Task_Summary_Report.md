@@ -11,159 +11,126 @@
 
 ## Executive Summary
 
-Successfully generated **22 agent-specific task specifications** for completing Phase 3 of the Tech Tree Epic. Tasks are organized by domain ownership and follow the established task specification template from `megalomania/task_create_task.md`.
+Successfully generated **22 agent-specific task specifications** for completing Phase 3 of the Tech Tree Epic. Tasks are organized by execution waves and priority levels to ensure optimal development flow and dependency management.
 
 **Total Tasks Created:** 22  
+**Execution Timeline:** 10 weeks across 4 waves  
 **Primary Agent Distribution:**
-- Frontend Developer: 18 tasks
+- Frontend Developer: 17 tasks
 - QA & Test Engineer: 3 tasks  
-- Game Designer: Collaborator on all tasks
-- Architecture Steward: Reviewer on all tasks
+- Game Designer: Collaborator on all tasks (20% allocation)
+- Architecture Steward: Reviewer on all tasks (10% allocation)
 
-## Task Organization
+## Task Organization by Execution Waves
 
-### Design System & UX Foundation (4 tasks)
+### Wave 1: Foundation & Design System (P0 - Critical Path)
+**Timeline:** Weeks 1-2 | **Total Duration:** 11 days | **Blocks:** All component work
 
-1. **`2025-12-20_design-system-typography-scale.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Establish foundational typography system for visual consistency
-   - **Dependencies:** None (foundational)
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P0-1** | `P0-1_design-system-typography-scale.md` | Frontend Developer | None | 3 days |
+| **P0-2** | `P0-2_design-system-color-tokens.md` | Frontend Developer | P0-1 | 3 days |
+| **P0-3** | `P0-3_design-system-spacing-layout.md` | Frontend Developer | P0-1, P0-2 | 3 days |
+| **P0-4** | `P0-4_design-system-focus-states.md` | Frontend Developer | P0-1, P0-2, P0-3 | 2 days |
 
-2. **`2025-12-20_design-system-color-tokens.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Define canonical color system with accessibility compliance
-   - **Dependencies:** Typography scale completion
+**Wave 1 Purpose:** Establish shared primitives and design system tokens
 
-3. **`2025-12-20_design-system-spacing-layout.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Establish consistent spacing and layout rhythm
-   - **Dependencies:** Typography and color tokens
+### Wave 2: Core Component Implementation (P1 - High Priority)
+**Timeline:** Weeks 3-5 | **Total Duration:** Variable (parallel execution) | **Blocks:** Integration work
 
-4. **`2025-12-20_design-system-focus-states.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Define consistent focus states for accessibility
-   - **Dependencies:** All design system tokens
+#### Canvas/Grid Components (Can run parallel after Wave 1)
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P1-1** | `P1-1_tech-canvas-pan-zoom.md` | Frontend Developer | P0-4 | 4 days |
+| **P1-2** | `P1-2_tech-canvas-node-components.md` | Frontend Developer | P0-4, P1-1 | 4 days |
+| **P1-3** | `P1-3_tech-canvas-grid-tier-layout.md` | Frontend Developer | P0-4, P1-1 | 3 days |
+| **P1-4** | `P1-4_tech-canvas-prerequisite-connections.md` | Frontend Developer | P0-4, P1-2, P1-3 | 3 days |
+| **P1-5** | `P1-5_tech-canvas-drag-drop-ergonomics.md` | Frontend Developer | P0-4, P1-3 | 3 days |
+| **P1-6** | `P1-6_tech-canvas-accessibility.md` | Frontend Developer | P0-4, P1-2, P1-3, P1-5 | 3 days |
 
-### Main Grid/Tech Canvas (6 tasks)
+#### Node Detail Components (Can run parallel after Wave 1)
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P1-7** | `P1-7_node-detail-layout-structure.md` | Frontend Developer | P0-4 | 3 days |
+| **P1-8** | `P1-8_node-detail-identity-fields.md` | Frontend Developer | P0-4, P1-7 | 3 days |
+| **P1-9** | `P1-9_node-detail-prerequisite-management.md` | Frontend Developer | P0-4, P1-7, P1-8 | 3 days |
+| **P1-10** | `P1-10_node-detail-effects-management.md` | Frontend Developer | P0-4, P1-7, P1-9 | 4 days |
+| **P1-11** | `P1-11_node-detail-culture-tags.md` | Frontend Developer | P0-4, P1-7, P1-10 | 2 days |
 
-5. **`2025-12-20_tech-canvas-pan-zoom.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Implement core pan/zoom behavior for spatial navigation
-   - **Dependencies:** Design system tokens
+#### Preview & Icon Picker (Can run parallel after Wave 1)
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P1-12** | `P1-12_preview-dialog-layout-structure.md` | Frontend Developer | P0-4, P1-3 | 3 days |
+| **P1-13** | `P1-13_preview-dialog-prerequisite-visualization.md` | Frontend Developer | P0-4, P1-12, P1-4 | 3 days |
+| **P1-14** | `P1-14_icon-picker-grid-interaction.md` | Frontend Developer | P0-4 | 4 days |
 
-6. **`2025-12-20_tech-canvas-node-components.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Create zoom-responsive node templates with visual states
-   - **Dependencies:** Pan/zoom implementation
+**Wave 2 Purpose:** Build individual components with design system integration
 
-7. **`2025-12-20_tech-canvas-grid-tier-layout.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Implement tier-banded layout with dynamic management
-   - **Dependencies:** Pan/zoom and node components
+### Wave 3: Performance & Integration (P1 - High Priority)
+**Timeline:** Weeks 6-8 | **Total Duration:** 9 days | **Blocks:** Validation work
 
-8. **`2025-12-20_tech-canvas-prerequisite-connections.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Create zoom-based prerequisite visualization
-   - **Dependencies:** Grid/tier layout and node components
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P1-15** | `P1-15_performance-virtualization.md` | Frontend Developer | P1-1, P1-2, P1-4, P1-7, P1-12, P1-14 | 5 days |
+| **P1-16** | `P1-16_cross-component-integration.md` | Frontend Developer | All Wave 2 tasks | 4 days |
 
-9. **`2025-12-20_tech-canvas-drag-drop-ergonomics.md`**
-   - **Primary Agent:** Frontend Developer
-   - **Purpose:** Implement predictable drag/drop with safety mechanisms
-   - **Dependencies:** Grid/tier layout and node components
+**Wave 3 Purpose:** Ensure system performance and integrate components
 
-10. **`2025-12-20_tech-canvas-accessibility.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Comprehensive keyboard navigation and screen reader support
-    - **Dependencies:** All canvas implementations
+### Wave 4: Validation & Hardening (P2/P3 - Medium/Low Priority)
+**Timeline:** Weeks 9-10 | **Total Duration:** 7 days | **Blocks:** None (final validation)
 
-### Node Detail Panel (5 tasks)
+| Priority | Task | Primary Agent | Dependencies | Duration |
+|----------|------|---------------|--------------|----------|
+| **P2-1** | `P2-1_accessibility-wcag-validation.md` | QA & Test Engineer | All tasks | 3 days |
+| **P3-1** | Design System Documentation | Frontend Developer | P0-1, P0-2, P0-3, P0-4 | 2 days |
+| **P3-2** | Component Usage Guidelines | Frontend Developer | All Wave 2 tasks | 2 days |
 
-11. **`2025-12-20_node-detail-layout-structure.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Sectioned vertical layout with progressive disclosure
-    - **Dependencies:** Design system tokens
-
-12. **`2025-12-20_node-detail-identity-fields.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Guarded Node ID editing and inline name/description editing
-    - **Dependencies:** Layout/structure implementation
-
-13. **`2025-12-20_node-detail-prerequisite-management.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Prerequisite selector with live validation
-    - **Dependencies:** Layout/structure and identity fields
-
-14. **`2025-12-20_node-detail-effects-management.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Type-specific effect editors with validation integration
-    - **Dependencies:** Layout/structure and prerequisite management
-
-15. **`2025-12-20_node-detail-culture-tags.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Integration with existing culture tag combobox
-    - **Dependencies:** Layout/structure and effects management
-
-### Preview Dialog (2 tasks)
-
-16. **`2025-12-20_preview-dialog-layout-structure.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Export-aligned preview layout with modal structure
-    - **Dependencies:** Design system tokens and main grid
-
-17. **`2025-12-20_preview-dialog-prerequisite-visualization.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Connection overlay rendering for prerequisite relationships
-    - **Dependencies:** Preview layout and main grid connections
-
-### Icon Picker (1 task)
-
-18. **`2025-12-20_icon-picker-grid-interaction.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Grid-based icon selection with accessibility
-    - **Dependencies:** Design system tokens
-
-### Performance & Integration (2 tasks)
-
-19. **`2025-12-20_performance-virtualization.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** Virtualization strategies for large tree performance
-    - **Dependencies:** All core component implementations
-
-20. **`2025-12-20_cross-component-integration.md`**
-    - **Primary Agent:** Frontend Developer
-    - **Purpose:** State synchronization across all components
-    - **Dependencies:** All individual component implementations
-
-### Accessibility Validation (1 task)
-
-21. **`2025-12-20_accessibility-wcag-validation.md`**
-    - **Primary Agent:** QA & Test Engineer
-    - **Purpose:** Comprehensive WCAG 2.1 AA compliance validation
-    - **Dependencies:** All component implementations and integration
+**Wave 4 Purpose:** Validate accessibility, performance, and prepare for production
 
 ## Task Characteristics
 
-### Fidelity Distribution
-- **Structural (foundation):** 5 tasks (23%)
-- **Functional (working implementation):** 16 tasks (73%)
-- **Validation (testing/compliance):** 1 task (4%)
+### Priority & Wave Distribution
+- **P0 (Critical Path):** 4 tasks (18%) - Foundation & Design System
+- **P1 (High Priority):** 16 tasks (73%) - Core Implementation & Integration
+- **P2/P3 (Medium/Low):** 2 tasks (9%) - Validation & Documentation
 
-### Domain Ownership Alignment
-All tasks properly align with the agent ownership model from `megalomania/agents.md`:
-- **Frontend Developer:** UI surface implementation and integration
-- **QA & Test Engineer:** Accessibility validation and testing
-- **Game Designer:** UX validation and usability testing
-- **Architecture Steward:** Charter compliance and structural review
+### Fidelity Distribution by Wave
+- **Wave 1 (Foundation):** Structural tasks (100%)
+- **Wave 2 (Implementation):** Functional tasks (100%)
+- **Wave 3 (Integration):** Functional tasks (100%)
+- **Wave 4 (Validation):** Validation tasks (100%)
 
-### Dependency Chains
-Tasks follow logical dependency chains from foundational design systems through component implementation to integration and validation.
+### Resource Allocation by Wave
+- **Frontend Developer:** 
+  - Wave 1: 4 tasks (100% allocation)
+  - Wave 2: 11 tasks (100% allocation, parallel execution)
+  - Wave 3: 2 tasks (100% allocation)
+  - Total: 17 implementation tasks
+
+- **QA & Test Engineer:**
+  - Wave 2: Component testing (intermittent)
+  - Wave 3: Integration testing (intermittent)
+  - Wave 4: Accessibility validation (100% allocation)
+  - Total: 3 validation tasks
+
+### Critical Path Analysis
+**Longest Critical Path:** Foundation → Design System → Canvas Components → Integration → Validation  
+**Estimated Total Duration:** 10 weeks  
+**Parallel Opportunities:** Canvas, Detail Panel, and Preview tasks can run concurrently after design system completion
+
+### Dependency Management
+- **Wave 1 Dependencies:** All foundational tasks are sequential (P0 tasks)
+- **Wave 2 Dependencies:** Components can execute in parallel after Wave 1 completion
+- **Wave 3 Dependencies:** Integration tasks depend on all Wave 2 task completion
+- **Wave 4 Dependencies:** Validation depends on all previous wave completion
 
 ### Scope Discipline
 All tasks maintain explicit non-goals and avoid scope creep by:
-- Clearly defining what's in scope vs. out of scope
+- Clearly defining what's in scope vs. out of scope per wave
 - Preventing cross-domain logic mixing
 - Maintaining architectural boundaries
 - Focusing on single, composable concerns
+- Following established charter compliance from `megalomania/agents.md`
 
 ## Quality Assurance
 
@@ -179,10 +146,26 @@ All tasks include measurable acceptance criteria that can be objectively verifie
 
 ## Next Steps
 
-1. **Project Manager Review:** Validate task organization and priority sequencing
-2. **Architecture Steward Review:** Ensure charter compliance and architectural integrity
-3. **Task Assignment:** Assign specific execution timelines based on dependencies
-4. **Progress Tracking:** Monitor task completion against Phase 3 roadmap milestones
+### Immediate Actions (Week 1)
+1. **Project Manager Review:** Validate wave structure and priority assignments
+2. **Architecture Steward Review:** Ensure charter compliance and critical path integrity
+3. **Resource Allocation:** Confirm Frontend Developer availability for Wave 1 (100% allocation)
+
+### Execution Planning (Week 1-2)
+4. **Wave 1 Kickoff:** Begin design system foundation tasks (P0-1 through P0-4)
+5. **Parallel Preparation:** Prepare Wave 2 component specifications for parallel execution
+6. **Dependency Tracking:** Establish monitoring for critical path progression
+
+### Ongoing Monitoring (Throughout Execution)
+7. **Weekly Progress Reviews:** Track wave completion against 10-week timeline
+8. **Parallel Execution Coordination:** Manage Canvas, Detail Panel, and Preview development
+9. **Integration Testing:** Begin integration testing as soon as Wave 2 components are available
+10. **Final Validation:** Ensure WCAG 2.1 AA compliance before project completion
+
+### Risk Mitigation Priorities
+- **Design System Completion:** Allocate senior resources, establish clear acceptance criteria
+- **Performance Virtualization:** Implement early prototyping, establish performance budgets  
+- **Cross-Component Integration:** Incremental integration testing, define clear interfaces
 
 ## Files Created
 
@@ -190,18 +173,24 @@ All 22 task specifications are located in: `megalomania/tasks/phase3/`
 
 Each task file follows the standard naming convention: `YYYY-MM-DD_<task-description>.md`
 
-**Generated Tasks Summary:**
-- ✅ Design System Foundation: 4 tasks
-- ✅ Main Grid/Canvas: 6 tasks  
-- ✅ Node Detail Panel: 5 tasks
-- ✅ Preview Dialog: 2 tasks
-- ✅ Icon Picker: 1 task
-- ✅ Performance/Integration: 2 tasks
-- ✅ Accessibility Validation: 1 task
+**Task Summary by Wave:**
+- ✅ **Wave 1 (Foundation):** 4 tasks - Design System & UX Foundation
+- ✅ **Wave 2 (Implementation):** 11 tasks - Core Component Development
+  - Canvas/Grid: 6 tasks
+  - Node Detail: 5 tasks  
+  - Preview & Icon: 2 tasks
+- ✅ **Wave 3 (Integration):** 2 tasks - Performance & Cross-Component Integration
+- ✅ **Wave 4 (Validation):** 1 task - Accessibility & Documentation
 - ✅ **Total: 22 tasks**
+
+**Critical Path Length:** 10 weeks  
+**Parallel Execution Opportunities:** Canvas, Detail Panel, Preview tasks after Wave 1  
+**Resource Requirements:** 17 Frontend tasks + 3 QA tasks across 4 waves
 
 ---
 
-**Report Status:** Complete  
+**Report Status:** Complete and Updated with Proper Execution Order  
 **Ready for Execution:** Yes  
-**Review Required:** Project Manager, Architecture Steward
+**Execution Order:** Follow Wave 1 → Wave 2 → Wave 3 → Wave 4 sequence  
+**Review Required:** Project Manager, Architecture Steward  
+**Priority Compliance:** All tasks mapped to P0/P1/P2/P3 priority levels

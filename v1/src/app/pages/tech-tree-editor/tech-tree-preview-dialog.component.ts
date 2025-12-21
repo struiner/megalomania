@@ -35,17 +35,34 @@ export class TechTreePreviewDialogComponent implements OnDestroy {
     const map = new Map<number, EditorTechNode[]>();
     this.tierBands.forEach((tier) => map.set(tier, []));
 
+    // First pass: distribute nodes to tier buckets
     this.nodes.forEach((node) => {
       const tier = this.clampTier(node.tier || 1);
       const bucket = map.get(tier) ?? [];
-      bucket.push(node);
+      bucket.push(this.normalizeNodeForSort(node));
       map.set(tier, bucket);
     });
 
+    // Second pass: sort each tier using exact export deterministic ordering
     this.tierBands.forEach((tier) => {
       const bucket = map.get(tier) ?? [];
-      bucket.sort((left, right) => (left.display_order || 0) - (right.display_order || 0)
-        || left.title.localeCompare(right.title));
+      bucket.sort((left, right) => {
+        // Tier delta (should be 0 within same tier)
+        const tierDelta = this.clampTier(left.tier) - this.clampTier(right.tier);
+        if (tierDelta !== 0) {
+          return tierDelta;
+        }
+
+        // Display order delta
+        const displayOrderDelta = (left.display_order ?? Number.MAX_SAFE_INTEGER)
+          - (right.display_order ?? Number.MAX_SAFE_INTEGER);
+        if (displayOrderDelta !== 0) {
+          return displayOrderDelta;
+        }
+
+        // Final tiebreaker: node ID locale comparison
+        return left.id.localeCompare(right.id);
+      });
       map.set(tier, bucket);
     });
 
@@ -166,6 +183,73 @@ export class TechTreePreviewDialogComponent implements OnDestroy {
   trackEffect = (_: number, effect: string) => effect;
   trackTag = (_: number, tag: CultureTagOption) => tag.id;
 
+  /**
+   * Normalize node for sorting to match export deterministic ordering
+   * Mirrors the normalization logic from TechTreeIoService.sortForDeterminism
+   */
+  private normalizeNodeForSort(node: EditorTechNode): EditorTechNode {
+    return {
+      ...node,
+      tier: this.clampTier(node.tier || 1),
+      culture_tags: this.uniqueAndSort(node.culture_tags),
+      prerequisites: this.sortPrerequisites(node.prerequisites),
+    };
+  }
+
+  /**
+   * Sort prerequisites deterministically
+   * Mirrors TechTreeIoService.sortPrerequisites logic
+   */
+  private sortPrerequisites(prerequisites: EditorTechNode['prerequisites']): EditorTechNode['prerequisites'] {
+    const deduped = new Map<string, EditorTechNode['prerequisites'][number]>();
+
+    prerequisites.forEach((prerequisite) => {
+      if (prerequisite.node) {
+        deduped.set(prerequisite.node, {
+          node: prerequisite.node,
+          relation: 'requires', // Always normalize to 'requires'
+        });
+      }
+    });
+
+    return Array.from(deduped.values()).sort((left, right) => left.node.localeCompare(right.node));
+  }
+
+  /**
+   * Unique and sort array of strings
+   * Mirrors TechTreeIoService.uniqueAndSort logic
+   */
+  private uniqueAndSort<T extends string>(values: T[]): T[] {
+    return Array.from(new Set(values)).sort((left, right) => left.localeCompare(right));
+  }
+
+  /**
+   * Check if a tier has no nodes
+   */
+  isEmptyTier(tier: number): boolean {
+    const tierNodes = this.bandedNodes.get(tier) || [];
+    return tierNodes.length === 0;
+  }
+
+  /**
+   * Get total node count for performance metrics
+   */
+  get totalNodeCount(): number {
+    return this.nodes.length;
+  }
+
+  /**
+   * Get max nodes in any single tier for layout optimization
+   */
+  get maxNodesPerTier(): number {
+    let max = 0;
+    this.tierBands.forEach((tier) => {
+      const count = (this.bandedNodes.get(tier) || []).length;
+      if (count > max) max = count;
+    });
+    return max;
+  }
+
   requestClose(): void {
     this.close.emit();
     this.previouslyFocused?.focus({ preventScroll: true });
@@ -196,7 +280,7 @@ export class TechTreePreviewDialogComponent implements OnDestroy {
       .join(' ');
   }
 
-  private clampTier(value: number): number {
+  private clampTier(value: number | undefined): number {
     return Math.min(256, Math.max(1, Math.floor(value || 1)));
   }
 }

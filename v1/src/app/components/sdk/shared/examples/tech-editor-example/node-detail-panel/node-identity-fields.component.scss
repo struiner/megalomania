@@ -1,0 +1,515 @@
+@use '../../design-system/typography.tokens' as *;
+@use '../../design-system/color.tokens' as *;
+@use '../../design-system/spacing.tokens' as *;
+@use '../../design-system/focus-state.tokens' as *;
+
+// ============================================================================
+// Node Identity Fields Component Styles
+// ============================================================================
+
+.node-identity-fields {
+  @extend %ds-body;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-spacing-lg);
+  padding: var(--ds-spacing-md);
+
+  // Field Group Styling
+  &__field-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-sm);
+  }
+
+  // Label Styling
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-spacing-xs);
+    @extend %ds-heading-5;
+    color: var(--ds-color-text-primary);
+  }
+
+  &__label-text {
+    font-weight: 600;
+  }
+
+  &__label-required {
+    color: var(--ds-color-error);
+    font-weight: bold;
+  }
+
+  &__label-help {
+    @extend %ds-body-small;
+    color: var(--ds-color-text-secondary);
+    font-style: italic;
+  }
+
+  &__label-warning {
+    color: var(--ds-color-warning);
+    font-size: 0.875rem;
+    cursor: help;
+  }
+
+  // Field Container
+  &__field-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-sm);
+  }
+
+  // Field Display Mode
+  &__field-display {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-spacing-md);
+    padding: var(--ds-spacing-sm);
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    transition: border-color 0.2s ease;
+
+    &--guarded {
+      background-color: var(--ds-color-warning-light);
+      border-color: var(--ds-color-warning);
+    }
+
+    &:hover {
+      border-color: var(--ds-color-border-secondary);
+    }
+  }
+
+  &__field-value {
+    @extend %ds-body;
+    color: var(--ds-color-text-primary);
+    flex: 1;
+    word-break: break-word;
+
+    &--empty {
+      color: var(--ds-color-text-secondary);
+      font-style: italic;
+    }
+
+    &--id {
+      @extend %ds-body-small;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      background-color: var(--ds-color-background-tertiary);
+      padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+      border-radius: var(--ds-border-radius-sm);
+      border: 1px solid var(--ds-color-border-secondary);
+    }
+
+    &--description {
+      @extend %ds-body-small;
+      line-height: 1.4;
+      max-height: 4.2rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // Edit Button
+  &__edit-button {
+    @extend %ds-button-tertiary;
+    @extend %ds-body-small;
+    padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    white-space: nowrap;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      opacity: 1;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  // Guarded Editor
+  &__guarded-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-md);
+    padding: var(--ds-spacing-md);
+    background-color: var(--ds-color-warning-light);
+    border: 2px solid var(--ds-color-warning);
+    border-radius: var(--ds-border-radius-lg);
+  }
+
+  // Inline Editor
+  &__inline-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-sm);
+    padding: var(--ds-spacing-sm);
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-secondary);
+    border-radius: var(--ds-border-radius-md);
+    transition: border-color 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--ds-color-focus);
+      box-shadow: 0 0 0 2px var(--ds-color-focus-alpha);
+    }
+  }
+
+  // Form Controls
+  &__input,
+  &__textarea {
+    @extend %ds-body;
+    width: 100%;
+    padding: var(--ds-spacing-sm);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-sm);
+    background-color: var(--ds-color-background-primary);
+    color: var(--ds-color-text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ds-color-focus);
+      box-shadow: 0 0 0 2px var(--ds-color-focus-alpha);
+    }
+
+    &--error {
+      border-color: var(--ds-color-error);
+      
+      &:focus {
+        border-color: var(--ds-color-error);
+        box-shadow: 0 0 0 2px var(--ds-color-error-alpha);
+      }
+    }
+
+    &--warning {
+      border-color: var(--ds-color-warning);
+      
+      &:focus {
+        border-color: var(--ds-color-warning);
+        box-shadow: 0 0 0 2px var(--ds-color-warning-alpha);
+      }
+    }
+
+    &--guarded {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      @extend %ds-body-small;
+      background-color: var(--ds-color-background-tertiary);
+    }
+
+    &--confirmation {
+      @extend %ds-body-small;
+      font-style: italic;
+      background-color: var(--ds-color-background-tertiary);
+    }
+
+    &--inline {
+      border: none;
+      background-color: transparent;
+      padding: var(--ds-spacing-xs);
+
+      &:focus {
+        border: 1px solid var(--ds-color-focus);
+        border-radius: var(--ds-border-radius-sm);
+        box-shadow: 0 0 0 1px var(--ds-color-focus-alpha);
+      }
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 3rem;
+    line-height: 1.4;
+
+    &--inline {
+      border: none;
+      background-color: transparent;
+      padding: var(--ds-spacing-xs);
+      min-height: 2rem;
+
+      &:focus {
+        border: 1px solid var(--ds-color-focus);
+        border-radius: var(--ds-border-radius-sm);
+      }
+    }
+  }
+
+  // Confirmation Section
+  &__confirmation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-xs);
+  }
+
+  &__confirmation-label {
+    @extend %ds-body-small;
+    color: var(--ds-color-text-secondary);
+    font-style: italic;
+  }
+
+  // Action Buttons
+  &__guarded-actions {
+    display: flex;
+    gap: var(--ds-spacing-sm);
+    justify-content: flex-end;
+  }
+
+  &__inline-actions {
+    display: flex;
+    gap: var(--ds-spacing-xs);
+    align-self: flex-end;
+  }
+
+  &__button {
+    @extend %ds-button-secondary;
+    @extend %ds-body-small;
+    padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--confirm {
+      background-color: var(--ds-color-warning);
+      color: var(--ds-color-on-warning);
+      border-color: var(--ds-color-warning-dark);
+
+      &:hover:not(:disabled) {
+        background-color: var(--ds-color-warning-dark);
+      }
+    }
+
+    &--cancel {
+      background-color: var(--ds-color-background-tertiary);
+      color: var(--ds-color-text-secondary);
+      border-color: var(--ds-color-border-secondary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--ds-color-background-quaternary);
+      }
+    }
+
+    &--save {
+      background-color: var(--ds-color-success);
+      color: var(--ds-color-on-success);
+      border-color: var(--ds-color-success-dark);
+      padding: var(--ds-spacing-xs);
+      min-width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        background-color: var(--ds-color-success-dark);
+      }
+    }
+
+    &--fix-errors {
+      @extend %ds-button-primary;
+    }
+  }
+
+  // Character Count
+  &__character-count {
+    @extend %ds-body-tiny;
+    color: var(--ds-color-text-secondary);
+    text-align: right;
+    align-self: flex-end;
+  }
+
+  // Validation Messages
+  &__validation-messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-xs);
+    padding: var(--ds-spacing-sm);
+    background-color: var(--ds-color-background-secondary);
+    border-left: 4px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-sm);
+  }
+
+  &__validation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ds-spacing-xs);
+    @extend %ds-body-small;
+    line-height: 1.3;
+
+    &--error {
+      color: var(--ds-color-error);
+      border-left-color: var(--ds-color-error);
+    }
+
+    &--warning {
+      color: var(--ds-color-warning);
+      border-left-color: var(--ds-color-warning);
+    }
+
+    &--downstream {
+      background-color: var(--ds-color-warning-light);
+      padding: var(--ds-spacing-sm);
+      border-radius: var(--ds-border-radius-sm);
+      border-left-color: var(--ds-color-warning);
+    }
+  }
+
+  &__validation-icon {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    margin-top: 0.125rem;
+  }
+
+  &__validation-text {
+    flex: 1;
+    word-break: break-word;
+  }
+
+  // Downstream Impact Details
+  &__downstream-details {
+    margin-top: var(--ds-spacing-sm);
+    padding: var(--ds-spacing-sm);
+    background-color: var(--ds-color-background-tertiary);
+    border-radius: var(--ds-border-radius-sm);
+    border: 1px solid var(--ds-color-border-secondary);
+  }
+
+  &__affected-nodes {
+    margin: var(--ds-spacing-xs) 0 0 0;
+    padding-left: var(--ds-spacing-md);
+    @extend %ds-body-tiny;
+    
+    li {
+      margin-bottom: var(--ds-spacing-xs);
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      color: var(--ds-color-text-secondary);
+    }
+  }
+
+  // Summary Section
+  &__summary {
+    padding: var(--ds-spacing-md);
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-sm);
+  }
+
+  &__summary-title {
+    @extend %ds-heading-5;
+    margin: 0;
+    color: var(--ds-color-text-primary);
+  }
+
+  &__summary-stats {
+    display: flex;
+    gap: var(--ds-spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    @extend %ds-body-small;
+    padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    border-radius: var(--ds-border-radius-sm);
+    font-weight: 500;
+
+    &--error {
+      background-color: var(--ds-color-error-light);
+      color: var(--ds-color-error-dark);
+    }
+
+    &--warning {
+      background-color: var(--ds-color-warning-light);
+      color: var(--ds-color-warning-dark);
+    }
+  }
+
+  &__summary-actions {
+    align-self: flex-end;
+  }
+}
+
+// ============================================================================
+// Responsive Design
+// ============================================================================
+
+@media (max-width: 768px) {
+  .node-identity-fields {
+    padding: var(--ds-spacing-sm);
+
+    &__field-display {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--ds-spacing-sm);
+    }
+
+    &__edit-button {
+      align-self: flex-start;
+    }
+
+    &__guarded-actions {
+      flex-direction: column-reverse;
+    }
+
+    &__inline-actions {
+      align-self: stretch;
+      justify-content: space-between;
+    }
+
+    &__summary-actions {
+      align-self: stretch;
+    }
+  }
+}
+
+// ============================================================================
+// Accessibility Enhancements
+// ============================================================================
+
+// High Contrast Mode
+@media (prefers-contrast: high) {
+  .node-identity-fields {
+    &__field-display {
+      border-width: 2px;
+    }
+
+    &__guarded-editor {
+      border-width: 3px;
+    }
+
+    &__validation-item {
+      &--error {
+        border: 2px solid var(--ds-color-error);
+      }
+
+      &--warning {
+        border: 2px solid var(--ds-color-warning);
+      }
+    }
+  }
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  .node-identity-fields {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+// Focus Visible
+.node-identity-fields {
+  &__button:focus-visible,
+  &__input:focus-visible,
+  &__textarea:focus-visible {
+    outline: 2px solid var(--ds-color-focus);
+    outline-offset: 2px;
+  }
+}

@@ -1,0 +1,363 @@
+@use '../../design-system/typography.tokens' as *;
+@use '../../design-system/color.tokens' as *;
+@use '../../design-system/spacing.tokens' as *;
+
+// ============================================================================
+// Identity Fields Demo Component Styles
+// ============================================================================
+
+.identity-fields-demo {
+  @extend %ds-body;
+  padding: var(--ds-spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--ds-color-background-primary);
+  color: var(--ds-color-text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-spacing-xl);
+
+  // Header Section
+  &__header {
+    text-align: center;
+    padding: var(--ds-spacing-lg) 0;
+    border-bottom: 2px solid var(--ds-color-border-primary);
+
+    h1 {
+      @extend %ds-heading-1;
+      margin: 0 0 var(--ds-spacing-sm) 0;
+      color: var(--ds-color-text-primary);
+    }
+  }
+
+  &__subtitle {
+    @extend %ds-body;
+    color: var(--ds-color-text-secondary);
+    margin: 0;
+  }
+
+  // Content Layout
+  &__content {
+    display: grid;
+    grid-template-columns: 300px 1fr 350px;
+    gap: var(--ds-spacing-lg);
+    align-items: start;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      gap: var(--ds-spacing-md);
+    }
+  }
+
+  // Controls Section
+  &__controls {
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    padding: var(--ds-spacing-md);
+
+    h3 {
+      @extend %ds-heading-3;
+      margin: 0 0 var(--ds-spacing-md) 0;
+      color: var(--ds-color-text-primary);
+    }
+  }
+
+  &__control-group {
+    margin-bottom: var(--ds-spacing-md);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      @extend %ds-heading-5;
+      margin: 0 0 var(--ds-spacing-sm) 0;
+      color: var(--ds-color-text-secondary);
+    }
+
+    label {
+      @extend %ds-body;
+      display: flex;
+      align-items: center;
+      gap: var(--ds-spacing-sm);
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        width: 1.125rem;
+        height: 1.125rem;
+        accent-color: var(--ds-color-primary);
+      }
+    }
+  }
+
+  &__button {
+    @extend %ds-button-secondary;
+    @extend %ds-body-small;
+    margin-right: var(--ds-spacing-sm);
+    margin-bottom: var(--ds-spacing-sm);
+    padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: var(--ds-color-primary);
+      color: var(--ds-color-on-primary);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__preset-button {
+    @extend %ds-button-tertiary;
+    @extend %ds-body-small;
+    display: block;
+    width: 100%;
+    margin-bottom: var(--ds-spacing-xs);
+    padding: var(--ds-spacing-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: var(--ds-color-background-tertiary);
+      border-color: var(--ds-color-primary);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Component Section
+  &__component {
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    padding: var(--ds-spacing-md);
+
+    h3 {
+      @extend %ds-heading-3;
+      margin: 0 0 var(--ds-spacing-md) 0;
+      color: var(--ds-color-text-primary);
+    }
+  }
+
+  &__empty-state {
+    padding: var(--ds-spacing-xl);
+    text-align: center;
+    color: var(--ds-color-text-secondary);
+    font-style: italic;
+    border: 2px dashed var(--ds-color-border-secondary);
+    border-radius: var(--ds-border-radius-md);
+  }
+
+  // Change Log Section
+  &__changelog {
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    padding: var(--ds-spacing-md);
+    max-height: 600px;
+    overflow-y: auto;
+
+    h3 {
+      @extend %ds-heading-3;
+      margin: 0 0 var(--ds-spacing-md) 0;
+      color: var(--ds-color-text-primary);
+      position: sticky;
+      top: 0;
+      background-color: var(--ds-color-background-secondary);
+      padding-bottom: var(--ds-spacing-sm);
+      border-bottom: 1px solid var(--ds-color-border-secondary);
+      z-index: 1;
+    }
+  }
+
+  &__log-entries {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-spacing-sm);
+  }
+
+  &__log-entry {
+    padding: var(--ds-spacing-sm);
+    border-radius: var(--ds-border-radius-sm);
+    border: 1px solid var(--ds-color-border-secondary);
+    background-color: var(--ds-color-background-tertiary);
+
+    &--identity {
+      border-left: 4px solid var(--ds-color-primary);
+    }
+
+    &--validation {
+      border-left: 4px solid var(--ds-color-warning);
+    }
+  }
+
+  &__log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ds-spacing-xs);
+  }
+
+  &__log-type {
+    @extend %ds-body-small;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+
+    .identity-fields-demo__log-entry--identity & {
+      color: var(--ds-color-primary);
+    }
+
+    .identity-fields-demo__log-entry--validation & {
+      color: var(--ds-color-warning);
+    }
+
+    .identity-fields-demo__log-entry--system & {
+      color: var(--ds-color-text-secondary);
+    }
+  }
+
+  &__log-time {
+    @extend %ds-body-tiny;
+    color: var(--ds-color-text-secondary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  }
+
+  &__log-content {
+    @extend %ds-body-small;
+    margin-bottom: var(--ds-spacing-xs);
+    line-height: 1.4;
+  }
+
+  &__log-values {
+    display: flex;
+    gap: var(--ds-spacing-md);
+    @extend %ds-body-tiny;
+
+    span {
+      display: flex;
+      gap: var(--ds-spacing-xs);
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+
+  &__log-empty {
+    text-align: center;
+    padding: var(--ds-spacing-lg);
+    color: var(--ds-color-text-secondary);
+    font-style: italic;
+  }
+
+  // Instructions Section
+  &__instructions {
+    background-color: var(--ds-color-background-secondary);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-border-radius-md);
+    padding: var(--ds-spacing-md);
+
+    h3 {
+      @extend %ds-heading-3;
+      margin: 0 0 var(--ds-spacing-md) 0;
+      color: var(--ds-color-text-primary);
+    }
+
+    ol {
+      @extend %ds-body;
+      line-height: 1.6;
+      padding-left: var(--ds-spacing-lg);
+
+      li {
+        margin-bottom: var(--ds-spacing-sm);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        strong {
+          color: var(--ds-color-primary);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// Responsive Design
+// ============================================================================
+
+@media (max-width: 768px) {
+  .identity-fields-demo {
+    padding: var(--ds-spacing-md);
+
+    &__header {
+      padding: var(--ds-spacing-md) 0;
+
+      h1 {
+        @extend %ds-heading-2;
+      }
+    }
+
+    &__log-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--ds-spacing-xs);
+    }
+
+    &__log-values {
+      flex-direction: column;
+      gap: var(--ds-spacing-xs);
+    }
+  }
+}
+
+// ============================================================================
+// Accessibility Enhancements
+// ============================================================================
+
+// High Contrast Mode
+@media (prefers-contrast: high) {
+  .identity-fields-demo {
+    &__log-entry {
+      border-width: 2px;
+
+      &--identity {
+        border-left-width: 6px;
+      }
+
+      &--validation {
+        border-left-width: 6px;
+      }
+    }
+  }
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  .identity-fields-demo {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+// Focus Visible
+.identity-fields-demo {
+  &__button:focus-visible,
+  &__preset-button:focus-visible {
+    outline: 2px solid var(--ds-color-focus);
+    outline-offset: 2px;
+  }
+}

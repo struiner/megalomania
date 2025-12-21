@@ -1,0 +1,181 @@
+/* Virtual Scroll Component Styles */
+
+.virtual-scroll-viewport {
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  contain: layout style paint;
+  will-change: scroll-position;
+  
+  /* Smooth scrolling performance optimization */
+  scroll-behavior: smooth;
+  
+  /* Hardware acceleration for scrolling */
+  transform: translateZ(0);
+  
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--color-surface-100);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-surface-400);
+    border-radius: 4px;
+    
+    &:hover {
+      background: var(--color-surface-500);
+    }
+  }
+}
+
+.virtual-scroll-spacer {
+  /* Invisible spacer that maintains scroll height */
+  width: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.virtual-scroll-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  will-change: transform;
+  
+  /* GPU acceleration for smooth transforms */
+  transform: translateZ(0);
+  
+  /* Prevent layout shifts during rendering */
+  contain: layout;
+}
+
+.virtual-scroll-item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Performance optimizations */
+  contain: layout style paint;
+  will-change: auto;
+  
+  /* Smooth transitions for state changes */
+  transition: opacity 0.15s ease-in-out;
+  
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+}
+
+/* Performance indicator overlay */
+.virtual-scroll-performance {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+  
+  /* Subtle shadow for visibility */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  
+  /* Fade animation for smooth appearance */
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Virtualization state indicators */
+.virtual-scroll-viewport.is-virtualizing {
+  .virtual-scroll-content {
+    /* Slightly reduced opacity during virtualization updates */
+    opacity: 0.98;
+    transition: opacity 0.1s ease-out;
+  }
+}
+
+.virtual-scroll-viewport.is-high-performance {
+  /* High-performance mode indicators */
+  .virtual-scroll-item {
+    /* Disable complex animations in high-performance mode */
+    transition: none;
+  }
+}
+
+/* Responsive design considerations */
+@media (max-width: 768px) {
+  .virtual-scroll-performance {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .virtual-scroll-viewport {
+    scroll-behavior: auto;
+  }
+  
+  .virtual-scroll-item {
+    transition: none;
+  }
+  
+  .virtual-scroll-performance {
+    animation: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .virtual-scroll-viewport {
+    &::-webkit-scrollbar-track {
+      background: var(--color-surface-800);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-surface-600);
+      
+      &:hover {
+        background: var(--color-surface-500);
+      }
+    }
+  }
+}
+
+/* Print styles */
+@media print {
+  .virtual-scroll-viewport {
+    overflow: visible;
+  }
+  
+  .virtual-scroll-performance {
+    display: none;
+  }
+  
+  .virtual-scroll-content {
+    position: static;
+    transform: none !important;
+  }
+}

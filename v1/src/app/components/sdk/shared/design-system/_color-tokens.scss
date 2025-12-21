@@ -1,0 +1,496 @@
+// Design System Color Tokens
+// Comprehensive color system for Tech Tree Editor
+// Complies with UI & Ergonomics Charter principles
+// Color as secondary signal, never sole meaning carrier
+
+// ============================================================================
+// COLOR FOUNDATION
+// ============================================================================
+
+// Base color palette following Hanseatic fantasy aesthetic
+// Warm, earthy tones with strategic use of color for hierarchy
+
+// Primary colors - Hanseatic merchant theme
+$color-primary: #8b4513;           // Saddle brown - leather, wood, reliability
+$color-primary-light: #cd853f;     // Peru - lighter wood tone
+$color-primary-dark: #654321;      // Dark brown - aged leather
+$color-primary-rgb: 139, 69, 19;
+
+// Secondary colors - Earthy accents
+$color-secondary: #daa520;         // Goldenrod - coin, trade, prosperity
+$color-secondary-light: #ffd700;   // Gold - bright prosperity
+$color-secondary-dark: #b8860b;    // Dark goldenrod - aged gold
+$color-secondary-rgb: 218, 165, 32;
+
+// Neutral colors - Background and text hierarchy
+$color-neutral-0: #ffffff;         // Pure white - primary backgrounds
+$color-neutral-50: #f8f8f8;        // Very light gray - subtle backgrounds
+$color-neutral-100: #f0f0f0;       // Light gray - disabled backgrounds
+$color-neutral-200: #e0e0e0;       // Medium light gray - borders
+$color-neutral-300: #c0c0c0;       // Medium gray - disabled text
+$color-neutral-400: #a0a0a0;       // Medium dark gray - secondary text
+$color-neutral-500: #808080;       // Dark gray - muted text
+$color-neutral-600: #606060;       // Darker gray - primary text on light
+$color-neutral-700: #404040;       // Very dark gray - primary text on dark
+$color-neutral-800: #202020;       // Near black - high contrast text
+$color-neutral-900: #000000;       // Pure black - maximum contrast
+
+// Semantic colors for states and feedback
+$color-success: #228b22;           // Forest green - prosperity, valid
+$color-success-light: #32cd32;     // Lime green - positive feedback
+$color-success-dark: #006400;      // Dark green - strong valid state
+$color-success-rgb: 34, 139, 34;
+
+$color-warning: #ff8c00;           // Dark orange - caution, attention
+$color-warning-light: #ffa500;     // Orange - mild warning
+$color-warning-dark: #cc7000;      // Darker orange - high attention
+$color-warning-rgb: 255, 140, 0;
+
+$color-error: #dc143c;             // Crimson - error, invalid, critical
+$color-error-light: #ff4757;       // Bright red - immediate error
+$color-error-dark: #b22222;        // Dark red - severe error
+$color-error-rgb: 220, 20, 60;
+
+$color-info: #4682b4;              // Steel blue - informational
+$color-info-light: #6495ed;        // Cornflower blue - mild info
+$color-info-dark: #1e3a5f;         // Dark blue - important info
+$color-info-rgb: 70, 130, 180;
+
+// Interaction state colors
+$color-focus: #4169e1;             // Royal blue - focus indicator
+$color-focus-light: #6a8df0;       // Light focus
+$color-focus-dark: #1e40af;        // Dark focus
+$color-focus-rgb: 65, 105, 225;
+
+$color-hover: rgba(139, 69, 19, 0.08);     // Primary with low opacity
+$color-hover-secondary: rgba(218, 165, 32, 0.12);  // Secondary with medium opacity
+$color-active: rgba(139, 69, 19, 0.16);    // Primary with higher opacity
+$color-selected: rgba(218, 165, 32, 0.20); // Secondary with medium-high opacity
+
+// Component-specific colors
+$color-node-available: $color-success;
+$color-node-locked: $color-neutral-400;
+$color-node-researching: $color-info;
+$color-node-complete: $color-secondary;
+$color-node-error: $color-error;
+
+$color-connection-valid: $color-success;
+$color-connection-invalid: $color-error;
+$color-connection-prerequisite: $color-neutral-600;
+
+// ============================================================================
+// THEME VARIABLES
+// ============================================================================
+
+// Light theme (default)
+:root {
+  // Core color tokens
+  --ds-color-primary: #{$color-primary};
+  --ds-color-primary-light: #{$color-primary-light};
+  --ds-color-primary-dark: #{$color-primary-dark};
+  --ds-color-secondary: #{$color-secondary};
+  --ds-color-secondary-light: #{$color-secondary-light};
+  --ds-color-secondary-dark: #{$color-secondary-dark};
+  
+  // Neutral scale
+  --ds-color-neutral-0: #{$color-neutral-0};
+  --ds-color-neutral-50: #{$color-neutral-50};
+  --ds-color-neutral-100: #{$color-neutral-100};
+  --ds-color-neutral-200: #{$color-neutral-200};
+  --ds-color-neutral-300: #{$color-neutral-300};
+  --ds-color-neutral-400: #{$color-neutral-400};
+  --ds-color-neutral-500: #{$color-neutral-500};
+  --ds-color-neutral-600: #{$color-neutral-600};
+  --ds-color-neutral-700: #{$color-neutral-700};
+  --ds-color-neutral-800: #{$color-neutral-800};
+  --ds-color-neutral-900: #{$color-neutral-900};
+  
+  // Semantic colors
+  --ds-color-success: #{$color-success};
+  --ds-color-success-light: #{$color-success-light};
+  --ds-color-success-dark: #{$color-success-dark};
+  --ds-color-warning: #{$color-warning};
+  --ds-color-warning-light: #{$color-warning-light};
+  --ds-color-warning-dark: #{$color-warning-dark};
+  --ds-color-error: #{$color-error};
+  --ds-color-error-light: #{$color-error-light};
+  --ds-color-error-dark: #{$color-error-dark};
+  --ds-color-info: #{$color-info};
+  --ds-color-info-light: #{$color-info-light};
+  --ds-color-info-dark: #{$color-info-dark};
+  
+  // Interaction states
+  --ds-color-focus: #{$color-focus};
+  --ds-color-focus-light: #{$color-focus-light};
+  --ds-color-focus-dark: #{$color-focus-dark};
+  --ds-color-hover: #{$color-hover};
+  --ds-color-hover-secondary: #{$color-hover-secondary};
+  --ds-color-active: #{$color-active};
+  --ds-color-selected: #{$color-selected};
+  
+  // Component colors
+  --ds-color-node-available: #{$color-node-available};
+  --ds-color-node-locked: #{$color-node-locked};
+  --ds-color-node-researching: #{$color-node-researching};
+  --ds-color-node-complete: #{$color-node-complete};
+  --ds-color-node-error: #{$color-node-error};
+  --ds-color-connection-valid: #{$color-connection-valid};
+  --ds-color-connection-invalid: #{$color-connection-invalid};
+  --ds-color-connection-prerequisite: #{$color-connection-prerequisite};
+  
+  // Text colors with semantic naming
+  --ds-color-text-primary: #{$color-neutral-800};
+  --ds-color-text-secondary: #{$color-neutral-600};
+  --ds-color-text-muted: #{$color-neutral-500};
+  --ds-color-text-disabled: #{$color-neutral-400};
+  --ds-color-text-inverse: #{$color-neutral-0};
+  
+  // Background colors
+  --ds-color-background-primary: #{$color-neutral-0};
+  --ds-color-background-secondary: #{$color-neutral-50};
+  --ds-color-background-tertiary: #{$color-neutral-100};
+  --ds-color-background-disabled: #{$color-neutral-100};
+  
+  // Border colors
+  --ds-color-border-primary: #{$color-neutral-200};
+  --ds-color-border-secondary: #{$color-neutral-300};
+  --ds-color-border-focus: #{$color-focus};
+  --ds-color-border-error: #{$color-error};
+  
+  // Surface colors
+  --ds-color-surface-raised: #{$color-neutral-0};
+  --ds-color-surface-embedded: #{$color-neutral-50};
+  --ds-color-surface-overlay: #{$color-neutral-0};
+  --ds-color-surface-sunken: #{$color-neutral-100};
+}
+
+// Dark theme (alternative)
+[data-theme="dark"] {
+  // Invert neutral scale for dark theme
+  --ds-color-neutral-0: #{$color-neutral-900};
+  --ds-color-neutral-50: #{$color-neutral-800};
+  --ds-color-neutral-100: #{$color-neutral-700};
+  --ds-color-neutral-200: #{$color-neutral-600};
+  --ds-color-neutral-300: #{$color-neutral-500};
+  --ds-color-neutral-400: #{$color-neutral-400};
+  --ds-color-neutral-500: #{$color-neutral-300};
+  --ds-color-neutral-600: #{$color-neutral-200};
+  --ds-color-neutral-700: #{$color-neutral-100};
+  --ds-color-neutral-800: #{$color-neutral-50};
+  --ds-color-neutral-900: #{$color-neutral-0};
+  
+  // Update dependent tokens
+  --ds-color-text-primary: var(--ds-color-neutral-100);
+  --ds-color-text-secondary: var(--ds-color-neutral-300);
+  --ds-color-text-muted: var(--ds-color-neutral-400);
+  --ds-color-text-disabled: var(--ds-color-neutral-500);
+  --ds-color-text-inverse: var(--ds-color-neutral-900);
+  
+  --ds-color-background-primary: var(--ds-color-neutral-900);
+  --ds-color-background-secondary: var(--ds-color-neutral-800);
+  --ds-color-background-tertiary: var(--ds-color-neutral-700);
+  --ds-color-background-disabled: var(--ds-color-neutral-700);
+  
+  --ds-color-border-primary: var(--ds-color-neutral-600);
+  --ds-color-border-secondary: var(--ds-color-neutral-500);
+  
+  --ds-color-surface-raised: var(--ds-color-neutral-800);
+  --ds-color-surface-embedded: var(--ds-color-neutral-900);
+  --ds-color-surface-overlay: var(--ds-color-neutral-800);
+  --ds-color-surface-sunken: var(--ds-color-neutral-700);
+}
+
+// ============================================================================
+// SEMANTIC COLOR ALIASES
+// ============================================================================
+
+// These provide clear semantic meaning while maintaining consistency
+:root {
+  // Status colors
+  --ds-color-status-available: var(--ds-color-success);
+  --ds-color-status-locked: var(--ds-color-neutral-400);
+  --ds-color-status-researching: var(--ds-color-info);
+  --ds-color-status-complete: var(--ds-color-secondary);
+  --ds-color-status-error: var(--ds-color-error);
+  
+  // Interaction feedback
+  --ds-color-feedback-success: var(--ds-color-success);
+  --ds-color-feedback-warning: var(--ds-color-warning);
+  --ds-color-feedback-error: var(--ds-color-error);
+  --ds-color-feedback-info: var(--ds-color-info);
+  
+  // Hierarchy indicators
+  --ds-color-hierarchy-primary: var(--ds-color-primary);
+  --ds-color-hierarchy-secondary: var(--ds-color-secondary);
+  --ds-color-hierarchy-accent: var(--ds-color-info);
+  
+  // Connection states
+  --ds-color-connection-available: var(--ds-color-success);
+  --ds-color-connection-locked: var(--ds-color-neutral-400);
+  --ds-color-connection-researching: var(--ds-color-info);
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+// Text color application with semantic meaning
+@mixin ds-text-primary {
+  color: var(--ds-color-text-primary);
+}
+
+@mixin ds-text-secondary {
+  color: var(--ds-color-text-secondary);
+}
+
+@mixin ds-text-muted {
+  color: var(--ds-color-text-muted);
+}
+
+@mixin ds-text-disabled {
+  color: var(--ds-color-text-disabled);
+}
+
+@mixin ds-text-inverse {
+  color: var(--ds-color-text-inverse);
+}
+
+// Background color application
+@mixin ds-bg-primary {
+  background-color: var(--ds-color-background-primary);
+}
+
+@mixin ds-bg-secondary {
+  background-color: var(--ds-color-background-secondary);
+}
+
+@mixin ds-bg-tertiary {
+  background-color: var(--ds-color-background-tertiary);
+}
+
+// Border color application
+@mixin ds-border-primary {
+  border-color: var(--ds-color-border-primary);
+}
+
+@mixin ds-border-focus {
+  border-color: var(--ds-color-border-focus);
+  box-shadow: 0 0 0 2px rgba(65, 105, 225, 0.2);
+}
+
+@mixin ds-border-error {
+  border-color: var(--ds-color-border-error);
+}
+
+// Interaction state mixins
+@mixin ds-focus-ring {
+  outline: 2px solid var(--ds-color-focus);
+  outline-offset: 2px;
+}
+
+@mixin ds-hover-overlay {
+  &:hover {
+    background-color: var(--ds-color-hover);
+  }
+}
+
+@mixin ds-active-overlay {
+  &:active {
+    background-color: var(--ds-color-active);
+  }
+}
+
+@mixin ds-selected-overlay {
+  &.selected,
+  &[aria-selected="true"] {
+    background-color: var(--ds-color-selected);
+    border-color: var(--ds-color-secondary);
+  }
+}
+
+// Component-specific mixins
+@mixin ds-node-state-available {
+  color: var(--ds-color-node-available);
+  border-color: var(--ds-color-node-available);
+}
+
+@mixin ds-node-state-locked {
+  color: var(--ds-color-node-locked);
+  border-color: var(--ds-color-node-locked);
+  opacity: 0.6;
+}
+
+@mixin ds-node-state-researching {
+  color: var(--ds-color-node-researching);
+  border-color: var(--ds-color-node-researching);
+  animation: pulse 2s infinite;
+}
+
+@mixin ds-node-state-complete {
+  color: var(--ds-color-node-complete);
+  border-color: var(--ds-color-node-complete);
+}
+
+@mixin ds-node-state-error {
+  color: var(--ds-color-node-error);
+  border-color: var(--ds-color-node-error);
+}
+
+// Validation feedback mixins
+@mixin ds-validation-success {
+  color: var(--ds-color-success);
+  &::before {
+    content: "✓";
+    color: var(--ds-color-success);
+  }
+}
+
+@mixin ds-validation-warning {
+  color: var(--ds-color-warning);
+  &::before {
+    content: "⚠";
+    color: var(--ds-color-warning);
+  }
+}
+
+@mixin ds-validation-error {
+  color: var(--ds-color-error);
+  &::before {
+    content: "✗";
+    color: var(--ds-color-error);
+  }
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// ============================================================================
+
+// Text color classes
+%ds-text-primary {
+  @include ds-text-primary;
+}
+
+%ds-text-secondary {
+  @include ds-text-secondary;
+}
+
+%ds-text-muted {
+  @include ds-text-muted;
+}
+
+%ds-text-disabled {
+  @include ds-text-disabled;
+}
+
+%ds-text-inverse {
+  @include ds-text-inverse;
+}
+
+// Background classes
+%ds-bg-primary {
+  @include ds-bg-primary;
+}
+
+%ds-bg-secondary {
+  @include ds-bg-secondary;
+}
+
+%ds-bg-tertiary {
+  @include ds-bg-tertiary;
+}
+
+// Interaction classes
+%ds-focusable {
+  &:focus {
+    @include ds-focus-ring;
+  }
+}
+
+%ds-hoverable {
+  @include ds-hover-overlay;
+}
+
+%ds-clickable {
+  @include ds-hover-overlay;
+  @include ds-active-overlay;
+  cursor: pointer;
+}
+
+%ds-selected {
+  @include ds-selected-overlay;
+}
+
+// Node state classes
+%ds-node-available {
+  @include ds-node-state-available;
+}
+
+%ds-node-locked {
+  @include ds-node-state-locked;
+}
+
+%ds-node-researching {
+  @include ds-node-state-researching;
+}
+
+%ds-node-complete {
+  @include ds-node-state-complete;
+}
+
+%ds-node-error {
+  @include ds-node-state-error;
+}
+
+// Validation classes
+%ds-validation-success {
+  @include ds-validation-success;
+}
+
+%ds-validation-warning {
+  @include ds-validation-warning;
+}
+
+%ds-validation-error {
+  @include ds-validation-error;
+}
+
+// ============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// ============================================================================
+
+// High contrast support
+@media (prefers-contrast: high) {
+  :root {
+    --ds-color-focus: #0066ff;
+    --ds-color-border-focus: #0066ff;
+  }
+  
+  %ds-focusable:focus {
+    outline: 3px solid var(--ds-color-focus);
+    outline-offset: 1px;
+  }
+  
+  %ds-node-locked {
+    opacity: 1;
+    border-style: solid;
+    border-width: 2px;
+  }
+}
+
+// Reduced motion support (no color animations)
+@media (prefers-reduced-motion: reduce) {
+  %ds-node-researching {
+    animation: none;
+  }
+}
+
+// Focus visible support for better keyboard navigation
+@supports selector(:focus-visible) {
+  %ds-focusable:focus {
+    outline: none;
+  }
+  
+  %ds-focusable:focus-visible {
+    @include ds-focus-ring;
+  }
+}
