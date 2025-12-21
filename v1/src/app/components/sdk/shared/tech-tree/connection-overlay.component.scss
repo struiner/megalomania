@@ -1,0 +1,172 @@
+/* Connection Overlay Component Styles */
+
+.connection-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allow mouse events to pass through by default */
+  z-index: 1;
+  
+  /* Performance optimizations */
+  contain: strict;
+  will-change: transform;
+  transform: translateZ(0);
+  
+  /* Smooth transformations */
+  transition: transform 0.1s ease-out;
+}
+
+.connections-group {
+  /* Enable pointer events only for connections */
+  pointer-events: stroke;
+}
+
+.connection-path {
+  /* GPU acceleration for smooth rendering */
+  transform: translateZ(0);
+  
+  /* Performance optimizations */
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+  
+  /* Smooth transitions for state changes */
+  transition: all 0.15s ease-in-out;
+  
+  /* Hover effects */
+  &:hover {
+    filter: brightness(1.2) drop-shadow(0 0 4px currentColor);
+    cursor: pointer;
+    pointer-events: stroke;
+  }
+  
+  /* Connection state styles */
+  &.connection-active {
+    /* Active connections are more prominent */
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  
+  &.connection-satisfied {
+    /* Satisfied connections have normal appearance */
+    opacity: 0.8;
+  }
+  
+  &.connection-unsatisfied {
+    /* Unsatisfied connections are dimmed and dashed */
+    opacity: 0.6;
+    
+    /* Animation for unsatisfied connections */
+    animation: pulseUnsatisfied 2s ease-in-out infinite;
+  }
+  
+  &.connection-highlighted {
+    /* Highlighted connections are very prominent */
+    filter: brightness(1.3) drop-shadow(0 0 6px currentColor);
+    opacity: 1.0;
+    stroke-width: 3px;
+  }
+}
+
+/* Performance indicator overlay */
+.performance-info {
+  pointer-events: none;
+  
+  rect {
+    fill: rgba(0, 0, 0, 0.9);
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 1;
+  }
+  
+  text {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    dominant-baseline: hanging;
+  }
+}
+
+/* Animations */
+@keyframes pulseUnsatisfied {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Zoom-based optimizations */
+@media (max-zoom: 0.5) {
+  .connection-path {
+    /* At very low zoom levels, simplify rendering */
+    stroke-width: 1px;
+    
+    &:hover {
+      /* Disable hover effects at low zoom for performance */
+      filter: none;
+    }
+  }
+}
+
+@media (min-zoom: 2.0) {
+  .connection-path {
+    /* At high zoom levels, add more detail */
+    stroke-width: 3px;
+    
+    /* Enhanced shadows for better visibility */
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .connection-overlay {
+    /* Dark mode specific optimizations */
+  }
+  
+  .performance-info {
+    rect {
+      fill: rgba(0, 0, 0, 0.95);
+      stroke: rgba(255, 255, 255, 0.1);
+    }
+    
+    text {
+      fill: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .connection-path {
+    stroke-width: 3px;
+    
+    &.connection-unsatisfied {
+      stroke-dasharray: none;
+      opacity: 1.0;
+    }
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .connection-path {
+    transition: none;
+    
+    &.connection-unsatisfied {
+      animation: none;
+    }
+  }
+  
+  .connection-overlay {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .connection-overlay {
+    display: none;
+  }
+}

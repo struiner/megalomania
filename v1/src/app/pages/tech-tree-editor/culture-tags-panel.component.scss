@@ -1,0 +1,37 @@
+.culture-card {
+  gap: var(--ds-space-3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+}
+
+.legacy-grid {
+  display: grid;
+  gap: var(--ds-space-1);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.tag-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--ds-space-2);
+  align-items: center;
+  padding: var(--ds-space-2);
+  border-radius: var(--ds-radius-sm);
+  border: 1px dashed var(--ds-color-border-weak);
+}
+
+.tag-label {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+}
+
+.meta {
+  font-size: var(--ds-font-size-xs);
+  color: var(--ds-color-text-muted);
+}

@@ -1,0 +1,141 @@
+<!-- Tech Tree Tier Layout Test Component -->
+<div class="tech-tree-tier-test">
+  <div class="test-controls">
+    <h2>Tech Tree Tier Layout Test</h2>
+    
+    <div class="test-section">
+      <h3>Test Trees</h3>
+      <div class="tree-selector">
+        <button 
+          *ngFor="let tree of ['basic-tree', 'sparse-tree', 'dense-tree']; trackBy: trackByTreeKey"
+          class="test-button"
+          [class.active]="currentTreeKey === tree"
+          (click)="loadTree(tree)">
+          {{ tree.replace('-', ' ') | titlecase }}
+        </button>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h3>Tier Management Tests</h3>
+      <div class="test-buttons">
+        <button class="test-button" (click)="addTestTier()">
+          Add New Tier
+        </button>
+        <button class="test-button" (click)="testSnapToTier()">
+          Test Snap-to-Tier
+        </button>
+        <button class="test-button" (click)="validateTierConsistency()">
+          Validate Tier Consistency
+        </button>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h3>Zoom Level Tests</h3>
+      <div class="zoom-test-controls">
+        <button class="test-button" (click)="testZoomLevels()">
+          Test All Zoom Levels
+        </button>
+        <div class="zoom-presets">
+          <button 
+            *ngFor="let zoom of [0.25, 0.5, 1.0, 1.5, 2.0, 3.0]"
+            class="test-button zoom-button"
+            [class.active]="currentZoom === zoom"
+            (click)="onZoomChanged(zoom)">
+            {{ (zoom * 100).toFixed(0) }}%
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h3>Test Results</h3>
+      <div class="test-actions">
+        <button class="test-button" (click)="clearLogs()">
+          Clear Logs
+        </button>
+        <button class="test-button" (click)="exportTestResults()">
+          Export Results
+        </button>
+      </div>
+      
+      <div class="test-logs">
+        <div class="log-header">
+          <span>Test Logs ({{ testLogs.length }} entries)</span>
+        </div>
+        <div class="log-content">
+          <div 
+            *ngFor="let log of testLogs; trackBy: trackByLogIndex" 
+            class="log-entry">
+            {{ log }}
+          </div>
+          <div *ngIf="testLogs.length === 0" class="log-empty">
+            No test logs yet. Run tests to see results.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h3>Current Tree Info</h3>
+      <div class="tree-info">
+        <div class="info-item">
+          <span class="info-label">Tree Type:</span>
+          <span class="info-value">{{ currentTreeKey | titlecase }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Node Count:</span>
+          <span class="info-value">{{ currentNodes.length }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tiers:</span>
+          <span class="info-value">
+            {{ [...new Set(currentNodes.map(n => n.tier))].sort((a, b) => a - b).join(', ') || 'None' }}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Current Zoom:</span>
+          <span class="info-value">{{ (currentZoom * 100).toFixed(0) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-canvas-container">
+    <h3>Tech Tree Canvas (Tier Layout)</h3>
+    <div class="canvas-wrapper">
+      <app-tech-tree-canvas
+        [nodes]="currentNodes"
+        [config]="techTreeConfig"
+        (nodeSelected)="onNodeSelected($event)"
+        (nodeFocused)="onNodeFocused($event)"
+        (zoomChanged)="onZoomChanged($event)">
+      </app-tech-tree-canvas>
+    </div>
+    
+    <div class="selected-node-info" *ngIf="selectedTech">
+      <h4>Selected Node</h4>
+      <div class="node-details">
+        <div class="detail-item">
+          <span class="detail-label">Name:</span>
+          <span class="detail-value">{{ selectedTech.name }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Tier:</span>
+          <span class="detail-value">Tier {{ selectedTech.tier }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Cost:</span>
+          <span class="detail-value">{{ selectedTech.cost }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Prerequisites:</span>
+          <span class="detail-value">
+            {{ selectedTech.prerequisites.length > 0 ? selectedTech.prerequisites.join(', ') : 'None' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<section class="identity-card ds-panel" *ngIf="node; else empty">
+  <header class="card-header">
+    <div>
+      <p class="ds-label">Identity</p>
+      <h3 class="ds-heading-md">Node basics</h3>
+      <p class="ds-muted">IDs, tier bounds, and ordering stay deterministic.</p>
+    </div>
+    <p class="badge">{{ node.id }}</p>
+  </header>
+
+  <div class="field-grid">
+    <label class="field">
+      <span class="field-label">Title</span>
+      <input
+        type="text"
+        [ngModel]="node.title"
+        (ngModelChange)="onChange({ title: $event || '' })"
+        aria-describedby="title-validation"
+      />
+      <ul *ngIf="validation['title']?.length" id="title-validation" class="validation-list">
+        <li *ngFor="let issue of validation['title']; trackBy: trackIssue" [class.error]="issue.severity === 'error'">
+          {{ issue.message }}
+        </li>
+      </ul>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Tier</span>
+      <input
+        type="number"
+        min="1"
+        [max]="tierBands.length || 1"
+        [ngModel]="node.tier"
+        (ngModelChange)="onChange({ tier: $event ? ($event || 1) : 1 })"
+        aria-describedby="tier-validation"
+      />
+      <ul *ngIf="validation['tier']?.length" id="tier-validation" class="validation-list">
+        <li *ngFor="let issue of validation['tier']; trackBy: trackIssue" [class.error]="issue.severity === 'error'">
+          {{ issue.message }}
+        </li>
+      </ul>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Display order</span>
+      <input
+        type="number"
+        min="1"
+        [ngModel]="node.display_order"
+        (ngModelChange)="onChange({ display_order: $event ? ($event || 1) : 1 })"
+        aria-describedby="order-validation"
+      />
+      <ul *ngIf="validation['display_order']?.length" id="order-validation" class="validation-list">
+        <li *ngFor="let issue of validation['display_order']; trackBy: trackIssue" [class.error]="issue.severity === 'error'">
+          {{ issue.message }}
+        </li>
+      </ul>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Category</span>
+      <input
+        type="text"
+        [ngModel]="node.category"
+        (ngModelChange)="onChange({ category: $event || '' })"
+      />
+    </label>
+
+    <label class="field field-span">
+      <span class="field-label">Summary</span>
+      <textarea
+        rows="3"
+        [ngModel]="node.summary"
+        (ngModelChange)="onChange({ summary: $event || '' })"
+        aria-describedby="summary-validation"
+      ></textarea>
+      <div class="meta-row">
+        <span class="ds-muted">{{ (node.summary || '').length }}/240</span>
+      </div>
+      <ul *ngIf="validation['summary']?.length" id="summary-validation" class="validation-list">
+        <li *ngFor="let issue of validation['summary']; trackBy: trackIssue" [class.error]="issue.severity === 'error'">
+          {{ issue.message }}
+        </li>
+      </ul>
+    </label>
+  </div>
+</section>
+
+<ng-template #empty>
+  <section class="identity-card ds-panel placeholder">
+    <p class="ds-muted">Select a node to edit its identity fields.</p>
+  </section>
+</ng-template>

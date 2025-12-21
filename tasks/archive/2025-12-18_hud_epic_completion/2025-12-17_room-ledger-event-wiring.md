@@ -1,6 +1,6 @@
 # Task Specification — Ledger Event Wiring for Room Blueprints
 
-**STATUS: NOT STARTED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
+**STATUS: COMPLETED (Structural fidelity); charter alignment approved for Phase 2 sequencing**
 
 ## Task Summary
 Define ledger events for room blueprint creation/modification/removal/export so blueprint operations are recorded in the PBC with deterministic schemas, without implementing placement or generation logic.

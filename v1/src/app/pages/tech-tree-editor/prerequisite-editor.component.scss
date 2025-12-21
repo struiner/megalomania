@@ -1,0 +1,53 @@
+.prereq-card {
+  gap: var(--ds-space-3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+}
+
+.prereq-list {
+  display: grid;
+  gap: var(--ds-space-2);
+}
+
+.prereq-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--ds-space-2);
+  align-items: center;
+}
+
+.prereq-chip {
+  padding: var(--ds-space-2) var(--ds-space-3);
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-color-border);
+  background: var(--ds-color-surface-card);
+  display: grid;
+  gap: var(--ds-space-1);
+}
+
+.prereq-chip .name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.prereq-chip .meta {
+  margin: 0;
+  font-size: var(--ds-font-size-xs);
+  color: var(--ds-color-text-muted);
+}
+
+.editor-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
+  gap: var(--ds-space-2);
+  align-items: end;
+}
+
+.placeholder {
+  align-items: center;
+}

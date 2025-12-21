@@ -1,0 +1,30 @@
+.effects-card {
+  gap: var(--ds-space-3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+}
+
+.effect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ds-space-2);
+}
+
+.field {
+  display: grid;
+  gap: var(--ds-space-1);
+}
+
+select[multiple] {
+  min-height: 96px;
+  padding: var(--ds-space-2);
+}
+
+.placeholder {
+  align-items: center;
+}

@@ -1,0 +1,139 @@
+<!-- Tech Node Component - Zoom Responsive Templates -->
+<div 
+  [attr.title]="getTooltipText()"
+  [class]="nodeClasses.join(' ')"
+  [attr.aria-label]="getGridCellAriaLabel()"
+  [attr.tabindex]="state.disabled ? -1 : 0"
+  (click)="onNodeClick($event)"
+  (focus)="onNodeFocus($event)"
+  (dblclick)="onNodeSelect($event)"
+  role="button"
+  [attr.aria-pressed]="state.selected"
+  [attr.aria-describedby]="'node-description-' + node.id"
+  [attr.aria-expanded]="currentTemplate === 'detailed'"
+  [attr.aria-label]="getSpatialDescription()"
+>
+
+  <!-- Compact Template: Icon + Title only -->
+  <ng-container *ngIf="currentTemplate === 'compact'">
+    <div class="tech-node__compact">
+      <div class="tech-node__icon">
+        <span [class]="stateIconClass">{{ stateIcon }}</span>
+      </div>
+      <div class="tech-node__title">
+        {{ node.name }}
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Standard Template: Icon + Title + Basic Info -->
+  <ng-container *ngIf="currentTemplate === 'standard'">
+    <div class="tech-node__standard">
+      <div class="tech-node__header">
+        <div class="tech-node__icon">
+          <span [class]="stateIconClass">{{ stateIcon }}</span>
+        </div>
+        <div class="tech-node__title-section">
+          <h4 class="tech-node__title">{{ node.name }}</h4>
+          <div class="tech-node__meta">
+            <span [class]="tierClass">T{{ node.tier }}</span>
+            <span class="tech-node__cost">Cost: {{ node.cost }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tech-node__prerequisites" *ngIf="node.prerequisites.length > 0">
+        <span class="tech-prereq-label">Requires:</span>
+        <span class="tech-prereq-list">{{ node.prerequisites.slice(0, 2).join(', ') }}
+          <span *ngIf="node.prerequisites.length > 2">...</span>
+        </span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Detailed Template: Full Information Display -->
+  <ng-container *ngIf="currentTemplate === 'detailed'">
+    <div class="tech-node__detailed">
+      <div class="tech-node__header">
+        <div class="tech-node__icon">
+          <span [class]="stateIconClass">{{ stateIcon }}</span>
+        </div>
+        <div class="tech-node__title-section">
+          <h4 class="tech-node__title">{{ node.name }}</h4>
+          <div class="tech-node__meta">
+            <span [class]="tierClass">Tier {{ node.tier }}</span>
+            <span class="tech-node__cost">Cost: {{ node.cost }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tech-node__description">
+        {{ node.description }}
+      </div>
+      
+      <div class="tech-node__details">
+        <div class="tech-node__section" *ngIf="node.prerequisites.length > 0">
+          <h5 class="tech-node__section-title">Prerequisites</h5>
+          <ul class="tech-node__list">
+            <li *ngFor="let prereq of node.prerequisites" 
+                class="tech-node__list-item"
+                [class.tech-node__list-item--satisfied]="state.prerequisiteSatisfied"
+                [class.tech-node__list-item--unsatisfied]="state.prerequisiteUnsatisfied">
+              {{ prereq }}
+            </li>
+          </ul>
+        </div>
+        
+        <div class="tech-node__section" *ngIf="node.effects.length > 0">
+          <h5 class="tech-node__section-title">Effects</h5>
+          <ul class="tech-node__list">
+            <li *ngFor="let effect of node.effects" class="tech-node__list-item">
+              {{ effect }}
+            </li>
+          </ul>
+        </div>
+        
+        <div class="tech-node__section" *ngIf="node.cultureTags.length > 0">
+          <h5 class="tech-node__section-title">Culture Tags</h5>
+          <div class="tech-node__tags">
+            <span *ngFor="let tag of node.cultureTags" class="tech-node__tag">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Visual State Indicators -->
+  <div class="tech-node__indicators">
+    <!-- Selection Indicator -->
+    <div class="tech-node__indicator tech-node__indicator--selected" 
+         *ngIf="state.selected"
+         aria-hidden="true">
+      <span>●</span>
+    </div>
+    
+    <!-- Focus Indicator -->
+    <div class="tech-node__indicator tech-node__indicator--focused"
+         *ngIf="state.focused"
+         aria-hidden="true">
+      <span>◎</span>
+    </div>
+    
+    <!-- Active Path Indicator -->
+    <div class="tech-node__indicator tech-node__indicator--active-path"
+         *ngIf="state.activePath"
+         aria-hidden="true">
+      <span>▶</span>
+    </div>
+  </div>
+
+  <!-- Validation Warning Indicator -->
+  <div class="tech-node__validation" 
+       *ngIf="state.invalid"
+       aria-label="Validation warning">
+    <span class="tech-node__validation-icon">⚠</span>
+  </div>
+
+</div>

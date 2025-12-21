@@ -1,0 +1,286 @@
+<section class="tech-tree-editor">
+  <header class="page-header ds-panel">
+    <div>
+      <p class="ds-label">SDK · Structures</p>
+      <h1 class="ds-heading-lg">Tech Tree Editor</h1>
+      <p class="ds-muted">Bottom-anchored shell for deterministic tier layout, tokens, and culture governance.</p>
+    </div>
+    <div class="status">
+      <p class="ds-label">Tree</p>
+      <p class="value">{{ document().tech_tree_id }} · v{{ document().version }}</p>
+      <p class="ds-label">Source</p>
+      <p class="value">{{ document().metadata?.source_label || 'unlinked (fixtures)' }}</p>
+    </div>
+  </header>
+
+  <section class="callout error ds-card" *ngIf="importErrorMessage() || importIssues().length">
+    <div>
+      <p class="ds-label">Import notice</p>
+      <p>{{ importErrorMessage() || 'Import produced validation issues.' }}</p>
+    </div>
+    <ul *ngIf="importIssues().length" class="callout-list">
+      <li *ngFor="let issue of importIssues()">{{ issue.message }}</li>
+    </ul>
+  </section>
+
+  <div class="workspace">
+    <section class="panel overview">
+      <header class="panel-header">
+        <div>
+          <p class="ds-label">Overview</p>
+          <h2 class="ds-heading-md">Tech canvas</h2>
+          <p class="ds-muted">Grid snap, pan/zoom, and keyboard drag/drop via tokens.</p>
+        </div>
+        <div class="tier-controls">
+          <button type="button" class="pill" (click)="addTierBand()">+ Tier</button>
+          <button type="button" class="pill" (click)="trimTierBands()" [disabled]="!canTrimTierBands()">Trim empty</button>
+        </div>
+      </header>
+      <p class="ds-muted">Arrow keys move focus; Ctrl+Arrow moves nodes; Ctrl/Cmd+scroll zooms.</p>
+      <app-tech-canvas
+        [tierBands]="tierBands()"
+        [columnLabels]="columnLabels()"
+        [nodes]="nodes()"
+        [selectedId]="selectedNode()?.id || null"
+        [viewport]="viewport()"
+        (viewportChange)="onViewportChange($event)"
+        (moveNode)="onMoveNode($event)"
+        (selectNode)="selectNode($event)"
+      ></app-tech-canvas>
+    </section>
+
+    <section class="panel detail-column">
+      <app-node-identity-card
+        [node]="selectedNode()"
+        [tierBands]="tierBands()"
+        [validation]="fieldValidationByField()"
+        (update)="updateNode($event)"
+      ></app-node-identity-card>
+
+      <section class="icon-card ds-panel" *ngIf="selectedNode() as node">
+        <div class="card-header">
+          <div>
+            <p class="ds-label">Icon</p>
+            <h3 class="ds-heading-md">Tech icon</h3>
+            <p class="ds-muted">Registry-backed with deterministic ordering.</p>
+          </div>
+          <p class="ds-label">{{ node.metadata?.icon_id || 'none' }}</p>
+        </div>
+        <app-tech-icon-picker
+          [icons]="iconOptions()"
+          [value]="selectedNode()?.metadata?.icon_id || null"
+          (valueChange)="updateIcon($event)"
+        ></app-tech-icon-picker>
+      </section>
+    </section>
+
+    <section class="panel stack">
+      <app-culture-tags-panel
+        [options]="cultureTagOptions()"
+        [selectedIds]="resolvedCultureTags()"
+        [defaultTags]="document().default_culture_tags"
+        (selectionChange)="replaceCultureTags($event)"
+      ></app-culture-tags-panel>
+      <div class="panel-actions">
+        <button type="button" class="ghost" (click)="openTagDialog('create')">Govern culture tags</button>
+      </div>
+
+      <app-effects-editor
+        [node]="selectedNode()"
+        [effectOptions]="effectOptions()"
+        (updateList)="updateEffectsList($event.key, $event.values)"
+      ></app-effects-editor>
+
+      <app-prerequisite-editor
+        [node]="selectedNode()"
+        [nodes]="nodes()"
+        (update)="updatePrerequisites($event)"
+      ></app-prerequisite-editor>
+    </section>
+  </div>
+
+  <footer class="action-dock ds-panel">
+    <div>
+      <p class="ds-label">Actions</p>
+      <p class="ds-muted">Keyboard focus-visible enabled; destructive actions are isolated.</p>
+    </div>
+    <div class="buttons">
+      <button type="button" (click)="createNode()">Create node</button>
+      <button type="button" (click)="duplicateNode()" [disabled]="!selectedNode()">Duplicate</button>
+      <button type="button" class="danger" (click)="deleteNode()" [disabled]="!selectedNode()">Delete</button>
+    </div>
+    <div class="buttons">
+      <button type="button" (click)="triggerImport()">Import sample</button>
+      <button type="button" class="primary ghost" (click)="openPreview()">Preview dialog</button>
+      <button type="button" class="primary" (click)="triggerExport()">Export snapshot</button>
+    </div>
+  </footer>
+
+  <section class="export-log ds-card" *ngIf="lastExport()">
+    <p class="ds-label">Last export (deterministic)</p>
+    <div class="log-body">
+      <p class="timestamp">Issues: {{ lastExport()?.issues?.length }}</p>
+      <pre>{{ lastExport()?.json }}</pre>
+    </div>
+  </section>
+
+  <section class="issue-list ds-card" *ngIf="validationIssues().length">
+    <p class="ds-label">Validation</p>
+    <ul>
+      <li *ngFor="let issue of validationIssues()">
+        <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+        <span class="path">{{ issue.path }}</span>
+        <span class="message">{{ issue.message }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="issue-list ds-card" *ngIf="governanceIssues().length">
+    <p class="ds-label">Governance notices</p>
+    <ul>
+      <li *ngFor="let issue of governanceIssues()">
+        <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+        <span class="path">{{ issue.path }}</span>
+        <span class="message">{{ issue.message }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="modal-backdrop" *ngIf="tagDialogMode() !== 'closed'">
+    <div class="modal">
+      <header class="modal-header">
+        <div>
+          <p class="ds-label">Culture tag governance</p>
+          <h3 class="ds-heading-md">Adapter-backed proposals</h3>
+          <p class="ds-muted">Operations route through the governance adapter with deterministic ordering and audit hooks.</p>
+        </div>
+        <button type="button" class="ghost" (click)="closeTagDialog()">Close</button>
+      </header>
+
+      <div class="tab-row">
+        <button type="button" [class.active]="tagDialogMode() === 'create'" (click)="switchTagMode('create')">Create</button>
+        <button
+          type="button"
+          [class.active]="tagDialogMode() === 'edit'"
+          [disabled]="!cultureTagOptions().length"
+          (click)="switchTagMode('edit')"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          [class.active]="tagDialogMode() === 'delete'"
+          [disabled]="!cultureTagOptions().length"
+          (click)="switchTagMode('delete')"
+        >
+          Delete
+        </button>
+      </div>
+
+      <div class="modal-body" *ngIf="tagDialogMode() === 'create'">
+        <div class="modal-grid">
+          <label class="field">
+            <span class="field-label">Namespace</span>
+            <select [ngModel]="tagNamespace()" (ngModelChange)="tagNamespace.set($event)">
+              <option value="biome">Biome</option>
+              <option value="settlement">Settlement</option>
+              <option value="guild">Guild</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Slug (snake_case)</span>
+            <input type="text" [ngModel]="tagSlug()" (ngModelChange)="tagSlug.set($event || '')" />
+          </label>
+          <label class="field">
+            <span class="field-label">Version</span>
+            <input type="number" min="1" [ngModel]="tagVersion()" (ngModelChange)="tagVersion.set($event ? ($event || 1) : 1)" />
+          </label>
+          <label class="field field-span">
+            <span class="field-label">Note</span>
+            <textarea rows="3" [ngModel]="tagNote()" (ngModelChange)="tagNote.set($event || '')"></textarea>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="primary" (click)="submitTagCreate()">Propose create</button>
+        </div>
+      </div>
+
+      <div class="modal-body" *ngIf="tagDialogMode() === 'edit'">
+        <div class="modal-grid">
+          <label class="field">
+            <span class="field-label">Tag</span>
+            <select [ngModel]="tagTarget()" (ngModelChange)="setTagTarget($event)">
+              <option *ngFor="let tag of cultureTagOptions()" [ngValue]="tag.id">
+                {{ tag.label }} · v{{ tag.version }} ({{ tag.status }})
+              </option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Version</span>
+            <input type="number" min="1" [ngModel]="tagVersion()" (ngModelChange)="tagVersion.set($event ? ($event || 1) : 1)" />
+          </label>
+          <label class="field field-span">
+            <span class="field-label">Note</span>
+            <textarea rows="3" [ngModel]="tagNote()" (ngModelChange)="tagNote.set($event || '')"></textarea>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="primary" (click)="submitTagEdit()" [disabled]="!tagTarget()">Propose edit</button>
+        </div>
+      </div>
+
+      <div class="modal-body" *ngIf="tagDialogMode() === 'delete'">
+        <div class="modal-grid">
+          <label class="field">
+            <span class="field-label">Tag</span>
+            <select [ngModel]="tagTarget()" (ngModelChange)="setTagTarget($event)">
+              <option *ngFor="let tag of cultureTagOptions()" [ngValue]="tag.id">
+                {{ tag.label }} · v{{ tag.version }} ({{ tag.status }})
+              </option>
+            </select>
+          </label>
+          <div class="field field-span">
+            <span class="field-label">Usage</span>
+            <p class="ds-muted" *ngIf="selectedTagUsage().length; else unusedTag">
+              {{ selectedTagUsage().join(', ') }}
+            </p>
+            <ng-template #unusedTag>
+              <p class="ds-muted">No references detected in current tree.</p>
+            </ng-template>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="danger" (click)="submitTagDelete()" [disabled]="!tagTarget()">Request delete</button>
+        </div>
+      </div>
+
+      <div class="issue-list slim" *ngIf="governanceIssues().length">
+        <p class="ds-label">Adapter notices</p>
+        <ul>
+          <li *ngFor="let issue of governanceIssues()">
+            <span class="severity" [class.error]="issue.severity === 'error'">{{ issue.severity }}</span>
+            <span class="path">{{ issue.path }}</span>
+            <span class="message">{{ issue.message }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="audit-log" *ngIf="cultureTagAuditTrail().length">
+        <p class="ds-label">Audit trail</p>
+        <ul>
+          <li *ngFor="let entry of cultureTagAuditTrail()">{{ entry }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <app-tech-tree-preview-dialog
+    *ngIf="previewOpen()"
+    [document]="document()"
+    [nodes]="nodes()"
+    [tierBands]="tierBands()"
+    [cultureTagOptions]="cultureTagOptions()"
+    [effectOptions]="effectOptions()"
+    (close)="closePreview()"
+  ></app-tech-tree-preview-dialog>
+</section>

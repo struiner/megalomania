@@ -49,7 +49,7 @@ interface OverlayPath {
 
     .connection-path {
       fill: none;
-      stroke: rgba(157, 229, 255, 0.5);
+      stroke: var(--ds-color-connector-weak);
       stroke-width: 2;
       stroke-linejoin: round;
       stroke-linecap: round;
@@ -57,13 +57,13 @@ interface OverlayPath {
     }
 
     .connection-path.active {
-      stroke: #ffda7b;
+      stroke: var(--ds-color-connector-highlight);
       stroke-width: 2.5;
     }
 
     .connection-node {
-      fill: rgba(255, 218, 123, 0.85);
-      stroke: rgba(255, 255, 255, 0.6);
+      fill: var(--ds-color-connector-highlight);
+      stroke: var(--ds-color-border-strong);
       stroke-width: 1;
     }
   `],

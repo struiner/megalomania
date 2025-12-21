@@ -1,0 +1,454 @@
+// Design System Typography Scale
+// Comprehensive typography system for Tech Tree Editor
+// Complies with UI & Ergonomics Charter principles
+
+// ============================================================================
+// TYPOGRAPHY SCALE FOUNDATION
+// ============================================================================
+
+// Base font settings that respect pixel integrity
+$font-family-base: 'Inter', 'Segoe UI', system-ui, sans-serif;
+$font-family-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+// Pixel-perfect font sizes following retro aesthetic
+$font-size-xs: 10px;
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-xxl: 22px;
+$font-size-xxxl: 28px;
+$font-size-display: 36px;
+
+// Line heights for optimal readability
+$line-height-tight: 1.2;
+$line-height-normal: 1.4;
+$line-height-relaxed: 1.6;
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ============================================================================
+// TECH TREE EDITOR TEXT HIERARCHY
+// ============================================================================
+
+// Primary hierarchy tokens
+$typography-heading-1-size: $font-size-display;
+$typography-heading-1-weight: $font-weight-bold;
+$typography-heading-1-line-height: $line-height-tight;
+
+$typography-heading-2-size: $font-size-xxxl;
+$typography-heading-2-weight: $font-weight-semibold;
+$typography-heading-2-line-height: $line-height-tight;
+
+$typography-heading-3-size: $font-size-xxl;
+$typography-heading-3-weight: $font-weight-semibold;
+$typography-heading-3-line-height: $line-height-tight;
+
+$typography-heading-4-size: $font-size-xl;
+$typography-heading-4-weight: $font-weight-medium;
+$typography-heading-4-line-height: $line-height-normal;
+
+$typography-heading-5-size: $font-size-lg;
+$typography-heading-5-weight: $font-weight-medium;
+$typography-heading-5-line-height: $line-height-normal;
+
+// Body text tokens
+$typography-body-large-size: $font-size-lg;
+$typography-body-large-weight: $font-weight-normal;
+$typography-body-large-line-height: $line-height-normal;
+
+$typography-body-size: $font-size-md;
+$typography-body-weight: $font-weight-normal;
+$typography-body-line-height: $line-height-normal;
+
+$typography-body-small-size: $font-size-sm;
+$typography-body-small-weight: $font-weight-normal;
+$typography-body-small-line-height: $line-height-normal;
+
+$typography-body-tiny-size: $font-size-xs;
+$typography-body-tiny-weight: $font-weight-normal;
+$typography-body-tiny-line-height: $line-height-relaxed;
+
+// Specialized text tokens for tech tree components
+$typography-node-title-size: $font-size-lg;
+$typography-node-title-weight: $font-weight-semibold;
+$typography-node-title-line-height: $line-height-tight;
+
+$typography-node-description-size: $font-size-sm;
+$typography-node-description-weight: $font-weight-normal;
+$typography-node-description-line-height: $line-height-relaxed;
+
+$typography-node-meta-size: $font-size-xs;
+$typography-node-meta-weight: $font-weight-medium;
+$typography-node-meta-line-height: $line-height-normal;
+
+$typography-node-prerequisite-size: $font-size-sm;
+$typography-node-prerequisite-weight: $font-weight-medium;
+$typography-node-prerequisite-line-height: $line-height-normal;
+
+$typography-validation-size: $font-size-sm;
+$typography-validation-weight: $font-weight-medium;
+$typography-validation-line-height: $line-height-normal;
+
+$typography-tooltip-size: $font-size-sm;
+$typography-tooltip-weight: $font-weight-normal;
+$typography-tooltip-line-height: $line-height-relaxed;
+
+$typography-icon-label-size: $font-size-xs;
+$typography-icon-label-weight: $font-weight-medium;
+$typography-icon-label-line-height: $line-height-normal;
+
+$typography-caption-size: $font-size-xs;
+$typography-caption-weight: $font-weight-normal;
+$typography-caption-line-height: $line-height-relaxed;
+
+$typography-code-size: $font-size-sm;
+$typography-code-weight: $font-weight-normal;
+$typography-code-line-height: $line-height-normal;
+
+// ============================================================================
+// CSS CUSTOM PROPERTIES
+// ============================================================================
+
+:root {
+  // Base font settings
+  --ds-font-family-base: #{$font-family-base};
+  --ds-font-family-mono: #{$font-family-mono};
+  
+  // Font sizes
+  --ds-font-size-xs: #{$font-size-xs};
+  --ds-font-size-sm: #{$font-size-sm};
+  --ds-font-size-md: #{$font-size-md};
+  --ds-font-size-lg: #{$font-size-lg};
+  --ds-font-size-xl: #{$font-size-xl};
+  --ds-font-size-xxl: #{$font-size-xxl};
+  --ds-font-size-xxxl: #{$font-size-xxxl};
+  --ds-font-size-display: #{$font-size-display};
+  
+  // Line heights
+  --ds-line-height-tight: #{$line-height-tight};
+  --ds-line-height-normal: #{$line-height-normal};
+  --ds-line-height-relaxed: #{$line-height-relaxed};
+  
+  // Font weights
+  --ds-font-weight-light: #{$font-weight-light};
+  --ds-font-weight-normal: #{$font-weight-normal};
+  --ds-font-weight-medium: #{$font-weight-medium};
+  --ds-font-weight-semibold: #{$font-weight-semibold};
+  --ds-font-weight-bold: #{$font-weight-bold};
+  
+  // Heading typography
+  --ds-typography-heading-1-size: #{$typography-heading-1-size};
+  --ds-typography-heading-1-weight: #{$typography-heading-1-weight};
+  --ds-typography-heading-1-line-height: #{$typography-heading-1-line-height};
+  
+  --ds-typography-heading-2-size: #{$typography-heading-2-size};
+  --ds-typography-heading-2-weight: #{$typography-heading-2-weight};
+  --ds-typography-heading-2-line-height: #{$typography-heading-2-line-height};
+  
+  --ds-typography-heading-3-size: #{$typography-heading-3-size};
+  --ds-typography-heading-3-weight: #{$typography-heading-3-weight};
+  --ds-typography-heading-3-line-height: #{$typography-heading-3-line-height};
+  
+  --ds-typography-heading-4-size: #{$typography-heading-4-size};
+  --ds-typography-heading-4-weight: #{$typography-heading-4-weight};
+  --ds-typography-heading-4-line-height: #{$typography-heading-4-line-height};
+  
+  --ds-typography-heading-5-size: #{$typography-heading-5-size};
+  --ds-typography-heading-5-weight: #{$typography-heading-5-weight};
+  --ds-typography-heading-5-line-height: #{$typography-heading-5-line-height};
+  
+  // Body typography
+  --ds-typography-body-large-size: #{$typography-body-large-size};
+  --ds-typography-body-large-weight: #{$typography-body-large-weight};
+  --ds-typography-body-large-line-height: #{$typography-body-large-line-height};
+  
+  --ds-typography-body-size: #{$typography-body-size};
+  --ds-typography-body-weight: #{$typography-body-weight};
+  --ds-typography-body-line-height: #{$typography-body-line-height};
+  
+  --ds-typography-body-small-size: #{$typography-body-small-size};
+  --ds-typography-body-small-weight: #{$typography-body-small-weight};
+  --ds-typography-body-small-line-height: #{$typography-body-small-line-height};
+  
+  --ds-typography-body-tiny-size: #{$typography-body-tiny-size};
+  --ds-typography-body-tiny-weight: #{$typography-body-tiny-weight};
+  --ds-typography-body-tiny-line-height: #{$typography-body-tiny-line-height};
+  
+  // Specialized typography
+  --ds-typography-node-title-size: #{$typography-node-title-size};
+  --ds-typography-node-title-weight: #{$typography-node-title-weight};
+  --ds-typography-node-title-line-height: #{$typography-node-title-line-height};
+  
+  --ds-typography-node-description-size: #{$typography-node-description-size};
+  --ds-typography-node-description-weight: #{$typography-node-description-weight};
+  --ds-typography-node-description-line-height: #{$typography-node-description-line-height};
+  
+  --ds-typography-node-meta-size: #{$typography-node-meta-size};
+  --ds-typography-node-meta-weight: #{$typography-node-meta-weight};
+  --ds-typography-node-meta-line-height: #{$typography-node-meta-line-height};
+  
+  --ds-typography-node-prerequisite-size: #{$typography-node-prerequisite-size};
+  --ds-typography-node-prerequisite-weight: #{$typography-node-prerequisite-weight};
+  --ds-typography-node-prerequisite-line-height: #{$typography-node-prerequisite-line-height};
+  
+  --ds-typography-validation-size: #{$typography-validation-size};
+  --ds-typography-validation-weight: #{$typography-validation-weight};
+  --ds-typography-validation-line-height: #{$typography-validation-line-height};
+  
+  --ds-typography-tooltip-size: #{$typography-tooltip-size};
+  --ds-typography-tooltip-weight: #{$typography-tooltip-weight};
+  --ds-typography-tooltip-line-height: #{$typography-tooltip-line-height};
+  
+  --ds-typography-icon-label-size: #{$typography-icon-label-size};
+  --ds-typography-icon-label-weight: #{$typography-icon-label-weight};
+  --ds-typography-icon-label-line-height: #{$typography-icon-label-line-height};
+  
+  --ds-typography-caption-size: #{$typography-caption-size};
+  --ds-typography-caption-weight: #{$typography-caption-weight};
+  --ds-typography-caption-line-height: #{$typography-caption-line-height};
+  
+  --ds-typography-code-size: #{$typography-code-size};
+  --ds-typography-code-weight: #{$typography-code-weight};
+  --ds-typography-code-line-height: #{$typography-code-line-height};
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+// Pixel-aligned text rendering
+@mixin ds-text-render {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Heading mixin with UI Charter compliance
+@mixin ds-heading($level: 1) {
+  margin: 0;
+  color: var(--sdk-text-primary, #e8e0ff);
+  font-weight: map-get((
+    1: $font-weight-bold,
+    2: $font-weight-semibold,
+    3: $font-weight-semibold,
+    4: $font-weight-medium,
+    5: $font-weight-medium
+  ), $level);
+  line-height: $line-height-tight;
+  letter-spacing: 0;
+  
+  @include ds-text-render;
+  
+  // Apply specific sizing based on level
+  @if $level == 1 {
+    font-size: var(--ds-typography-heading-1-size);
+  } @else if $level == 2 {
+    font-size: var(--ds-typography-heading-2-size);
+  } @else if $level == 3 {
+    font-size: var(--ds-typography-heading-3-size);
+  } @else if $level == 4 {
+    font-size: var(--ds-typography-heading-4-size);
+  } @else if $level == 5 {
+    font-size: var(--ds-typography-heading-5-size);
+  }
+}
+
+// Body text mixin
+@mixin ds-body($size: 'md') {
+  margin: 0;
+  color: var(--sdk-text-primary, #e8e0ff);
+  font-weight: var(--ds-font-weight-normal);
+  line-height: var(--ds-line-height-normal);
+  @include ds-text-render;
+  
+  @if $size == 'large' {
+    font-size: var(--ds-typography-body-large-size);
+    font-weight: var(--ds-typography-body-large-weight);
+    line-height: var(--ds-typography-body-large-line-height);
+  } @else if $size == 'small' {
+    font-size: var(--ds-typography-body-small-size);
+    font-weight: var(--ds-typography-body-small-weight);
+    line-height: var(--ds-typography-body-small-line-height);
+  } @else if $size == 'tiny' {
+    font-size: var(--ds-typography-body-tiny-size);
+    font-weight: var(--ds-typography-body-tiny-weight);
+    line-height: var(--ds-typography-body-tiny-line-height);
+  } @else {
+    font-size: var(--ds-typography-body-size);
+    font-weight: var(--ds-typography-body-weight);
+    line-height: var(--ds-typography-body-line-height);
+  }
+}
+
+// Node-specific text styling
+@mixin ds-node-title {
+  font-size: var(--ds-typography-node-title-size);
+  font-weight: var(--ds-typography-node-title-weight);
+  line-height: var(--ds-typography-node-title-line-height);
+  color: var(--sdk-text-primary, #e8e0ff);
+  @include ds-text-render;
+}
+
+@mixin ds-node-description {
+  font-size: var(--ds-typography-node-description-size);
+  font-weight: var(--ds-typography-node-description-weight);
+  line-height: var(--ds-typography-node-description-line-height);
+  color: var(--sdk-text-secondary, rgba(232, 224, 255, 0.85));
+  @include ds-text-render;
+}
+
+@mixin ds-node-meta {
+  font-size: var(--ds-typography-node-meta-size);
+  font-weight: var(--ds-typography-node-meta-weight);
+  line-height: var(--ds-typography-node-meta-line-height);
+  color: var(--sdk-text-muted, rgba(232, 224, 255, 0.65));
+  @include ds-text-render;
+}
+
+// Validation text styling
+@mixin ds-validation {
+  font-size: var(--ds-typography-validation-size);
+  font-weight: var(--ds-typography-validation-weight);
+  line-height: var(--ds-typography-validation-line-height);
+  @include ds-text-render;
+}
+
+// Code text styling
+@mixin ds-code {
+  font-family: var(--ds-font-family-mono);
+  font-size: var(--ds-typography-code-size);
+  font-weight: var(--ds-typography-code-weight);
+  line-height: var(--ds-typography-code-line-height);
+  @include ds-text-render;
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// These provide consistent typography patterns for all components
+// ============================================================================
+
+// Heading classes
+%ds-heading-1 {
+  @include ds-heading(1);
+}
+
+%ds-heading-2 {
+  @include ds-heading(2);
+}
+
+%ds-heading-3 {
+  @include ds-heading(3);
+}
+
+%ds-heading-4 {
+  @include ds-heading(4);
+}
+
+%ds-heading-5 {
+  @include ds-heading(5);
+}
+
+// Body text classes
+%ds-body-large {
+  @include ds-body('large');
+}
+
+%ds-body {
+  @include ds-body('md');
+}
+
+%ds-body-small {
+  @include ds-body('small');
+}
+
+%ds-body-tiny {
+  @include ds-body('tiny');
+}
+
+// Specialized text classes
+%ds-node-title {
+  @include ds-node-title;
+}
+
+%ds-node-description {
+  @include ds-node-description;
+}
+
+%ds-node-meta {
+  @include ds-node-meta;
+}
+
+%ds-validation {
+  @include ds-validation;
+}
+
+%ds-tooltip {
+  font-size: var(--ds-typography-tooltip-size);
+  font-weight: var(--ds-typography-tooltip-weight);
+  line-height: var(--ds-typography-tooltip-line-height);
+  color: var(--sdk-text-primary, #e8e0ff);
+  @include ds-text-render;
+}
+
+%ds-icon-label {
+  font-size: var(--ds-typography-icon-label-size);
+  font-weight: var(--ds-typography-icon-label-weight);
+  line-height: var(--ds-typography-icon-label-line-height);
+  color: var(--sdk-text-secondary, rgba(232, 224, 255, 0.85));
+  @include ds-text-render;
+}
+
+%ds-caption {
+  font-size: var(--ds-typography-caption-size);
+  font-weight: var(--ds-typography-caption-weight);
+  line-height: var(--ds-typography-caption-line-height);
+  color: var(--sdk-text-muted, rgba(232, 224, 255, 0.65));
+  @include ds-text-render;
+}
+
+%ds-code {
+  @include ds-code;
+}
+
+// ============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// ============================================================================
+
+// High contrast support for typography
+@media (prefers-contrast: high) {
+  :root {
+    --ds-font-weight-normal: #{$font-weight-normal};
+    --ds-font-weight-medium: #{$font-weight-semibold};
+    --ds-font-weight-semibold: #{$font-weight-bold};
+  }
+  
+  %ds-body,
+  %ds-body-large,
+  %ds-body-small,
+  %ds-body-tiny {
+    color: #ffffff;
+    font-weight: var(--ds-font-weight-semibold);
+  }
+  
+  %ds-node-description,
+  %ds-node-meta,
+  %ds-tooltip,
+  %ds-icon-label,
+  %ds-caption {
+    color: #ffffff;
+    font-weight: var(--ds-font-weight-medium);
+  }
+}
+
+// Reduced motion support (no typography animations)
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

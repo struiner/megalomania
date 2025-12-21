@@ -1,0 +1,50 @@
+<section class="prereq-card ds-panel" *ngIf="node; else prereqPlaceholder">
+  <header class="card-header">
+    <div>
+      <p class="ds-label">Prerequisites</p>
+      <h3 class="ds-heading-md">Inline editing</h3>
+      <p class="ds-muted">Select a prerequisite node and relation, then add or remove inline.</p>
+    </div>
+  </header>
+
+  <div class="prereq-list" *ngIf="node?.prerequisites?.length; else emptyList">
+    <div class="prereq-row" *ngFor="let prereq of node?.prerequisites; trackBy: trackPrereq">
+      <div class="prereq-chip">
+        <p class="name">{{ resolveLabel(prereq.node) }}</p>
+        <p class="meta">Relation: {{ prereq.relation }}</p>
+      </div>
+      <button type="button" class="ghost" (click)="removePrerequisite(prereq.node)">Remove</button>
+    </div>
+  </div>
+
+  <div class="editor-row">
+    <label class="field">
+      <span class="field-label">Node</span>
+      <select [(ngModel)]="candidateId">
+        <option [ngValue]="null">Select node</option>
+        <option *ngFor="let entry of availableNodes; trackBy: trackNode" [ngValue]="entry.id">
+          {{ entry.title }} (Tier {{ entry.tier || 1 }})
+        </option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Relation</span>
+      <select [(ngModel)]="candidateRelation">
+        <option [ngValue]="'requires'">Requires</option>
+      </select>
+    </label>
+
+    <button type="button" class="primary" (click)="addPrerequisite()" [disabled]="!candidateId">Add</button>
+  </div>
+</section>
+
+<ng-template #emptyList>
+  <p class="ds-muted">No prerequisites defined.</p>
+</ng-template>
+
+<ng-template #prereqPlaceholder>
+  <section class="prereq-card ds-panel placeholder">
+    <p class="ds-muted">Select a node to manage its prerequisites.</p>
+  </section>
+</ng-template>
