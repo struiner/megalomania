@@ -1,0 +1,23 @@
+[
+  {
+    "rule_id": "LEDGER_FIRST",
+    "source": "AGENTS.md",
+    "section": "2.Core Invariants",
+    "summary": "All authoritative truth is emitted as immutable ledger events.",
+    "tags": ["ledger", "authority", "immutability"]
+  },
+  {
+    "rule_id": "LOWEST_VIABLE_FIDELITY",
+    "source": "AGENTS.md",
+    "section": "5.Fidelity & Abstraction",
+    "summary": "Default to the lowest viable fidelity stage and stop early.",
+    "tags": ["fidelity", "scope", "abstraction"]
+  },
+  {
+    "rule_id": "UI_OWNS_NO_TRUTH",
+    "source": "AGENTS.md",
+    "section": "6.UI & Ergonomics",
+    "summary": "UI may only display derived views and never own truth.",
+    "tags": ["ui", "truth", "derived"]
+  }
+]
