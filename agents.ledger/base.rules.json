@@ -2,22 +2,121 @@
   {
     "rule_id": "LEDGER_FIRST",
     "source": "AGENTS.md",
-    "section": "2.Core Invariants",
+    "section": "3.Core invariants",
     "summary": "All authoritative truth is emitted as immutable ledger events.",
-    "tags": ["ledger", "authority", "immutability"]
+    "tags": ["ledger", "authority", "immutability"],
+    "enforcement": "veto_authority"
   },
   {
     "rule_id": "LOWEST_VIABLE_FIDELITY",
     "source": "AGENTS.md",
-    "section": "5.Fidelity & Abstraction",
+    "section": "5.Level-of-Detail & abstraction",
     "summary": "Default to the lowest viable fidelity stage and stop early.",
-    "tags": ["fidelity", "scope", "abstraction"]
+    "tags": ["fidelity", "scope", "abstraction"],
+    "enforcement": "scope_control"
   },
   {
     "rule_id": "UI_OWNS_NO_TRUTH",
     "source": "AGENTS.md",
-    "section": "6.UI & Ergonomics",
+    "section": "6.UI & ergonomics",
     "summary": "UI may only display derived views and never own truth.",
-    "tags": ["ui", "truth", "derived"]
+    "tags": ["ui", "truth", "derived"],
+    "enforcement": "domain_ownership"
+  },
+  {
+    "rule_id": "DETERMINISTIC_RECONSTRUCTION",
+    "source": "AGENTS.md",
+    "section": "3.Core invariants",
+    "summary": "Any game state must be reproducible from the ledger alone.",
+    "tags": ["determinism", "reconstruction", "rebuildability"],
+    "enforcement": "blocking_authority"
+  },
+  {
+    "rule_id": "SINGLE_SOURCE_OF_TRUTH",
+    "source": "AGENTS.md",
+    "section": "3.Core invariants",
+    "summary": "Each domain has exactly one authoritative source.",
+    "tags": ["authority", "ownership", "domain"],
+    "enforcement": "escalation_required"
+  },
+  {
+    "rule_id": "EVENT_DRIVEN_COMMUNICATION",
+    "source": "AGENTS.md",
+    "section": "3.Core invariants",
+    "summary": "Domains communicate only through ledger events or derived views.",
+    "tags": ["communication", "events", "decoupling"],
+    "enforcement": "veto_authority"
+  },
+  {
+    "rule_id": "CROSS_DOMAIN_ESCALATION",
+    "source": "AGENTS.md",
+    "section": "4.1.Cross-domain rules",
+    "summary": "Any decision affecting more than one domain must be escalated to the Project Manager.",
+    "tags": ["escalation", "coordination", "authority"],
+    "enforcement": "final_authority"
+  },
+  {
+    "rule_id": "VETO_RATIONALE",
+    "source": "AGENTS.md",
+    "section": "4.1.Cross-domain rules",
+    "summary": "Vetoes must include a written rationale referencing violated principles or invariants.",
+    "tags": ["veto", "documentation", "accountability"],
+    "enforcement": "documentation_required"
+  },
+  {
+    "rule_id": "PERFORMANCE_TARGETS",
+    "source": "AGENTS.md",
+    "section": "7.Performance considerations",
+    "summary": "Target 60 FPS for UI, 30 FPS for simulation, 1GB RAM limit, 1000+ events capacity.",
+    "tags": ["performance", "metrics", "constraints"],
+    "enforcement": "review_required"
+  },
+  {
+    "rule_id": "NO_HIDDEN_MUTABLE_TRUTH",
+    "source": "AGENTS.md",
+    "section": "10.Operating rules",
+    "summary": "Authoritative state lives only in the ledger and its derived views.",
+    "tags": ["state", "immutability", "truth"],
+    "enforcement": "veto_authority"
+  },
+  {
+    "rule_id": "SMALL_COMPOSABLE_SYSTEMS",
+    "source": "AGENTS.md",
+    "section": "10.Operating rules",
+    "summary": "Prefer small, composable systems over monolithic features.",
+    "tags": ["architecture", "modularity", "composition"],
+    "enforcement": "review_required"
+  },
+  {
+    "rule_id": "DELIBERATE_EVENT_EMISSION",
+    "source": "AGENTS.md",
+    "section": "10.Operating rules",
+    "summary": "Emit events deliberately; unnecessary noise becomes technical debt.",
+    "tags": ["events", "quality", "debt_prevention"],
+    "enforcement": "review_required"
+  },
+  {
+    "rule_id": "REBUILDABILITY_REQUIRED",
+    "source": "AGENTS.md",
+    "section": "10.Operating rules",
+    "summary": "Any subsystem that cannot be rebuilt from the ledger is invalid.",
+    "tags": ["rebuildability", "ledger", "validation"],
+    "enforcement": "blocking_authority"
+  },
+  {
+    "rule_id": "SUCCESS_METRICS_REQUIRED",
+    "source": "AGENTS.md",
+    "section": "8.1.Reusable Task Spec Template",
+    "summary": "Tasks must define measurable criteria for completion and quality assessment.",
+    "tags": ["metrics", "quality", "completion"],
+    "enforcement": "review_required"
+  },
+  {
+    "rule_id": "DOMAIN_OWNERSHIP_ENFORCEMENT",
+    "source": "AGENTS.md",
+    "section": "4.2.Domain ownership enforcement",
+    "summary": "Unauthorized cross-domain modifications result in immediate rollback and review.",
+    "tags": ["ownership", "enforcement", "rollback"],
+    "enforcement": "immediate_action"
   }
 ]
