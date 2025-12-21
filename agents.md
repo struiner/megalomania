@@ -12,18 +12,26 @@ Players explore a procedurally generated world divided into 512×512‑cell chun
 - **Domain ownership** – each agent owns one kind of truth; cross‑domain communication happens via events, views or APIs—not direct mutation:contentReference[oaicite:4]{index=4}.  
 - **Horizontal scalability** – systems grow by adding domains rather than deepening inheritance; each domain comprises events → views → policies → actuators:contentReference[oaicite:5]{index=5}.
 
-## 3 Roles & domain ownership
+## 3 Roles & domain ownership (authoritative)
 
-| Agent                | Domain ownership        | Core responsibility (summary)                                                                 |
-|----------------------|-------------------------|------------------------------------------------------------------------------------------------|
-| **Project Manager**  | Coordination            | Intake user requests, decompose into tasks, assign agents, track roadmap, enforce time‑zone use:contentReference[oaicite:6]{index=6} |
-| **Game Designer**    | Vision & lore           | Maintain design doc and tone; define mechanics conceptually; validate that systems support gameplay:contentReference[oaicite:7]{index=7} |
-| **Ledger Engineer**  | Ledger & integrity      | Define ledger schemas, implement serialization and Merkle hashing, enforce append‑only behavior:contentReference[oaicite:8]{index=8} |
-| **World Generator**  | World truth             | Generate terrain and settlements, simulate NPC history, emit events into the ledger:contentReference[oaicite:9]{index=9} |
-| **Economy Engineer** | Markets & goods         | Define goods catalogue, model supply/demand, simulate NPC economies:contentReference[oaicite:10]{index=10} |
-| **Frontend Developer** | UI surface            | Build Angular UI components, visualize maps and ledgers, implement menus without inventing state:contentReference[oaicite:11]{index=11} |
-| **SDK & Modding Engineer** | Extensibility      | Build SDKs and modding APIs; ensure mods emit valid events and respect determinism:contentReference[oaicite:12]{index=12} |
-| **QA & Test Engineer** | Verification & trust  | Write unit/integration tests, validate determinism, profile performance:contentReference[oaicite:13]{index=13} |
+| Agent | Domain ownership | Core responsibility (summary) | Authority & escalation |
+|------|------------------|--------------------------------|------------------------|
+| **Project Manager** | Coordination | Intake user requests, decompose into tasks, assign agents, track roadmap, enforce time-zone use | **Final authority on scope, sequencing, and task boundaries.** Arbitrates cross-domain conflicts and approves fidelity promotion. |
+| **Game Designer** | Vision & lore | Maintain design doc and tone; define mechanics conceptually; validate that systems support gameplay | **Final authority on conceptual mechanics, player experience, and UI ergonomics.** Must escalate when concepts imply new ledger events or economic rules. |
+| **Ledger Engineer** | Ledger & integrity | Define ledger schemas, implement serialization and Merkle hashing, enforce append-only behavior | **Veto authority** over any change that affects determinism, ledger integrity, rebuildability, or event semantics. |
+| **World Generator** | World truth | Generate terrain and settlements, simulate NPC history, emit events into the ledger | **Final authority on world-generation logic and historical simulation shape.** Must escalate if new world behavior requires new ledger schemas. |
+| **Economy Engineer** | Markets & goods | Define goods catalogue, model supply/demand, simulate NPC economies | **Final authority on economic mechanics and goods semantics.** Must escalate if changes alter ledger structure or world-generation assumptions. |
+| **Frontend Developer** | UI surface | Build Angular UI components, visualize maps and ledgers, implement menus without inventing state | **Final authority on UI structure and interaction flow.** Must escalate if UI requires new truth sources or persistent state. |
+| **SDK & Modding Engineer** | Extensibility | Build SDKs and modding APIs; ensure mods emit valid events and respect determinism | **Final authority on public APIs and extension points.** Must escalate if modding hooks threaten determinism or ledger guarantees. |
+| **QA & Test Engineer** | Verification & trust | Write unit/integration tests, validate determinism, profile performance | **Blocking authority** on merges that fail determinism, integrity, or performance acceptance criteria. |
+
+### 3.1 Cross-domain rules (binding)
+
+- Each agent is the **single source of truth** for their domain.
+- Agents **may not reinterpret** another domain’s intent.
+- Any decision affecting **more than one domain** must be escalated to the Project Manager.
+- **Vetoes must include a written rationale** referencing violated principles or invariants.
+- Silence does not imply consent; unresolved ambiguity must be documented and escalated.
 
 ## 4 Level‑of‑Detail & abstraction (fidelity stages)
 
@@ -33,6 +41,18 @@ The *Level of Detail & Abstraction Charter* emphasizes that **correct shape beat
 2. **Structural (skeleton)** – establish relationships and data flow; minimal working implementations with explicit extension points:contentReference[oaicite:16]{index=16}.  
 3. **Functional (playable/usable)** – implement correct behavior for primary paths and end‑to‑end flows; secondary features may be incomplete:contentReference[oaicite:17]{index=17}.  
 4. **Refinement (hardening)** – improve robustness and clarity; handle errors and performance considerations:contentReference[oaicite:18]{index=18}.  
+
+Each fidelity stage must define explicit exit conditions.
+
+- Conceptual work ends when:
+  - Responsibilities are named
+  - Inputs/outputs are listed
+  - No implementation choices remain implicit
+
+- Structural work ends when:
+  - Data flow is explicit
+  - Interfaces are frozen
+  - All extension points are identified
 
 Codex should default to the **lowest viable fidelity stage** and stop early if details are omitted:contentReference[oaicite:19]{index=19}.
 
@@ -70,6 +90,11 @@ A meta‑task scans the repository for TODOs, stubs and placeholders and convert
 - Flag ambiguous ownership for human review and avoid inventing new mechanics:contentReference[oaicite:40]{index=40}.  
 - Produce a summary report listing detected signals and proposed task titles:contentReference[oaicite:41]{index=41}.
 
+The meta-task may not:
+- Invent new systems
+- Reinterpret TODO intent
+- Merge TODOs across domains without explicit human approval
+
 ### 6.3 Core task patterns
 
 - **Low fidelity by default** – tasks should aim for conceptual or structural work unless explicitly promoted:contentReference[oaicite:42]{index=42}.  
@@ -104,3 +129,11 @@ All contributors (human and AI) must adhere to these non‑negotiable rules:cont
 - **Primary owners** – the Project Manager owns coordination; the Architecture Steward enforces structural integrity; the Game Designer owns UI ergonomics and lore:contentReference[oaicite:47]{index=47}.  
 - **Change control** – changes to agent responsibilities, ownership boundaries or workflow must be reflected in this document before implementation:contentReference[oaicite:48]{index=48}.  
 - **Living document** – this charter is authoritative and stable; it evolves only in response to repeated friction or failure modes:contentReference[oaicite:49]{index=49}.:contentReference[oaicite:50]{index=50}
+
+## 10 Decision Escalation
+
+An agent must escalate to the Project Manager when:
+- A decision affects more than one domain
+- An invariant appears to conflict with task goals
+- Fidelity stage promotion is required
+- A choice would introduce irreversible structure
