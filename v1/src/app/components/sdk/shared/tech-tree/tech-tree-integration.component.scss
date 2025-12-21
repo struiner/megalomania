@@ -1,0 +1,498 @@
+// Tech Tree Integration Component Styles
+// Provides cohesive styling for the integrated tech tree editor
+
+.tech-tree-integration {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 600px;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  &--fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+// Header Section
+.integration-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  min-height: 64px;
+  
+  .header-left {
+    flex: 1;
+    
+    .integration-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      color: #212529;
+    }
+    
+    .integration-subtitle {
+      font-size: 0.875rem;
+      margin: 4px 0 0 0;
+      color: #6c757d;
+    }
+  }
+  
+  .header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    
+    .workflow-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #e9ecef;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #28a745;
+        transition: background-color 0.2s ease;
+        
+        &--loading {
+          background: #ffc107;
+          animation: pulse 1.5s infinite;
+        }
+        
+        &--dirty {
+          background: #ffc107;
+        }
+        
+        &--error {
+          background: #dc3545;
+        }
+      }
+      
+      .status-text {
+        font-size: 0.875rem;
+        color: #212529;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  .header-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+}
+
+// Integration Buttons
+.integration-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &--primary {
+    background: #007bff;
+    color: #ffffff;
+    border-color: #007bff;
+    
+    &:hover:not(:disabled) {
+      background: #0056b3;
+      border-color: #0056b3;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: #212529;
+    border-color: #dee2e6;
+    
+    &:hover:not(:disabled) {
+      background: #e9ecef;
+      border-color: #adb5bd;
+    }
+  }
+  
+  .btn-icon {
+    font-size: 14px;
+  }
+}
+
+// Main Content Area
+.integration-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  
+  &--fullscreen {
+    height: calc(100vh - 64px);
+  }
+}
+
+// Canvas Section
+.canvas-section {
+  flex: 1;
+  position: relative;
+  background: #ffffff;
+  
+  &--expanded {
+    max-width: 100%;
+  }
+}
+
+// Detail Section
+.detail-section {
+  width: 400px;
+  min-width: 300px;
+  max-width: 600px;
+  background: #f8f9fa;
+  border-left: 1px solid #e9ecef;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  
+  &--collapsed {
+    width: 60px;
+    min-width: 60px;
+  }
+  
+  .panel-btn--collapse {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #6c757d;
+    transition: all 0.15s ease;
+    
+    &:hover {
+      background: #e9ecef;
+      color: #212529;
+    }
+  }
+}
+
+// Detail Panel Content
+.detail-content {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+  
+  &--collapsed {
+    display: none;
+  }
+}
+
+// Validation Summary
+.validation-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid;
+  
+  &--errors {
+    background: rgba(220, 53, 69, 0.1);
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+  
+  &--warnings {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+    color: #ffc107;
+  }
+  
+  .validation-icon {
+    font-size: 16px;
+  }
+  
+  .validation-text {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .validation-action {
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: #6c757d;
+  
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: #212529;
+  }
+  
+  p {
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Detail Panel Toggle Button (when collapsed)
+.detail-toggle-btn {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 60px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #6c757d;
+  transition: all 0.15s ease;
+  z-index: 10;
+  
+  &:hover {
+    background: #e9ecef;
+    color: #212529;
+  }
+}
+
+// Footer Status Bar
+.integration-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #e9ecef;
+  border-top: 1px solid #dee2e6;
+  min-height: 40px;
+  
+  .status-bar-left,
+  .status-bar-right {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .status-bar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .status-item {
+    font-size: 0.75rem;
+    color: #6c757d;
+    
+    strong {
+      color: #212529;
+      font-weight: 500;
+    }
+  }
+}
+
+// Sync Status Indicator
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  
+  .sync-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+    transition: background-color 0.15s ease;
+  }
+  
+  .sync-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  &--synchronized {
+    .sync-indicator {
+      background: #28a745;
+    }
+  }
+  
+  &--desynchronized {
+    .sync-indicator {
+      background: #dc3545;
+      animation: pulse 1s infinite;
+    }
+    
+    .sync-text {
+      color: #dc3545;
+    }
+  }
+  
+  &--recovering {
+    .sync-indicator {
+      background: #ffc107;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .sync-text {
+      color: #ffc107;
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .integration-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+    
+    .header-left,
+    .header-center,
+    .header-right {
+      flex: none;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .header-right {
+      order: -1;
+    }
+  }
+  
+  .detail-section {
+    width: 350px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .integration-content {
+    flex-direction: column;
+  }
+  
+  .canvas-section {
+    height: 60vh;
+  }
+  
+  .detail-section {
+    width: 100%;
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  .integration-footer {
+    flex-direction: column;
+    gap: 12px;
+    
+    .status-bar-left,
+    .status-bar-center,
+    .status-bar-right {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Focus States
+.integration-btn:focus,
+.panel-btn--collapse:focus,
+.detail-toggle-btn:focus,
+.validation-action:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+// High Contrast Support
+@media (prefers-contrast: high) {
+  .integration-header,
+  .integration-footer {
+    border-width: 2px;
+  }
+  
+  .status-indicator,
+  .sync-indicator {
+    border: 1px solid #212529;
+  }
+}
+
+// Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+  .integration-btn,
+  .panel-btn--collapse,
+  .detail-toggle-btn,
+  .status-indicator,
+  .sync-indicator {
+    transition: none;
+    animation: none;
+  }
+}

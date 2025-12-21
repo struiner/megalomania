@@ -1,0 +1,32 @@
+<section class="culture-card ds-panel">
+  <header class="card-header">
+    <div>
+      <p class="ds-label">Culture tags</p>
+      <h3 class="ds-heading-md">Governed vocabulary</h3>
+      <p class="ds-muted">Defaults: {{ describeDefaults() }}</p>
+    </div>
+    <button type="button" class="ghost" (click)="toggleLegacy()">
+      {{ showLegacy() ? 'Hide legacy grid' : 'Show legacy grid' }}
+    </button>
+  </header>
+
+  <app-culture-tag-combobox
+    [options]="options"
+    [selectedIds]="selectedIds"
+    (selectionChange)="onSelectionChange($event)"
+  ></app-culture-tag-combobox>
+
+  <div class="legacy-grid" *ngIf="showLegacy()">
+    <label class="tag-option" *ngFor="let tag of options">
+      <input
+        type="checkbox"
+        [checked]="selectedIds.includes(tag.id)"
+        (change)="onCheckboxChange(tag.id, $any($event.target).checked)"
+      />
+      <div class="tag-label">
+        <span class="name">{{ tag.label }}</span>
+        <span class="meta">v{{ tag.version }}</span>
+      </div>
+    </label>
+  </div>
+</section>

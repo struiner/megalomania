@@ -25,7 +25,7 @@ It exists to:
 
 * Orient the player in space and situation
 * Provide deliberate access to management and information
-* Stay out of the way of the world simulation
+* Stay out of the way of the world a
 
 The HUD must **never compete** with the game world for attention.
 

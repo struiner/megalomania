@@ -1,0 +1,813 @@
+// Design System Canvas Pan & Zoom Tokens
+// Comprehensive pan and zoom styling for Tech Tree Canvas
+// Complies with UI & Ergonomics Charter principles
+// Spatial navigation as editorial aid, not structural modification
+
+// ============================================================================
+// CANVAS PAN & ZOOM FOUNDATION
+// ============================================================================
+
+// Import required design system modules
+@import 'color-tokens';
+@import 'spacing-tokens';
+@import 'typography-tokens';
+
+// Canvas container and viewport styles
+$canvas-min-height: 400px;
+$canvas-max-height: calc(100vh - 200px);
+$canvas-border-radius: var(--ds-spacing-md);
+$canvas-border: 1px solid var(--ds-color-border-primary);
+$canvas-background: var(--ds-color-background-primary);
+
+// Zoom indicator styles
+$zoom-indicator-bg: rgba(0, 0, 0, 0.7);
+$zoom-indicator-color: var(--ds-color-text-inverse);
+$zoom-indicator-padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+$zoom-indicator-border-radius: var(--ds-spacing-xs);
+$zoom-indicator-font-size: map-get($font-sizes, 'sm');
+$zoom-indicator-font-weight: map-get($font-weights, 'medium');
+
+// Performance optimization classes
+$performance-excellent: 'filter: none;';
+$performance-good: 'filter: brightness(0.98);';
+$performance-fair: 'filter: brightness(0.95) contrast(0.98);';
+$performance-poor: 'filter: brightness(0.9) contrast(0.95); will-change: transform;';
+
+// ============================================================================
+// ZOOM LEVEL VISUAL DENSITY MAPPING
+// ============================================================================
+
+// Overview zoom level (0.25x)
+.zoom-level-overview {
+  // Node styling
+  .tech-tree-node {
+    transform: scale(0.6);
+    padding: var(--ds-spacing-xs);
+    
+    .node-icon {
+      width: 16px;
+      height: 16px;
+      
+      img {
+        width: 12px;
+        height: 12px;
+      }
+    }
+    
+    .node-title {
+      font-size: map-get($font-sizes, 'xs');
+      font-weight: map-get($font-weights, 'normal');
+      margin-bottom: 2px;
+    }
+    
+    .node-description,
+    .node-meta {
+      display: none;
+    }
+  }
+  
+  // Connection styling
+  .tech-tree-connection {
+    stroke-width: 1px;
+    opacity: 0.6;
+    
+    .connection-arrow {
+      display: none;
+    }
+    
+    .connection-label {
+      font-size: 10px;
+      display: none;
+    }
+  }
+  
+  // Grid styling
+  .tech-tree-grid {
+    gap: var(--ds-spacing-xs);
+  }
+  
+  // Performance optimization
+  @extend %canvas-performance-high;
+}
+
+// Compact zoom level (0.5x)
+.zoom-level-compact {
+  .tech-tree-node {
+    transform: scale(0.8);
+    padding: var(--ds-spacing-sm);
+    
+    .node-icon {
+      width: 20px;
+      height: 20px;
+      
+      img {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    .node-title {
+      font-size: map-get($font-sizes, 'xs');
+      margin-bottom: var(--ds-spacing-xs);
+    }
+    
+    .node-description {
+      display: block;
+      font-size: 10px;
+      line-height: 1.2;
+      margin-bottom: var(--ds-spacing-xs);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      
+      .node-cost {
+        font-size: 9px;
+      }
+      
+      .node-category {
+        display: none;
+      }
+    }
+  }
+  
+  .tech-tree-connection {
+    stroke-width: 1.5px;
+    opacity: 0.8;
+    
+    .connection-arrow {
+      display: block;
+      width: 8px;
+      height: 8px;
+    }
+    
+    .connection-label {
+      display: none;
+    }
+  }
+  
+  .tech-tree-grid {
+    gap: var(--ds-spacing-sm);
+  }
+  
+  @extend %canvas-performance-high;
+}
+
+// Normal zoom level (0.75x)
+.zoom-level-normal {
+  .tech-tree-node {
+    transform: scale(1.0);
+    padding: var(--ds-spacing-md);
+    
+    .node-icon {
+      width: 24px;
+      height: 24px;
+      
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .node-title {
+      font-size: map-get($font-sizes, 'sm');
+      margin-bottom: var(--ds-spacing-xs);
+    }
+    
+    .node-description {
+      display: block;
+      font-size: map-get($font-sizes, 'xs');
+      line-height: 1.3;
+      margin-bottom: var(--ds-spacing-sm);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ds-spacing-xs);
+      
+      .node-cost {
+        font-size: map-get($font-sizes, 'xs');
+      }
+      
+      .node-category {
+        font-size: 10px;
+        display: block;
+      }
+    }
+  }
+  
+  .tech-tree-connection {
+    stroke-width: 2px;
+    opacity: 0.9;
+    
+    .connection-arrow {
+      display: block;
+      width: 10px;
+      height: 10px;
+    }
+    
+    .connection-label {
+      display: block;
+      font-size: 11px;
+      font-weight: map-get($font-weights, 'medium');
+    }
+  }
+  
+  .tech-tree-grid {
+    gap: var(--ds-spacing-md);
+  }
+  
+  @extend %canvas-performance-medium;
+}
+
+// Detailed zoom level (1.0x)
+.zoom-level-detailed {
+  .tech-tree-node {
+    transform: scale(1.2);
+    padding: var(--ds-spacing-lg);
+    
+    .node-icon {
+      width: 28px;
+      height: 28px;
+      
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    
+    .node-title {
+      font-size: map-get($font-sizes, 'sm');
+      margin-bottom: var(--ds-spacing-sm);
+    }
+    
+    .node-description {
+      display: block;
+      font-size: map-get($font-sizes, 'sm');
+      line-height: 1.4;
+      margin-bottom: var(--ds-spacing-md);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ds-spacing-sm);
+      
+      .node-cost,
+      .node-category {
+        font-size: map-get($font-sizes, 'sm');
+        display: block;
+      }
+    }
+  }
+  
+  .tech-tree-connection {
+    stroke-width: 2.5px;
+    opacity: 1;
+    
+    .connection-arrow {
+      display: block;
+      width: 12px;
+      height: 12px;
+    }
+    
+    .connection-label {
+      display: block;
+      font-size: map-get($font-sizes, 'sm');
+      font-weight: map-get($font-weights, 'medium');
+    }
+  }
+  
+  .tech-tree-grid {
+    gap: var(--ds-spacing-lg);
+  }
+  
+  @extend %canvas-performance-medium;
+}
+
+// Close-up zoom level (1.5x)
+.zoom-level-closeup {
+  .tech-tree-node {
+    transform: scale(1.5);
+    padding: var(--ds-spacing-xl);
+    
+    .node-icon {
+      width: 32px;
+      height: 32px;
+      
+      img {
+        width: 28px;
+        height: 28px;
+      }
+    }
+    
+    .node-title {
+      font-size: map-get($font-sizes, 'md');
+      margin-bottom: var(--ds-spacing-md);
+    }
+    
+    .node-description {
+      display: block;
+      font-size: map-get($font-sizes, 'md');
+      line-height: 1.4;
+      margin-bottom: var(--ds-spacing-lg);
+      display: block;
+      -webkit-line-clamp: none;
+    }
+    
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ds-spacing-md);
+      
+      .node-cost,
+      .node-category {
+        font-size: map-get($font-sizes, 'md');
+        display: block;
+      }
+    }
+  }
+  
+  .tech-tree-connection {
+    stroke-width: 3px;
+    opacity: 1;
+    
+    .connection-arrow {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
+    
+    .connection-label {
+      display: block;
+      font-size: map-get($font-sizes, 'md');
+      font-weight: map-get($font-weights, 'medium');
+    }
+  }
+  
+  .tech-tree-grid {
+    gap: var(--ds-spacing-xl);
+  }
+  
+  @extend %canvas-performance-low;
+}
+
+// ============================================================================
+// CANVAS COMPONENT STYLES
+// ============================================================================
+
+.tech-canvas {
+  position: relative;
+  background: $canvas-background;
+  border: $canvas-border;
+  border-radius: $canvas-border-radius;
+  overflow: hidden;
+  min-height: $canvas-min-height;
+  max-height: $canvas-max-height;
+  user-select: none;
+  touch-action: none;
+  
+  // Pan cursor states
+  &.pan-ready {
+    cursor: var(--canvas-pan-cursor-grab, grab);
+    
+    &:active {
+      cursor: var(--canvas-pan-cursor-grabbing, grabbing);
+    }
+  }
+  
+  &.zoom-ready {
+    cursor: var(--canvas-zoom-cursor-crosshair, crosshair);
+  }
+  
+  // Loading state
+  &.loading {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      
+      &::after {
+        content: '';
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--ds-color-neutral-300);
+        border-top: 3px solid var(--ds-color-primary);
+        border-radius: 50%;
+        animation: canvas-spin 1s linear infinite;
+      }
+    }
+  }
+  
+  // Canvas viewport
+  .canvas-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transform-origin: 0 0;
+  }
+  
+  // Canvas content (tech tree grid)
+  .canvas-content {
+    position: absolute;
+    transform-origin: 0 0;
+    will-change: transform;
+    
+    // Performance optimization for transforms
+    &.performance-optimized {
+      will-change: transform;
+      backface-visibility: hidden;
+      perspective: 1000px;
+    }
+  }
+  
+  // Zoom indicator
+  .zoom-indicator {
+    position: absolute;
+    bottom: var(--ds-spacing-md);
+    right: var(--ds-spacing-md);
+    background: $zoom-indicator-bg;
+    color: $zoom-indicator-color;
+    padding: $zoom-indicator-padding;
+    border-radius: $zoom-indicator-border-radius;
+    font-size: $zoom-indicator-font-size;
+    font-weight: $zoom-indicator-font-weight;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 150ms ease, transform 150ms ease;
+    z-index: 100;
+    pointer-events: none;
+    
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .zoom-percentage {
+      font-weight: map-get($font-weights, 'bold');
+    }
+  }
+  
+  // Bounds indicator
+  .bounds-indicator {
+    position: absolute;
+    border: 2px dashed var(--canvas-bounds-indicator-color, #ff6b35);
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 50;
+    
+    &.visible {
+      animation: bounds-pulse 2s infinite;
+    }
+  }
+  
+  // Performance overlay
+  .performance-overlay {
+    position: absolute;
+    top: var(--ds-spacing-sm);
+    left: var(--ds-spacing-sm);
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    border-radius: var(--ds-spacing-xs);
+    font-size: map-get($font-sizes, 'xs');
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    
+    &.visible {
+      opacity: 1;
+    }
+  }
+  
+  // Mini-map (for large trees)
+  .mini-map {
+    position: absolute;
+    top: var(--ds-spacing-md);
+    right: var(--ds-spacing-md);
+    width: 120px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--ds-color-border-primary);
+    border-radius: var(--ds-spacing-xs);
+    overflow: hidden;
+    z-index: 90;
+    
+    .mini-map-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      
+      .mini-map-content {
+        position: absolute;
+        transform-origin: 0 0;
+      }
+      
+      .mini-map-view {
+        position: absolute;
+        border: 2px solid var(--ds-color-primary);
+        background: rgba(65, 105, 225, 0.1);
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// PERFORMANCE OPTIMIZATION CLASSES
+// ============================================================================
+
+%canvas-performance-high {
+  filter: none;
+  transform: translateZ(0);
+  will-change: auto;
+  
+  .tech-tree-node,
+  .tech-tree-connection {
+    will-change: auto;
+  }
+}
+
+%canvas-performance-medium {
+  filter: brightness(0.98);
+  transform: translateZ(0);
+  will-change: transform;
+  
+  .tech-tree-node,
+  .tech-tree-connection {
+    will-change: transform;
+  }
+}
+
+%canvas-performance-low {
+  filter: brightness(0.95) contrast(0.98);
+  transform: translateZ(0);
+  will-change: transform;
+  
+  // Reduce expensive effects
+  .tech-tree-node {
+    .node-state-indicator {
+      animation: none;
+    }
+    
+    &.state-researching .icon-researching {
+      animation: none;
+    }
+  }
+  
+  .tech-tree-connection {
+    .connection-arrow {
+      animation: none;
+    }
+  }
+}
+
+// Performance level indicators
+.canvas-performance-excellent {
+  filter: none;
+  .performance-overlay {
+    display: none;
+  }
+}
+
+.canvas-performance-good {
+  filter: brightness(0.98);
+  .performance-overlay {
+    background: rgba(255, 165, 0, 0.8);
+    &::before {
+      content: 'Performance: Good';
+    }
+  }
+}
+
+.canvas-performance-fair {
+  filter: brightness(0.95) contrast(0.98);
+  .performance-overlay {
+    background: rgba(255, 140, 0, 0.8);
+    &::before {
+      content: 'Performance: Fair';
+    }
+  }
+}
+
+.canvas-performance-poor {
+  filter: brightness(0.9) contrast(0.95);
+  .performance-overlay {
+    background: rgba(255, 0, 0, 0.8);
+    &::before {
+      content: 'Performance: Poor - Consider zooming out';
+    }
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+
+@keyframes canvas-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounds-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+// Smooth zoom animation
+@keyframes smooth-zoom {
+  from {
+    transform: scale(var(--zoom-from, 1));
+  }
+  to {
+    transform: scale(var(--zoom-to, 1));
+  }
+}
+
+// Smooth pan animation
+@keyframes smooth-pan {
+  from {
+    transform: translate(var(--pan-from-x, 0), var(--pan-from-y, 0));
+  }
+  to {
+    transform: translate(var(--pan-to-x, 0), var(--pan-to-y, 0));
+  }
+}
+
+// ============================================================================
+// RESPONSIVE DESIGN
+// ============================================================================
+
+// Mobile optimizations
+@media (max-width: 767px) {
+  .tech-canvas {
+    min-height: 300px;
+    max-height: calc(100vh - 120px);
+    
+    .zoom-indicator {
+      bottom: var(--ds-spacing-sm);
+      right: var(--ds-spacing-sm);
+      font-size: map-get($font-sizes, 'xs');
+      padding: var(--ds-spacing-xs) var(--ds-spacing-sm);
+    }
+    
+    .mini-map {
+      width: 80px;
+      height: 60px;
+      top: var(--ds-spacing-sm);
+      right: var(--ds-spacing-sm);
+    }
+    
+    .performance-overlay {
+      top: var(--ds-spacing-xs);
+      left: var(--ds-spacing-xs);
+      font-size: 10px;
+      padding: 2px var(--ds-spacing-xs);
+    }
+  }
+  
+  // Simplify zoom levels on mobile
+  .zoom-level-overview,
+  .zoom-level-compact {
+    .tech-tree-node {
+      .node-description,
+      .node-meta {
+        display: none;
+      }
+    }
+  }
+  
+  .zoom-level-closeup {
+    .tech-tree-node {
+      .node-description {
+        -webkit-line-clamp: 2;
+      }
+    }
+  }
+}
+
+// High DPI displays
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .tech-canvas {
+    .canvas-content {
+      // Optimize for high DPI
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .tech-canvas {
+    .canvas-content,
+    .zoom-indicator,
+    .bounds-indicator {
+      transition: none;
+      animation: none;
+    }
+    
+    &.loading::before::after {
+      animation: none;
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .tech-canvas {
+    border-width: 2px;
+    border-color: var(--ds-color-text-primary);
+    
+    .zoom-indicator {
+      background: var(--ds-color-background-primary);
+      color: var(--ds-color-text-primary);
+      border: 1px solid var(--ds-color-text-primary);
+    }
+    
+    .mini-map {
+      border-width: 2px;
+      background: var(--ds-color-background-secondary);
+    }
+  }
+}
+
+// ============================================================================
+// UTILITY CLASSES
+// ============================================================================
+
+.canvas-smooth-pan {
+  transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.canvas-smooth-zoom {
+  transition: transform 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.canvas-instant {
+  transition: none;
+}
+
+.canvas-bounds-visible {
+  .bounds-indicator {
+    display: block;
+  }
+}
+
+.canvas-bounds-hidden {
+  .bounds-indicator {
+    display: none;
+  }
+}
+
+// Accessibility utilities
+.canvas-accessible-pan {
+  &:focus {
+    outline: 2px solid var(--ds-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.canvas-accessible-zoom {
+  .zoom-indicator {
+    &.visible {
+      // Ensure zoom indicator is accessible
+      position: absolute;
+      clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}

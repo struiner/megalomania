@@ -1,17 +1,31 @@
 # Tech Tree Editor — Routed Skeleton
 
-The tech tree editor is a routed SDK surface that hosts three structural panels: overview, node detail, and prerequisite visualization. It is wired to fixtures and now consumes the canonical tech-tree data model with deterministic import/export wiring.
+The tech tree editor is a routed SDK surface that hosts the tech canvas, structured detail stack, and preview dialog. It is wired to fixtures and now consumes the canonical tech-tree data model with deterministic import/export wiring. Design tokens live under `v1/src/styles` and are imported globally so new panels stay aligned with the SDK shell.
 
 ## Layout and flows
 
 - **Route**: `/sdk/tech-tree` (also discoverable via the SDK menu). The route uses the `SdkToolPageComponent` shell so the editor can be swapped or embedded without changing navigation.
-- **Panels**: overview (grid of tier rows × deterministic display-order columns with inline tier controls and add/trim affordances), node detail (title/summary/tier/category, culture tag picker, enum-bound effect selectors), prerequisite diagram (minimal columnar tree). Panels do not own truth; they read from `TechTreeEditorService` signals.
-- **Overlay layer**: `TechTreeConnectionOverlayComponent` renders Manhattan connectors (4px rounding, crisp edges) behind the prerequisite grid to keep dependency lines readable without occluding node content.
-- **Icon picker**: node detail now includes a registry-backed icon selector (`TechIconRegistryService` + `TechIconPickerComponent`) using shared taxonomy IDs (e.g., `structure_lumberyard`) with culture-overlay hints.
-- **Culture tags**: the checkbox grid has been replaced by an accessible multi-select combobox with search/filter; a legacy grid can be toggled for quick audits. Governance CRUD lives in a modal shell that routes create/edit/delete proposals through `CultureTagGovernanceAdapterService` with audit trails and versioned statuses.
-- **Preview dialog**: a read-only preview dialog renders tier-banded cards plus connection overlays, culture tag legend, and effect summaries. It is triggered from the action dock and respects the shallow modal rule.
-- **Action dock**: bottom-weighted section with two primary actions (import fixtures, export snapshot) to respect the UI charter’s limits on visible actions. Tier controls stay scoped to the overview grid so the action dock remains stable. Validation issues are surfaced under the export log to highlight schema problems early.
-- **Selection flow**: selecting a chip or node highlights dependencies and updates the detail form. Form edits update the injected service so fixtures can be replaced later. Import failures are surfaced via validation issues and a banner fed by structured `TechTreeImportError` instances.
+- **Panels**: overview (tech canvas with pan/zoom and keyboard/pointer drag/drop), identity (title/summary/tier/order/category + icon picker), effects, culture tags, and inline prerequisite editor. Panels do not own truth; they read from `TechTreeEditorService` signals via the `TechTreeEditorOrchestrator`.
+- **Overlay layer**: `TechTreeConnectionOverlayComponent` renders Manhattan connectors with tokenized colors behind the tech canvas and preview dialog. Connection highlighting follows the active/focused node.
+- **Icon picker**: node detail includes a registry-backed icon selector (`TechIconRegistryService` + `TechIconPickerComponent`) using shared taxonomy IDs (e.g., `structure_lumberyard`) with culture-overlay hints.
+- **Culture tags**: a combobox-driven picker sits in `CultureTagsPanelComponent`; a toggleable legacy grid supports audits. Governance CRUD lives in a modal shell that routes create/edit/delete proposals through `CultureTagGovernanceAdapterService` with audit trails and versioned statuses.
+- **Preview dialog**: `TechTreePreviewDialogComponent` traps focus, restores focus on close, highlights prerequisite paths for the focused/hovered node, and now exposes a legend for connector semantics. It uses design tokens for spacing and contrast.
+- **Action dock**: bottom-weighted section with import/export controls and node creation actions. Validation issues and governance notices surface under the dock for early feedback.
+- **Selection flow**: selecting a chip or node highlights dependencies and updates the detail form. Form edits update the injected service; import failures are surfaced via validation issues and the import banner.
+
+## Integration contract
+
+- **Orchestrator**: `TechTreeEditorOrchestrator` coordinates shared state (selection, viewport, preview open/close, validation aggregation) and proxies service updates so subcomponents remain stateless. Canvas viewport changes are emitted as `{ panX, panY, scale }` and consumed by overlays and the preview dialog.
+- **Tech canvas**: `TechCanvasComponent` owns pan/zoom, roving tabindex, keyboard drag/drop (`Ctrl/Cmd + Arrow`), and virtualization. It emits node move events (`nodeId`, `tier`, `column`) and viewport changes; consumers keep overlays/connectors in sync via these outputs.
+- **Drag/drop accessibility**: `DragDropBehaviorDirective` adds ARIA roles (`grid`, `gridcell`, `draggable`), focus restoration, and live-region announcements. Keyboard users can grab via Enter/Space and reposition with modifier + arrows. The announcer is exposed as a service so other surfaces can reuse the live region.
+- **Detail stack**: `NodeIdentityCardComponent`, `EffectsEditorComponent`, `PrerequisiteEditorComponent`, and `CultureTagsPanelComponent` are isolated and emit minimal payloads. Validation is field-scoped (`node.title`, `node.tier`, `node.display_order`, `node.summary`) and merged with export issues for the page-level list.
+- **Preview dialog**: accepts `document`, `nodes`, `tierBands`, `cultureTagOptions`, and `effectOptions`; highlights connectors via `selectedId` and traps focus with `cdkTrapFocusAutoCapture`. ESC and the Close button restore the prior focus target.
+
+## Performance and virtualization
+
+- **Virtualized grid**: `VirtualizedGridComponent` windows the visible set of nodes based on viewport size, pan, and zoom. `TechCanvasComponent` uses this window for node rendering and overlay edge filtering while preserving deterministic ordering for export/validation.
+- **Perf harness**: `TECH_TREE_PERFORMANCE_FIXTURE` (140 nodes) lives in `tech-tree-editor.fixtures.ts` for render/memory baselines. Swap it into `requestImport` or canvas inputs to measure pan/zoom and virtualization performance without altering the main fixture.
+- **Metrics**: track render time for 100–200 nodes and memory allocations when panning/zooming; overlays should react to viewport changes without re-rendering offscreen nodes.
 
 ## Extension points
 

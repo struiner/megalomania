@@ -1,0 +1,489 @@
+// Design System Spacing & Layout Tokens
+// Comprehensive spacing system for Tech Tree Editor
+// Complies with UI & Ergonomics Charter principles
+// Empty space as a feature - intentional spacing for visual clarity
+
+// ============================================================================
+// SPACING SCALE FOUNDATION
+// ============================================================================
+
+// Base spacing unit following pixel-perfect design principles
+$spacing-unit: 4px;
+
+// Mathematical spacing scale - consistent increments for visual harmony
+// Based on 4px base unit for pixel-perfect alignment
+$spacing-xs: $spacing-unit;          // 4px - micro spacing
+$spacing-sm: $spacing-unit * 2;      // 8px - small spacing
+$spacing-md: $spacing-unit * 3;      // 12px - medium spacing
+$spacing-lg: $spacing-unit * 4;      // 16px - large spacing
+$spacing-xl: $spacing-unit * 6;      // 24px - extra large spacing
+$spacing-xxl: $spacing-unit * 8;     // 32px - extra extra large spacing
+$spacing-xxxl: $spacing-unit * 12;   // 48px - section spacing
+$spacing-xxxxl: $spacing-unit * 16;  // 64px - page-level spacing
+
+// Component-specific spacing tokens
+$spacing-button-padding-x: $spacing-md;  // 12px horizontal button padding
+$spacing-button-padding-y: $spacing-sm;  // 8px vertical button padding
+$spacing-button-icon-gap: $spacing-xs;   // 4px gap between button icon and text
+
+$spacing-input-padding-x: $spacing-sm;   // 8px horizontal input padding
+$spacing-input-padding-y: $spacing-xs;   // 4px vertical input padding
+
+$spacing-card-padding: $spacing-lg;      // 16px card padding
+$spacing-card-gap: $spacing-md;          // 12px gap between card elements
+
+$spacing-panel-padding: $spacing-xl;     // 24px panel padding
+$spacing-panel-gap: $spacing-lg;         // 16px gap between panel sections
+
+// ============================================================================
+// GRID SYSTEM FOUNDATION
+// ============================================================================
+
+// Grid configuration for tech tree components
+$grid-column-count: 12;
+$grid-gutter-width: $spacing-md;        // 12px column gutters
+$grid-row-height: $spacing-xl;          // 24px row height for consistent vertical rhythm
+
+// Responsive breakpoints for tech tree editor
+$grid-breakpoint-sm: 768px;   // Small devices
+$grid-breakpoint-md: 1024px;  // Medium devices
+$grid-breakpoint-lg: 1440px;  // Large devices
+$grid-breakpoint-xl: 1920px;  // Extra large devices
+
+// Container max-widths
+$container-sm: 640px;
+$container-md: 768px;
+$container-lg: 1024px;
+$container-xl: 1280px;
+
+// ============================================================================
+// LAYOUT RHYTHM & DENSITY TOKENS
+// ============================================================================
+
+// Compact density (default for tech tree efficiency)
+$spacing-density-compact-row-gap: $spacing-sm;     // 8px between nodes
+$spacing-density-compact-column-gap: $spacing-sm;  // 8px between nodes
+$spacing-density-compact-node-padding: $spacing-sm; // 8px internal node padding
+
+// Comfortable density (for detailed editing)
+$spacing-density-comfortable-row-gap: $spacing-lg;      // 16px between nodes
+$spacing-density-comfortable-column-gap: $spacing-lg;   // 16px between nodes
+$spacing-density-comfortable-node-padding: $spacing-md; // 12px internal node padding
+
+// Spacious density (for presentations/demonstrations)
+$spacing-density-spacious-row-gap: $spacing-xl;      // 24px between nodes
+$spacing-density-spacious-column-gap: $spacing-xl;   // 24px between nodes
+$spacing-density-spacious-node-padding: $spacing-lg; // 16px internal node padding
+
+// Vertical rhythm for content hierarchy
+$spacing-rhythm-micro: $spacing-xs;   // 4px - micro rhythm
+$spacing-rhythm-tight: $spacing-sm;   // 8px - tight rhythm
+$spacing-rhythm-normal: $spacing-md;  // 12px - normal rhythm
+$spacing-rhythm-loose: $spacing-lg;   // 16px - loose rhythm
+$spacing-rhythm-spacious: $spacing-xl; // 24px - spacious rhythm
+
+// ============================================================================
+// COMPONENT-SPECIFIC SPACING TOKENS
+// ============================================================================
+
+// Tech tree node spacing
+$spacing-node-margin: $spacing-sm;           // 8px margin around nodes
+$spacing-node-padding: $spacing-md;          // 12px internal node padding
+$spacing-node-border-radius: $spacing-xs;    // 4px border radius
+$spacing-node-icon-gap: $spacing-xs;         // 4px gap between icon and text
+
+$spacing-node-grid-gap: $spacing-sm;         // 8px gap between nodes in grid
+$spacing-node-connection-offset: $spacing-xs; // 4px offset for connection lines
+
+// Connection lines spacing
+$spacing-connection-stroke-width: 2px;
+$spacing-connection-arrow-size: $spacing-xs; // 4px arrow size
+$spacing-connection-line-margin: $spacing-xs; // 4px margin from node borders
+
+// Preview dialog spacing
+$spacing-preview-padding: $spacing-xl;       // 24px preview dialog padding
+$spacing-preview-content-gap: $spacing-lg;   // 16px gap between preview sections
+$spacing-preview-actions-gap: $spacing-md;   // 12px gap between action buttons
+
+// Node detail panel spacing
+$spacing-detail-padding: $spacing-lg;        // 16px detail panel padding
+$spacing-detail-section-gap: $spacing-xl;    // 24px gap between detail sections
+$spacing-detail-field-gap: $spacing-md;      // 12px gap between form fields
+$spacing-detail-validation-gap: $spacing-sm; // 8px gap for validation messages
+
+// Icon picker spacing
+$spacing-icon-picker-padding: $spacing-md;   // 12px icon picker padding
+$spacing-icon-grid-gap: $spacing-xs;         // 4px gap between icons
+$spacing-icon-preview-size: 48px;           // 48px icon preview size
+$spacing-icon-label-gap: $spacing-xs;        // 4px gap between icon and label
+
+// Validation spacing
+$spacing-validation-padding: $spacing-sm;   // 8px validation notice padding
+$spacing-validation-gap: $spacing-xs;       // 4px gap between validation elements
+$spacing-validation-icon-size: $spacing-sm; // 8px validation icon size
+
+// ============================================================================
+// CSS CUSTOM PROPERTIES
+// ============================================================================
+
+:root {
+  // Base spacing scale
+  --ds-spacing-unit: #{$spacing-unit};
+  --ds-spacing-xs: #{$spacing-xs};
+  --ds-spacing-sm: #{$spacing-sm};
+  --ds-spacing-md: #{$spacing-md};
+  --ds-spacing-lg: #{$spacing-lg};
+  --ds-spacing-xl: #{$spacing-xl};
+  --ds-spacing-xxl: #{$spacing-xxl};
+  --ds-spacing-xxxl: #{$spacing-xxxl};
+  --ds-spacing-xxxxl: #{$spacing-xxxxl};
+  
+  // Component-specific spacing
+  --ds-spacing-button-padding-x: #{$spacing-button-padding-x};
+  --ds-spacing-button-padding-y: #{$spacing-button-padding-y};
+  --ds-spacing-button-icon-gap: #{$spacing-button-icon-gap};
+  
+  --ds-spacing-input-padding-x: #{$spacing-input-padding-x};
+  --ds-spacing-input-padding-y: #{$spacing-input-padding-y};
+  
+  --ds-spacing-card-padding: #{$spacing-card-padding};
+  --ds-spacing-card-gap: #{$spacing-card-gap};
+  
+  --ds-spacing-panel-padding: #{$spacing-panel-padding};
+  --ds-spacing-panel-gap: #{$spacing-panel-gap};
+  
+  // Grid system
+  --ds-grid-column-count: #{$grid-column-count};
+  --ds-grid-gutter-width: #{$grid-gutter-width};
+  --ds-grid-row-height: #{$grid-row-height};
+  
+  // Breakpoints
+  --ds-breakpoint-sm: #{$grid-breakpoint-sm};
+  --ds-breakpoint-md: #{$grid-breakpoint-md};
+  --ds-breakpoint-lg: #{$grid-breakpoint-lg};
+  --ds-breakpoint-xl: #{$grid-breakpoint-xl};
+  
+  // Container widths
+  --ds-container-sm: #{$container-sm};
+  --ds-container-md: #{$container-md};
+  --ds-container-lg: #{$container-lg};
+  --ds-container-xl: #{$container-xl};
+  
+  // Density tokens
+  --ds-spacing-density-compact-row-gap: #{$spacing-density-compact-row-gap};
+  --ds-spacing-density-compact-column-gap: #{$spacing-density-compact-column-gap};
+  --ds-spacing-density-compact-node-padding: #{$spacing-density-compact-node-padding};
+  
+  --ds-spacing-density-comfortable-row-gap: #{$spacing-density-comfortable-row-gap};
+  --ds-spacing-density-comfortable-column-gap: #{$spacing-density-comfortable-column-gap};
+  --ds-spacing-density-comfortable-node-padding: #{$spacing-density-comfortable-node-padding};
+  
+  --ds-spacing-density-spacious-row-gap: #{$spacing-density-spacious-row-gap};
+  --ds-spacing-density-spacious-column-gap: #{$spacing-density-spacious-column-gap};
+  --ds-spacing-density-spacious-node-padding: #{$spacing-density-spacious-node-padding};
+  
+  // Rhythm tokens
+  --ds-spacing-rhythm-micro: #{$spacing-rhythm-micro};
+  --ds-spacing-rhythm-tight: #{$spacing-rhythm-tight};
+  --ds-spacing-rhythm-normal: #{$spacing-rhythm-normal};
+  --ds-spacing-rhythm-loose: #{$spacing-rhythm-loose};
+  --ds-spacing-rhythm-spacious: #{$spacing-rhythm-spacious};
+  
+  // Tech tree specific
+  --ds-spacing-node-margin: #{$spacing-node-margin};
+  --ds-spacing-node-padding: #{$spacing-node-padding};
+  --ds-spacing-node-border-radius: #{$spacing-node-border-radius};
+  --ds-spacing-node-icon-gap: #{$spacing-node-icon-gap};
+  --ds-spacing-node-grid-gap: #{$spacing-node-grid-gap};
+  --ds-spacing-node-connection-offset: #{$spacing-node-connection-offset};
+  
+  --ds-spacing-connection-stroke-width: #{$spacing-connection-stroke-width};
+  --ds-spacing-connection-arrow-size: #{$spacing-connection-arrow-size};
+  --ds-spacing-connection-line-margin: #{$spacing-connection-line-margin};
+  
+  // Preview dialog
+  --ds-spacing-preview-padding: #{$spacing-preview-padding};
+  --ds-spacing-preview-content-gap: #{$spacing-preview-content-gap};
+  --ds-spacing-preview-actions-gap: #{$spacing-preview-actions-gap};
+  
+  // Node detail panel
+  --ds-spacing-detail-padding: #{$spacing-detail-padding};
+  --ds-spacing-detail-section-gap: #{$spacing-detail-section-gap};
+  --ds-spacing-detail-field-gap: #{$spacing-detail-field-gap};
+  --ds-spacing-detail-validation-gap: #{$spacing-detail-validation-gap};
+  
+  // Icon picker
+  --ds-spacing-icon-picker-padding: #{$spacing-icon-picker-padding};
+  --ds-spacing-icon-grid-gap: #{$spacing-icon-grid-gap};
+  --ds-spacing-icon-preview-size: #{$spacing-icon-preview-size};
+  --ds-spacing-icon-label-gap: #{$spacing-icon-label-gap};
+  
+  // Validation
+  --ds-spacing-validation-padding: #{$spacing-validation-padding};
+  --ds-spacing-validation-gap: #{$spacing-validation-gap};
+  --ds-spacing-validation-icon-size: #{$spacing-validation-icon-size};
+}
+
+// ============================================================================
+// UTILITY MIXINS
+// ============================================================================
+
+// Spacing utility mixins
+@mixin ds-margin($property, $size) {
+  #{$property}: var(--ds-spacing-#{$size});
+}
+
+@mixin ds-padding($property, $size) {
+  #{$property}: var(--ds-spacing-#{$size});
+}
+
+@mixin ds-gap($direction, $size) {
+  @if $direction == 'row' {
+    row-gap: var(--ds-spacing-#{$size});
+  } @else if $direction == 'column' {
+    column-gap: var(--ds-spacing-#{$size});
+  } @else {
+    gap: var(--ds-spacing-#{$size});
+  }
+}
+
+// Layout utility mixins
+@mixin ds-container($max-width: 'lg') {
+  width: 100%;
+  max-width: var(--ds-container-#{$max-width});
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--ds-spacing-md);
+  padding-right: var(--ds-spacing-md);
+  
+  @media (max-width: 767px) {
+    padding-left: var(--ds-spacing-sm);
+    padding-right: var(--ds-spacing-sm);
+  }
+}
+
+@mixin ds-grid-container {
+  display: grid;
+  grid-template-columns: repeat(var(--ds-grid-column-count), 1fr);
+  gap: var(--ds-grid-gutter-width);
+  align-items: start;
+}
+
+@mixin ds-grid-column($span: 1) {
+  grid-column: span $span;
+}
+
+// Density mixins
+@mixin ds-density-compact {
+  --ds-node-row-gap: var(--ds-spacing-density-compact-row-gap);
+  --ds-node-column-gap: var(--ds-spacing-density-compact-column-gap);
+  --ds-node-padding: var(--ds-spacing-density-compact-node-padding);
+}
+
+@mixin ds-density-comfortable {
+  --ds-node-row-gap: var(--ds-spacing-density-comfortable-row-gap);
+  --ds-node-column-gap: var(--ds-spacing-density-comfortable-column-gap);
+  --ds-node-padding: var(--ds-spacing-density-comfortable-node-padding);
+}
+
+@mixin ds-density-spacious {
+  --ds-node-row-gap: var(--ds-spacing-density-spacious-row-gap);
+  --ds-node-column-gap: var(--ds-spacing-density-spacious-column-gap);
+  --ds-node-padding: var(--ds-spacing-density-spacious-node-padding);
+}
+
+// Responsive mixins
+@mixin ds-breakpoint-up($breakpoint) {
+  @media (min-width: var(--ds-breakpoint-#{$breakpoint})) {
+    @content;
+  }
+}
+
+@mixin ds-breakpoint-down($breakpoint) {
+  @media (max-width: calc(var(--ds-breakpoint-#{$breakpoint}) - 1px)) {
+    @content;
+  }
+}
+
+// ============================================================================
+// BASE EXTEND CLASSES
+// ============================================================================
+
+// Container classes
+%ds-container {
+  @include ds-container;
+}
+
+%ds-container-sm {
+  @include ds-container('sm');
+}
+
+%ds-container-md {
+  @include ds-container('md');
+}
+
+%ds-container-lg {
+  @include ds-container('lg');
+}
+
+%ds-container-xl {
+  @include ds-container('xl');
+}
+
+// Grid classes
+%ds-grid-container {
+  @include ds-grid-container;
+}
+
+%ds-grid-column-1 { @include ds-grid-column(1); }
+%ds-grid-column-2 { @include ds-grid-column(2); }
+%ds-grid-column-3 { @include ds-grid-column(3); }
+%ds-grid-column-4 { @include ds-grid-column(4); }
+%ds-grid-column-6 { @include ds-grid-column(6); }
+%ds-grid-column-8 { @include ds-grid-column(8); }
+%ds-grid-column-12 { @include ds-grid-column(12); }
+
+// Density classes
+%ds-density-compact {
+  @include ds-density-compact;
+}
+
+%ds-density-comfortable {
+  @include ds-density-comfortable;
+}
+
+%ds-density-spacious {
+  @include ds-density-spacious;
+}
+
+// Spacing utility classes
+%ds-spacing-none { margin: 0; padding: 0; }
+%ds-spacing-xs { margin: var(--ds-spacing-xs); padding: var(--ds-spacing-xs); }
+%ds-spacing-sm { margin: var(--ds-spacing-sm); padding: var(--ds-spacing-sm); }
+%ds-spacing-md { margin: var(--ds-spacing-md); padding: var(--ds-spacing-md); }
+%ds-spacing-lg { margin: var(--ds-spacing-lg); padding: var(--ds-spacing-lg); }
+%ds-spacing-xl { margin: var(--ds-spacing-xl); padding: var(--ds-spacing-xl); }
+
+// Directional spacing classes
+%ds-margin-top-xs { margin-top: var(--ds-spacing-xs); }
+%ds-margin-top-sm { margin-top: var(--ds-spacing-sm); }
+%ds-margin-top-md { margin-top: var(--ds-spacing-md); }
+%ds-margin-top-lg { margin-top: var(--ds-spacing-lg); }
+%ds-margin-top-xl { margin-top: var(--ds-spacing-xl); }
+
+%ds-margin-bottom-xs { margin-bottom: var(--ds-spacing-xs); }
+%ds-margin-bottom-sm { margin-bottom: var(--ds-spacing-sm); }
+%ds-margin-bottom-md { margin-bottom: var(--ds-spacing-md); }
+%ds-margin-bottom-lg { margin-bottom: var(--ds-spacing-lg); }
+%ds-margin-bottom-xl { margin-bottom: var(--ds-spacing-xl); }
+
+%ds-margin-left-xs { margin-left: var(--ds-spacing-xs); }
+%ds-margin-left-sm { margin-left: var(--ds-spacing-sm); }
+%ds-margin-left-md { margin-left: var(--ds-spacing-md); }
+%ds-margin-left-lg { margin-left: var(--ds-spacing-lg); }
+%ds-margin-left-xl { margin-left: var(--ds-spacing-xl); }
+
+%ds-margin-right-xs { margin-right: var(--ds-spacing-xs); }
+%ds-margin-right-sm { margin-right: var(--ds-spacing-sm); }
+%ds-margin-right-md { margin-right: var(--ds-spacing-md); }
+%ds-margin-right-lg { margin-right: var(--ds-spacing-lg); }
+%ds-margin-right-xl { margin-right: var(--ds-spacing-xl); }
+
+%ds-padding-top-xs { padding-top: var(--ds-spacing-xs); }
+%ds-padding-top-sm { padding-top: var(--ds-spacing-sm); }
+%ds-padding-top-md { padding-top: var(--ds-spacing-md); }
+%ds-padding-top-lg { padding-top: var(--ds-spacing-lg); }
+%ds-padding-top-xl { padding-top: var(--ds-spacing-xl); }
+
+%ds-padding-bottom-xs { padding-bottom: var(--ds-spacing-xs); }
+%ds-padding-bottom-sm { padding-bottom: var(--ds-spacing-sm); }
+%ds-padding-bottom-md { padding-bottom: var(--ds-spacing-md); }
+%ds-padding-bottom-lg { padding-bottom: var(--ds-spacing-lg); }
+%ds-padding-bottom-xl { padding-bottom: var(--ds-spacing-xl); }
+
+%ds-padding-left-xs { padding-left: var(--ds-spacing-xs); }
+%ds-padding-left-sm { padding-left: var(--ds-spacing-sm); }
+%ds-padding-left-md { padding-left: var(--ds-spacing-md); }
+%ds-padding-left-lg { padding-left: var(--ds-spacing-lg); }
+%ds-padding-left-xl { padding-left: var(--ds-spacing-xl); }
+
+%ds-padding-right-xs { padding-right: var(--ds-spacing-xs); }
+%ds-padding-right-sm { padding-right: var(--ds-spacing-sm); }
+%ds-padding-right-md { padding-right: var(--ds-spacing-md); }
+%ds-padding-right-lg { padding-right: var(--ds-spacing-lg); }
+%ds-padding-right-xl { padding-right: var(--ds-spacing-xl); }
+
+// Gap classes
+%ds-gap-xs { gap: var(--ds-spacing-xs); }
+%ds-gap-sm { gap: var(--ds-spacing-sm); }
+%ds-gap-md { gap: var(--ds-spacing-md); }
+%ds-gap-lg { gap: var(--ds-spacing-lg); }
+%ds-gap-xl { gap: var(--ds-spacing-xl); }
+
+%ds-row-gap-xs { row-gap: var(--ds-spacing-xs); }
+%ds-row-gap-sm { row-gap: var(--ds-spacing-sm); }
+%ds-row-gap-md { row-gap: var(--ds-spacing-md); }
+%ds-row-gap-lg { row-gap: var(--ds-spacing-lg); }
+%ds-row-gap-xl { row-gap: var(--ds-spacing-xl); }
+
+%ds-column-gap-xs { column-gap: var(--ds-spacing-xs); }
+%ds-column-gap-sm { column-gap: var(--ds-spacing-sm); }
+%ds-column-gap-md { column-gap: var(--ds-spacing-md); }
+%ds-column-gap-lg { column-gap: var(--ds-spacing-lg); }
+%ds-column-gap-xl { column-gap: var(--ds-spacing-xl); }
+
+// ============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// ============================================================================
+
+// High contrast support for spacing (ensure adequate spacing)
+@media (prefers-contrast: high) {
+  :root {
+    --ds-spacing-node-margin: var(--ds-spacing-md);
+    --ds-spacing-node-padding: var(--ds-spacing-lg);
+    --ds-spacing-button-padding-x: var(--ds-spacing-lg);
+    --ds-spacing-button-padding-y: var(--ds-spacing-md);
+  }
+  
+  %ds-density-compact {
+    --ds-node-row-gap: var(--ds-spacing-md);
+    --ds-node-column-gap: var(--ds-spacing-md);
+  }
+}
+
+// Reduced motion support (no spacing transitions)
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+// Touch target minimum size (44px) for interactive elements
+@media (pointer: coarse) {
+  %ds-clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+// ============================================================================
+// PRINT STYLES
+// ============================================================================
+
+@media print {
+  :root {
+    --ds-spacing-xs: 2px;
+    --ds-spacing-sm: 4px;
+    --ds-spacing-md: 6px;
+    --ds-spacing-lg: 8px;
+    --ds-spacing-xl: 12px;
+  }
+  
+  %ds-density-compact,
+  %ds-density-comfortable,
+  %ds-density-spacious {
+    --ds-node-row-gap: var(--ds-spacing-sm);
+    --ds-node-column-gap: var(--ds-spacing-sm);
+  }
+}

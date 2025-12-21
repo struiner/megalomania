@@ -3,7 +3,8 @@ import { GuildType } from '../../enums/GuildType';
 import { SettlementSpecialization } from '../../enums/SettlementSpecialization';
 import { SettlementType } from '../../enums/SettlementType';
 import { StructureType } from '../../enums/StructureType';
-import { EditorTechTree } from './tech-tree-editor.types';
+import { TECH_PREREQUISITE_RELATION } from '../../models/tech-tree.models';
+import { EditorTechNode, EditorTechTree } from './tech-tree-editor.types';
 
 export const TECH_TREE_FIXTURE_DOCUMENT: EditorTechTree = {
   tech_tree_id: 'northern_trade_v1',
@@ -74,4 +75,28 @@ export const TECH_TREE_FIXTURE_DOCUMENT: EditorTechTree = {
       metadata: { icon_id: 'guild_scholars' },
     },
   ],
+};
+
+export const TECH_TREE_PERFORMANCE_FIXTURE: EditorTechTree = {
+  tech_tree_id: 'perf_harness',
+  version: 1,
+  default_culture_tags: [],
+  metadata: { source_label: 'fixtures/perf-harness' },
+  nodes: Array.from({ length: 140 }, (_, index) => {
+    const id = `perf_node_${index + 1}`;
+    const previous = index > 0 ? `perf_node_${index}` : null;
+    const tier = (index % 8) + 1;
+    const displayOrder = (index % 12) + 1;
+    return {
+      id,
+      title: `Performance Node ${index + 1}`,
+      summary: `Virtualized fixture node #${index + 1} for perf harness.`,
+      tier,
+      display_order: displayOrder,
+      category: 'performance',
+      culture_tags: [],
+      prerequisites: previous ? [{ node: previous, relation: TECH_PREREQUISITE_RELATION.Requires }] : [],
+      effects: { unlock_goods: [GoodsType.Wood] },
+    } as EditorTechNode;
+  }),
 };

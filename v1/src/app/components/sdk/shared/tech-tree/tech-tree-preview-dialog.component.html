@@ -1,0 +1,279 @@
+<!-- Preview Dialog Container -->
+<div 
+  #dialogContainer
+  class="preview-dialog-container"
+  [class.fullscreen]="isFullscreen"
+  role="dialog"
+  [attr.aria-labelledby]="'preview-title-' + title"
+  [attr.aria-describedby]="'preview-description-' + title"
+  [attr.aria-modal]="true"
+  tabindex="-1"
+>
+  <!-- Dialog Header -->
+  <header class="preview-header">
+    <div class="preview-header-info">
+      <h2 
+        [id]="'preview-title-' + title" 
+        class="preview-title"
+      >
+        {{ title }}
+      </h2>
+      <p 
+        *ngIf="description"
+        [id]="'preview-description-' + title"
+        class="preview-description"
+      >
+        {{ description }}
+      </p>
+    </div>
+    
+    <!-- Header Controls -->
+    <div class="preview-header-controls">
+      <!-- Culture Legend Toggle -->
+      <button
+        *ngIf="config.showCultureTags && cultureTagLegends.length > 0"
+        class="preview-control-btn"
+        [class.active]="showCultureLegend"
+        (click)="toggleCultureLegend()"
+        [attr.aria-label]="showCultureLegend ? 'Hide culture tag legend' : 'Show culture tag legend'"
+        [attr.aria-expanded]="showCultureLegend"
+        type="button"
+      >
+        <span class="btn-icon">🏷️</span>
+        <span class="btn-text">Culture Tags</span>
+      </button>
+      
+      <!-- Zoom Controls -->
+      <div class="zoom-controls" role="group" aria-label="Zoom controls">
+        <button
+          class="preview-control-btn"
+          (click)="zoomOut()"
+          [disabled]="zoomLevel <= 0.5"
+          aria-label="Zoom out"
+          type="button"
+        >
+          <span class="btn-icon">🔍-</span>
+        </button>
+        
+        <span class="zoom-level" aria-live="polite">
+          {{ (zoomLevel * 100) | number:'1.0-0' }}%
+        </span>
+        
+        <button
+          class="preview-control-btn"
+          (click)="zoomIn()"
+          [disabled]="zoomLevel >= 3.0"
+          aria-label="Zoom in"
+          type="button"
+        >
+          <span class="btn-icon">🔍+</span>
+        </button>
+        
+        <button
+          class="preview-control-btn"
+          (click)="resetZoom()"
+          aria-label="Reset zoom to 100%"
+          type="button"
+        >
+          <span class="btn-icon">🎯</span>
+        </button>
+      </div>
+      
+      <!-- Fullscreen Toggle -->
+      <button
+        class="preview-control-btn"
+        (click)="toggleFullscreen()"
+        [attr.aria-label]="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'"
+        type="button"
+      >
+        <span class="btn-icon">{{ isFullscreen ? '⛶' : '⛶' }}</span>
+      </button>
+      
+      <!-- Close Button -->
+      <button
+        class="preview-close-btn"
+        (click)="onClose()"
+        aria-label="Close preview dialog"
+        type="button"
+      >
+        <span class="close-icon">✕</span>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Culture Tag Legend Panel -->
+  <aside 
+    *ngIf="showCultureLegend && cultureTagLegends.length > 0"
+    class="culture-legend-panel"
+    role="complementary"
+    aria-labelledby="culture-legend-title"
+  >
+    <h3 id="culture-legend-title" class="legend-title">
+      Culture Tags
+    </h3>
+    
+    <div class="legend-content">
+      <div 
+        *ngFor="let legend of cultureTagLegends; trackBy: trackByCultureLegend"
+        class="legend-item"
+        [style.border-left-color]="legend.color"
+      >
+        <span 
+          class="legend-icon" 
+          [style.color]="legend.color"
+          [attr.aria-label]="legend.namespace + ' culture tag'"
+        >
+          {{ legend.icon }}
+        </span>
+        <span class="legend-label">{{ legend.label }}</span>
+        <span class="legend-count">({{ legend.count }})</span>
+        <span class="legend-namespace">{{ legend.namespace }}</span>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- Preview Content Area -->
+  <main 
+    #previewContent
+    class="preview-content"
+    [class.with-legend]="showCultureLegend && cultureTagLegends.length > 0"
+    role="main"
+    aria-label="Technology tree preview content"
+  >
+    <!-- Tier Background Bands -->
+    <div class="tier-bands">
+      <div 
+        *ngFor="let tierData of exportOrdering; trackBy: trackByTier"
+        class="tier-band"
+        [style]="getTierBandStyle(tierData.tier)"
+        [attr.aria-label]="'Tier ' + tierData.tier"
+      >
+        <span class="tier-label">Tier {{ tierData.tier }}</span>
+      </div>
+    </div>
+    
+    <!-- SVG Connections Layer -->
+    <svg 
+      *ngIf="config.showConnections && connectionPaths.length > 0"
+      class="connections-layer"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="Technology prerequisites connections"
+    >
+      <title>Technology Prerequisites Connections</title>
+      <desc>Lines showing prerequisite relationships between technologies with visual complexity indicators</desc>
+      
+      <g class="connections-group">
+        <path
+          *ngFor="let connection of connectionPaths; trackBy: trackByConnectionPath"
+          [attr.d]="connection.path"
+          class="connection-path"
+          [class.complex]="connection.complexity === 'complex'"
+          [class.circular]="connection.complexity === 'circular'"
+          [class.dense]="connection.isDense"
+          [attr.stroke]="connection.style.stroke"
+          [attr.stroke-width]="connection.style.strokeWidth"
+          [attr.opacity]="connection.style.opacity"
+          [attr.stroke-dasharray]="connection.style.strokeDasharray"
+          fill="none"
+        >
+          <title>{{ connection.fromNode.name }} → {{ connection.toNode.name }}
+            {{ connection.complexity === 'circular' ? '(Circular dependency)' : '' }}
+            {{ connection.isDense ? '(Dense area)' : '' }}
+          </title>
+        </path>
+      </g>
+    </svg>
+    
+    <!-- Preview Nodes Layer -->
+    <div class="nodes-layer">
+      <div
+        *ngFor="let node of renderNodes; trackBy: trackByNodeId"
+        class="preview-node"
+        [attr.data-node-id]="node.id"
+        [attr.aria-label]="node.name + ', Tier ' + node.tier"
+        [attr.tabindex]="focusedNodeId === node.id ? 0 : -1"
+        (focus)="onNodeFocus(node.id)"
+        [class.focused]="focusedNodeId === node.id"
+      >
+        <!-- Node Icon -->
+        <div class="node-icon" [attr.aria-hidden]="true">
+          <img 
+            *ngIf="node.iconUrl" 
+            [src]="node.iconUrl" 
+            [alt]="node.name + ' icon'"
+            class="icon-image"
+          />
+          <span *ngIf="!node.iconUrl" class="icon-placeholder">
+            {{ node.name.charAt(0).toUpperCase() }}
+          </span>
+        </div>
+        
+        <!-- Node Content -->
+        <div class="node-content">
+          <h4 class="node-title">{{ node.name }}</h4>
+          <div class="node-meta">
+            <span class="node-tier">Tier {{ node.tier }}</span>
+            <span class="node-cost">Cost: {{ node.cost }}</span>
+          </div>
+          
+          <!-- Culture Tags -->
+          <div 
+            *ngIf="node.cultureTags && node.cultureTags.length > 0"
+            class="node-culture-tags"
+          >
+            <span
+              *ngFor="let tag of node.cultureTags"
+              class="culture-tag"
+              [style.background-color]="cultureTagLegends.find(l => l.label === tag)?.color || '#9E9E9E'"
+              [attr.aria-label]="'Culture tag: ' + tag"
+            >
+              {{ cultureTagLegends.find(l => l.label === tag)?.icon || '🏷️' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Dialog Footer -->
+  <footer class="preview-footer" *ngIf="nodes.length > config.maxNodesForFullDetail">
+    <div class="preview-stats">
+      <span class="stat-item">
+        <strong>{{ nodes.length }}</strong> technologies
+      </span>
+      <span class="stat-item">
+        <strong>{{ uniqueTiers.length }}</strong> tiers
+      </span>
+      <span class="stat-item">
+        <strong>{{ connectionPaths.length }}</strong> connections
+      </span>
+    </div>
+    
+    <div class="preview-help">
+      <span class="help-text">
+        Use arrow keys to navigate • Press F11 for fullscreen • Press Esc to close
+      </span>
+    </div>
+  </footer>
+  
+  <!-- Screen Reader Announcements -->
+  <div 
+    class="sr-only" 
+    aria-live="polite" 
+    aria-atomic="true"
+  >
+    <span *ngIf="focusedNodeId">
+      Focused: {{ renderNodes.find(n => n.id === focusedNodeId)?.name || 'Unknown technology' }}
+    </span>
+  </div>
+</div>
+
+<!-- Focus Trap Overlay -->
+<div 
+  *ngIf="config.focusTrapEnabled"
+  class="focus-trap-overlay"
+  tabindex="0"
+  (focus)="trapFocus()"
+  aria-hidden="true"
+></div>

@@ -1,0 +1,578 @@
+<!-- Node Detail Panel - Sectioned Layout with Progressive Disclosure -->
+<div 
+  class="node-detail-panel"
+  [class.node-detail-panel--visible]="isVisible"
+  role="region"
+  aria-label="Technology Node Details"
+  *ngIf="selectedNode">
+
+  <!-- Panel Header with Global Actions -->
+  <header class="node-detail-panel__header">
+    <div class="node-detail-panel__title-section">
+      <h2 class="node-detail-panel__title">
+        {{ selectedNode?.name || 'Technology Node' }}
+      </h2>
+      <div class="node-detail-panel__meta">
+        <span class="node-detail-panel__node-type">
+          {{ selectedNode?.type || 'Unknown Type' }}
+        </span>
+        <span class="node-detail-panel__node-id">
+          ID: {{ selectedNode?.id || 'N/A' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Global Actions -->
+    <div class="node-detail-panel__actions">
+      <!-- Validation Status Indicator -->
+      <div 
+        class="node-detail-panel__validation-indicator"
+        [class.node-detail-panel__validation-indicator--has-issues]="hasValidationIssues()"
+        [attr.aria-label]="getValidationCount() + ' validation messages'"
+        title="{{ getValidationCount() }} validation messages">
+        <span class="node-detail-panel__validation-count">
+          {{ getValidationCount() }}
+        </span>
+        <span class="node-detail-panel__validation-icon">⚠</span>
+      </div>
+
+      <!-- Expand/Collapse All Controls -->
+      <div class="node-detail-panel__section-controls">
+        <button 
+          type="button"
+          class="node-detail-panel__control-button"
+          (click)="expandAllSections()"
+          aria-label="Expand all sections">
+          Expand All
+        </button>
+        <button 
+          type="button"
+          class="node-detail-panel__control-button"
+          (click)="collapseAllSections()"
+          aria-label="Collapse all sections">
+          Collapse All
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Validation Messages (Always Visible) -->
+  <div 
+    class="node-detail-panel__global-validations"
+    *ngIf="globalValidationMessages.length > 0"
+    role="alert"
+    aria-live="polite">
+    <h3 class="node-detail-panel__validation-title">
+      Validation Issues
+    </h3>
+    <ul class="node-detail-panel__validation-list">
+      <li 
+        *ngFor="let validation of globalValidationMessages"
+        class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}"
+        [attr.data-field]="validation.field">
+        <span 
+          class="node-detail-panel__validation-icon"
+          [attr.aria-label]="validation.type + ' message'">
+          {{ getValidationIcon(validation.type) }}
+        </span>
+        <span class="node-detail-panel__validation-message">
+          {{ validation.message }}
+        </span>
+        <span 
+          *ngIf="validation.field"
+          class="node-detail-panel__validation-field">
+          Field: {{ validation.field }}
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Sections Container -->
+  <div class="node-detail-panel__sections" role="tablist" aria-label="Node properties sections">
+    
+    <!-- Identity & Naming Section -->
+    <section 
+      class="node-detail-panel__section"
+      [class.node-detail-panel__section--collapsed]="sections[0].isCollapsed"
+      role="tabpanel"
+      [attr.aria-labelledby]="'section-header-identity'">
+      
+      <header 
+        class="node-detail-panel__section-header"
+        id="section-header-identity">
+        <button 
+          type="button"
+          class="node-detail-panel__section-toggle"
+          (click)="onSectionToggle('identity')"
+          [attr.aria-expanded]="!sections[0].isCollapsed"
+          [attr.aria-controls]="'section-content-identity'"
+          [class.node-detail-panel__section-toggle--has-issues]="hasIdentityValidationIssues()">
+          
+          <span class="node-detail-panel__section-toggle-icon">
+            {{ sections[0].isCollapsed ? '▶' : '▼' }}
+          </span>
+          <h3 class="node-detail-panel__section-title">
+            {{ sections[0].title }}
+          </h3>
+          <span 
+            *ngIf="getIdentityValidationCount() > 0"
+            class="node-detail-panel__section-validation-count"
+            [attr.aria-label]="getIdentityValidationCount() + ' validation messages in this section'">
+            {{ getIdentityValidationCount() }}
+          </span>
+        </button>
+        
+        <p 
+          *ngIf="sections[0].description"
+          class="node-detail-panel__section-description">
+          {{ sections[0].description }}
+        </p>
+      </header>
+
+      <div 
+        class="node-detail-panel__section-content"
+        id="section-content-identity"
+        [attr.aria-hidden]="sections[0].isCollapsed">
+        
+        <!-- Section Validation Messages -->
+        <div 
+          *ngIf="sections[0].validationMessages.length > 0"
+          class="node-detail-panel__section-validations"
+          id="validation-identity"
+          role="alert">
+          <ul class="node-detail-panel__validation-list">
+            <li 
+              *ngFor="let validation of sections[0].validationMessages"
+              class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}">
+              <span class="node-detail-panel__validation-icon">
+                {{ getValidationIcon(validation.type) }}
+              </span>
+              <span class="node-detail-panel__validation-message">
+                {{ validation.message }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Identity Fields Component -->
+        <div class="node-detail-panel__section-body">
+          <app-node-identity-fields
+            [nodeData]="nodeIdentityData"
+            [isReadOnly]="false"
+            (identityChanged)="onIdentityChanged($event)"
+            (validationRequested)="onIdentityValidationRequested($event)">
+          </app-node-identity-fields>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Identity Section -->
+    <section 
+      class="node-detail-panel__section"
+      [class.node-detail-panel__section--collapsed]="sections[1].isCollapsed"
+      role="tabpanel"
+      [attr.aria-labelledby]="'section-header-visual'">
+      
+      <header class="node-detail-panel__section-header" id="section-header-visual">
+        <button 
+          type="button"
+          class="node-detail-panel__section-toggle"
+          (click)="onSectionToggle('visual')"
+          [attr.aria-expanded]="!sections[1].isCollapsed"
+          [attr.aria-controls]="'section-content-visual'"
+          [class.node-detail-panel__section-toggle--has-issues]="sections[1].validationMessages.length > 0">
+          
+          <span class="node-detail-panel__section-toggle-icon">
+            {{ sections[1].isCollapsed ? '▶' : '▼' }}
+          </span>
+          <h3 class="node-detail-panel__section-title">
+            {{ sections[1].title }}
+          </h3>
+          <span 
+            *ngIf="sections[1].validationMessages.length > 0"
+            class="node-detail-panel__section-validation-count">
+            {{ sections[1].validationMessages.length }}
+          </span>
+        </button>
+        
+        <p 
+          *ngIf="sections[1].description"
+          class="node-detail-panel__section-description">
+          {{ sections[1].description }}
+        </p>
+      </header>
+
+      <div 
+        class="node-detail-panel__section-content"
+        id="section-content-visual"
+        [attr.aria-hidden]="sections[1].isCollapsed">
+        
+        <div 
+          *ngIf="sections[1].validationMessages.length > 0"
+          class="node-detail-panel__section-validations"
+          id="validation-visual"
+          role="alert">
+          <ul class="node-detail-panel__validation-list">
+            <li 
+              *ngFor="let validation of sections[1].validationMessages"
+              class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}">
+              <span class="node-detail-panel__validation-icon">
+                {{ getValidationIcon(validation.type) }}
+              </span>
+              <span class="node-detail-panel__validation-message">
+                {{ validation.message }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="node-detail-panel__section-body">
+          <!-- Culture Tags Section -->
+          <div class="node-detail-panel__culture-tags">
+            <div class="node-detail-panel__field-header">
+              <label class="node-detail-panel__field-label">
+                Culture Tags
+              </label>
+              <div class="node-detail-panel__field-meta">
+                <span class="node-detail-panel__default-indicator" 
+                      *ngIf="isUsingDefaultCultureTags()"
+                      title="Using default culture tags">
+                  Default tags: {{ describeDefaultCultureTags() }}
+                </span>
+                <span class="node-detail-panel__tag-count"
+                      *ngIf="!isUsingDefaultCultureTags()"
+                      [attr.aria-label]="currentCultureTags.length + ' custom culture tags selected'">
+                  {{ currentCultureTags.length }} custom tag{{ currentCultureTags.length === 1 ? '' : 's' }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Culture Tag Combobox -->
+            <app-culture-tag-combobox
+              [options]="cultureTagOptions"
+              [selectedIds]="currentCultureTags"
+              [placeholderText]="'Select culture tags...'"
+              (selectionChange)="onCultureTagsChanged($event)">
+            </app-culture-tag-combobox>
+            
+            <!-- Usage Feedback -->
+            <div class="node-detail-panel__culture-tag-feedback" 
+                 *ngIf="currentCultureTags.length > 0 || defaultCultureTags.length > 0">
+              <div class="node-detail-panel__current-tags" *ngIf="currentCultureTags.length > 0">
+                <span class="node-detail-panel__feedback-label">Selected:</span>
+                <div class="node-detail-panel__tag-list">
+                  <span 
+                    *ngFor="let tagId of currentCultureTags; trackBy: trackByCultureTagId"
+                    class="node-detail-panel__selected-tag">
+                    {{ getCultureTagLabel(tagId) }}
+                    <span class="node-detail-panel__tag-namespace">{{ getCultureTagNamespace(tagId) }}</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="node-detail-panel__default-tags" *ngIf="isUsingDefaultCultureTags() && defaultCultureTags.length > 0">
+                <span class="node-detail-panel__feedback-label">Defaults:</span>
+                <div class="node-detail-panel__tag-list">
+                  <span 
+                    *ngFor="let tagId of defaultCultureTags; trackBy: trackByCultureTagId"
+                    class="node-detail-panel__default-tag">
+                    {{ getCultureTagLabel(tagId) }}
+                    <span class="node-detail-panel__tag-namespace">{{ getCultureTagNamespace(tagId) }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Visual Identity Placeholder Content -->
+          <div class="node-detail-panel__content-placeholder">
+            <p class="node-detail-panel__placeholder-text">
+              <strong>Additional Visual Identity Content</strong><br>
+              • Icon selection and preview<br>
+              • Color schemes and theming<br>
+              • Visual state indicators<br>
+              • Graphics and animations
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prerequisites Section -->
+    <section 
+      class="node-detail-panel__section"
+      [class.node-detail-panel__section--collapsed]="sections[2].isCollapsed"
+      role="tabpanel"
+      [attr.aria-labelledby]="'section-header-prerequisites'">
+      
+      <header class="node-detail-panel__section-header" id="section-header-prerequisites">
+        <button 
+          type="button"
+          class="node-detail-panel__section-toggle"
+          (click)="onSectionToggle('prerequisites')"
+          [attr.aria-expanded]="!sections[2].isCollapsed"
+          [attr.aria-controls]="'section-content-prerequisites'"
+          [class.node-detail-panel__section-toggle--has-issues]="hasPrerequisiteValidationIssues()">
+          
+          <span class="node-detail-panel__section-toggle-icon">
+            {{ sections[2].isCollapsed ? '▶' : '▼' }}
+          </span>
+          <h3 class="node-detail-panel__section-title">
+            {{ sections[2].title }}
+          </h3>
+          <span 
+            *ngIf="getPrerequisiteValidationCount() > 0"
+            class="node-detail-panel__section-validation-count"
+            [attr.aria-label]="getPrerequisiteValidationCount() + ' validation messages in prerequisites section'">
+            {{ getPrerequisiteValidationCount() }}
+          </span>
+        </button>
+        
+        <p 
+          *ngIf="sections[2].description"
+          class="node-detail-panel__section-description">
+          {{ sections[2].description }}
+        </p>
+      </header>
+
+      <div 
+        class="node-detail-panel__section-content"
+        id="section-content-prerequisites"
+        [attr.aria-hidden]="sections[2].isCollapsed">
+        
+        <div 
+          *ngIf="sections[2].validationMessages.length > 0"
+          class="node-detail-panel__section-validations"
+          id="validation-prerequisites"
+          role="alert">
+          <ul class="node-detail-panel__validation-list">
+            <li 
+              *ngFor="let validation of sections[2].validationMessages"
+              class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}">
+              <span class="node-detail-panel__validation-icon">
+                {{ getValidationIcon(validation.type) }}
+              </span>
+              <span class="node-detail-panel__validation-message">
+                {{ validation.message }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="node-detail-panel__section-body">
+          <!-- Prerequisite Selector -->
+          <div class="node-detail-panel__prerequisite-selector">
+            <label class="node-detail-panel__field-label">
+              Add Prerequisites
+            </label>
+            <app-prerequisite-selector
+              [availableNodes]="getAvailableNodes()"
+              [selectedPrerequisites]="currentPrerequisites"
+              [currentNodeId]="selectedNode?.id || ''"
+              [config]="prerequisiteSelectorConfig"
+              [isDisabled]="!selectedNode"
+              (prerequisiteSelected)="onPrerequisiteSelected($event)"
+              (prerequisiteDeselected)="onPrerequisiteDeselected($event)"
+              (searchChanged)="onPrerequisiteSearchChanged($event)"
+              (nodeFocused)="onPrerequisiteNodeFocused($event)">
+            </app-prerequisite-selector>
+          </div>
+
+          <!-- Prerequisite List -->
+          <div class="node-detail-panel__prerequisite-list" *ngIf="currentPrerequisites.length > 0">
+            <label class="node-detail-panel__field-label">
+              Current Prerequisites ({{ currentPrerequisites.length }})
+            </label>
+            <app-prerequisite-list
+              [prerequisites]="currentPrerequisites"
+              [availableNodes]="allNodes"
+              [config]="prerequisiteListConfig"
+              [isDisabled]="!selectedNode"
+              (prerequisiteRemoved)="onPrerequisiteRemoved($event)"
+              (prerequisiteReordered)="onPrerequisiteReordered($event)"
+              (prerequisiteClicked)="onPrerequisiteClicked($event)"
+              (listModified)="onPrerequisiteListModified($event)">
+            </app-prerequisite-list>
+          </div>
+
+          <!-- Empty State -->
+          <div class="node-detail-panel__prerequisite-empty" *ngIf="currentPrerequisites.length === 0">
+            <p class="node-detail-panel__empty-message">
+              No prerequisites selected. Use the selector above to add dependencies.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Effects Section -->
+    <section 
+      class="node-detail-panel__section"
+      [class.node-detail-panel__section--collapsed]="sections[3].isCollapsed"
+      role="tabpanel"
+      [attr.aria-labelledby]="'section-header-effects'">
+      
+      <header class="node-detail-panel__section-header" id="section-header-effects">
+        <button 
+          type="button"
+          class="node-detail-panel__section-toggle"
+          (click)="onSectionToggle('effects')"
+          [attr.aria-expanded]="!sections[3].isCollapsed"
+          [attr.aria-controls]="'section-content-effects'"
+          [class.node-detail-panel__section-toggle--has-issues]="sections[3].validationMessages.length > 0">
+          
+          <span class="node-detail-panel__section-toggle-icon">
+            {{ sections[3].isCollapsed ? '▶' : '▼' }}
+          </span>
+          <h3 class="node-detail-panel__section-title">
+            {{ sections[3].title }}
+          </h3>
+          <span 
+            *ngIf="sections[3].validationMessages.length > 0"
+            class="node-detail-panel__section-validation-count">
+            {{ sections[3].validationMessages.length }}
+          </span>
+        </button>
+        
+        <p 
+          *ngIf="sections[3].description"
+          class="node-detail-panel__section-description">
+          {{ sections[3].description }}
+        </p>
+      </header>
+
+      <div 
+        class="node-detail-panel__section-content"
+        id="section-content-effects"
+        [attr.aria-hidden]="sections[3].isCollapsed">
+        
+        <div 
+          *ngIf="sections[3].validationMessages.length > 0"
+          class="node-detail-panel__section-validations"
+          id="validation-effects"
+          role="alert">
+          <ul class="node-detail-panel__validation-list">
+            <li 
+              *ngFor="let validation of sections[3].validationMessages"
+              class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}">
+              <span class="node-detail-panel__validation-icon">
+                {{ getValidationIcon(validation.type) }}
+              </span>
+              <span class="node-detail-panel__validation-message">
+                {{ validation.message }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="node-detail-panel__section-body">
+          <div class="node-detail-panel__content-placeholder">
+            <p class="node-detail-panel__placeholder-text">
+              <strong>Effects Content Area</strong><br>
+              • Technology benefits and bonuses<br>
+              • Gameplay modifications<br>
+              • Economic and strategic effects<br>
+              • Effect validation and testing
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metadata & Advanced Section -->
+    <section 
+      class="node-detail-panel__section node-detail-panel__section--advanced"
+      [class.node-detail-panel__section--collapsed]="sections[4].isCollapsed"
+      role="tabpanel"
+      [attr.aria-labelledby]="'section-header-metadata'">
+      
+      <header class="node-detail-panel__section-header" id="section-header-metadata">
+        <button 
+          type="button"
+          class="node-detail-panel__section-toggle"
+          (click)="onSectionToggle('metadata')"
+          [attr.aria-expanded]="!sections[4].isCollapsed"
+          [attr.aria-controls]="'section-content-metadata'"
+          [class.node-detail-panel__section-toggle--has-issues]="sections[4].validationMessages.length > 0">
+          
+          <span class="node-detail-panel__section-toggle-icon">
+            {{ sections[4].isCollapsed ? '▶' : '▼' }}
+          </span>
+          <h3 class="node-detail-panel__section-title">
+            {{ sections[4].title }}
+          </h3>
+          <span 
+            *ngIf="sections[4].validationMessages.length > 0"
+            class="node-detail-panel__section-validation-count">
+            {{ sections[4].validationMessages.length }}
+          </span>
+        </button>
+        
+        <p 
+          *ngIf="sections[4].description"
+          class="node-detail-panel__section-description">
+          {{ sections[4].description }}
+        </p>
+      </header>
+
+      <div 
+        class="node-detail-panel__section-content"
+        id="section-content-metadata"
+        [attr.aria-hidden]="sections[4].isCollapsed">
+        
+        <div 
+          *ngIf="sections[4].validationMessages.length > 0"
+          class="node-detail-panel__section-validations"
+          id="validation-metadata"
+          role="alert">
+          <ul class="node-detail-panel__validation-list">
+            <li 
+              *ngFor="let validation of sections[4].validationMessages"
+              class="node-detail-panel__validation-item node-detail-panel__validation-item--{{ validation.type }}">
+              <span class="node-detail-panel__validation-icon">
+                {{ getValidationIcon(validation.type) }}
+              </span>
+              <span class="node-detail-panel__validation-message">
+                {{ validation.message }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="node-detail-panel__section-body">
+          <div class="node-detail-panel__content-placeholder">
+            <p class="node-detail-panel__placeholder-text">
+              <strong>Metadata & Advanced Content Area</strong><br>
+              • Technical configuration settings<br>
+              • Debug and development flags<br>
+              • Analytics and tracking data<br>
+              • Import/export and serialization
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Panel Footer with Status -->
+  <footer class="node-detail-panel__footer">
+    <div class="node-detail-panel__status">
+      <span class="node-detail-panel__status-text">
+        {{ getValidationCount() === 0 ? 'All validations passed' : getValidationCount() + ' validation issues found' }}
+      </span>
+    </div>
+  </footer>
+</div>
+
+<!-- Empty State (when no node selected) -->
+<div 
+  class="node-detail-panel node-detail-panel--empty"
+  *ngIf="!selectedNode"
+  role="region"
+  aria-label="No node selected">
+  <div class="node-detail-panel__empty-state">
+    <p class="node-detail-panel__empty-text">
+      Select a technology node to view and edit its properties
+    </p>
+  </div>
+</div>
